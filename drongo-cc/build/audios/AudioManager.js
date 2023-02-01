@@ -1,4 +1,4 @@
-import { Injector } from "../dg-basics";
+import { Injector } from "../drongo-cc";
 /**
  * 音频管理器
  */

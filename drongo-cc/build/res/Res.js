@@ -9,8 +9,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { assetManager } from "cc";
 import { ResManager } from "./ResManager";
-import { ResURL2Key } from "./ResURL";
+import { resURL2Key } from "./ResURL";
 export class Res {
+    static setResLoader(key, loader) {
+        this.__loaders.set(key, loader);
+    }
+    static getResLoader(key) {
+        if (!this.__loaders.has(key)) {
+            throw new Error("未注册的加载器：" + key);
+        }
+        return this.__loaders.get(key);
+    }
     /**
      * 获取资源引用
      * @param urls
@@ -20,9 +29,6 @@ export class Res {
      */
     static getResRef(urls, refKey, progress) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!this.getCCAssetByType) {
-                throw new Error("类型获取函数未设置!");
-            }
             if (!this.resourcePool) {
                 throw new Error("资源对象池未设置！");
             }
@@ -42,7 +48,7 @@ export class Res {
             }
             else {
                 //已加载完成
-                let urlKey = ResURL2Key(urls);
+                let urlKey = resURL2Key(urls);
                 if (ResManager.hasRes(urlKey)) {
                     return Promise.resolve(ResManager.addResRef(urlKey, refKey));
                 }
@@ -57,7 +63,7 @@ export class Res {
     static loadAsset(url, refKey, progress) {
         return __awaiter(this, void 0, void 0, function* () {
             //已加载完成
-            const urlKey = ResURL2Key(url);
+            const urlKey = resURL2Key(url);
             if (ResManager.hasRes(urlKey)) {
                 return Promise.resolve(ResManager.addResRef(urlKey, refKey));
             }
@@ -66,14 +72,20 @@ export class Res {
                     throw new Error("未实现！");
                 }
                 let bundle = assetManager.getBundle(url.bundle);
+                let loader;
                 if (!bundle) {
                     assetManager.loadBundle(url.bundle, (err, bundle) => {
                         if (err) {
                             reject(err);
                             return;
                         }
-                        let ccType = this.getCCAssetByType(url.type);
-                        bundle.load(url.url, ccType, (err, asset) => {
+                        if (typeof url.type == "function") {
+                            loader = this.defaultAssetLoader;
+                        }
+                        else {
+                            loader = this.getResLoader(url.type);
+                        }
+                        loader(url, bundle, progress, (err, asset) => {
                             if (err) {
                                 reject(err);
                                 return;
@@ -87,8 +99,13 @@ export class Res {
                     });
                 }
                 else {
-                    let ccType = this.getCCAssetByType(url.type);
-                    bundle.load(url.url, ccType, progress, (err, asset) => {
+                    if (typeof url.type == "function") {
+                        loader = this.defaultAssetLoader;
+                    }
+                    else {
+                        loader = this.getResLoader(url.type);
+                    }
+                    loader(url, bundle, progress, (err, asset) => {
                         if (err) {
                             reject(err);
                             return;
@@ -104,4 +121,21 @@ export class Res {
             return promise;
         });
     }
+    /**
+     * 默认加载器
+     * @param url
+     * @param bundle
+     * @param progress
+     * @param cb
+     */
+    static defaultAssetLoader(url, bundle, progress, cb) {
+        if (typeof url == "string") {
+            throw new Error("url不能为字符串" + url);
+        }
+        if (typeof url.type == "string") {
+            throw new Error("url.type不能为字符串" + url);
+        }
+        bundle.load(url.url, url.type, progress, cb);
+    }
 }
+Res.__loaders = new Map();

@@ -8,6 +8,7 @@ export declare class Event {
     static readonly REMOVE: string;
     static readonly UPDATE: string;
     static readonly CLEAR: string;
+    static readonly State_Changed: string;
     /**事件通道 */
     private static channels;
     /**

@@ -1,6 +1,6 @@
 import { director, find, Node } from "cc";
-import { TickManager } from "../dg-basics";
-import { ResURL2Key } from "../res/ResURL";
+import { TickManager } from "../drongo-cc";
+import { resURL2Key } from "../res/ResURL";
 import { AudioChannel } from "./AudioChannel";
 import { AudioManager } from "./AudioManager";
 /**
@@ -147,7 +147,7 @@ export class AudioManagerImpl {
         //正在播放的轨道
         let current = this.__musicChannels[this.__musicChannelIndex];
         if (current && current.isPlaying) {
-            if (ResURL2Key(current.url) == ResURL2Key(url)) {
+            if (resURL2Key(current.url) == resURL2Key(url)) {
                 //播放相同的音乐
                 return;
             }
@@ -204,7 +204,7 @@ export class AudioManagerImpl {
     getPlaying(url) {
         for (let index = 0; index < this.__soundChannels.length; index++) {
             const element = this.__soundChannels[index];
-            if (element.isPlaying && ResURL2Key(element.url) == ResURL2Key(url)) {
+            if (element.isPlaying && resURL2Key(element.url) == resURL2Key(url)) {
                 return element;
             }
         }

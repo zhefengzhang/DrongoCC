@@ -4,8 +4,7 @@ import { EventDispatcher } from "../events/EventDispatcher";
  */
 export declare class Dictionary<TKey, TValue> extends EventDispatcher {
     private __map;
-    private __dataChanged;
-    private __cacheElements;
+    private __list;
     constructor();
     set(key: TKey, value: TValue): void;
     /**
@@ -21,6 +20,12 @@ export declare class Dictionary<TKey, TValue> extends EventDispatcher {
      */
     get(key: TKey): TValue | undefined;
     /**
+     * 通过索引获取元素
+     * @param index
+     * @returns
+     */
+    getValue(index: number): TValue | undefined;
+    /**
      * 删除指定元素
      * @param key
      * @returns
@@ -34,10 +39,6 @@ export declare class Dictionary<TKey, TValue> extends EventDispatcher {
     * 元素列表
     */
     get elements(): Array<TValue>;
-    /**
-     * key列表
-     */
-    get keys(): Array<TKey>;
     get size(): number;
     destroy(): void;
 }

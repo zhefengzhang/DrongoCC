@@ -1,7 +1,7 @@
 import { AudioSource, director, Node } from "cc";
-import { Res } from "../dg-basics";
+import { Res } from "../drongo-cc";
 import { ResRef } from "../res/ResRef";
-import { ResURL, ResURL2Key } from "../res/ResURL";
+import { ResURL, resURL2Key } from "../res/ResURL";
 import { IAudioChannel } from "./IAudioChannel";
 
 
@@ -102,7 +102,7 @@ export class AudioChannel implements IAudioChannel {
                         value.dispose();
                         return;
                     }
-                    let resKey: string = ResURL2Key(this.url);
+                    let resKey: string = resURL2Key(this.url);
                     if (resKey != value.key) {
                         value.dispose();
                         return;
@@ -193,7 +193,7 @@ export class AudioChannel implements IAudioChannel {
             result.dispose();
             return;
         }
-        let resKey: string = ResURL2Key(this.url);
+        let resKey: string = resURL2Key(this.url);
         if (resKey != result.key) {
             result.dispose();
             return;

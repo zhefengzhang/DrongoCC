@@ -7,43 +7,24 @@ export class Dictionary extends EventDispatcher {
     constructor() {
         super();
         this.__map = new Map();
-        this.__dataChanged = false;
-        this.__cacheElements = [];
+        this.__list = [];
     }
     set(key, value) {
         let old;
+        //删除老的
         if (this.__map.has(key)) {
             old = this.__map.get(key);
-            if (old) {
-                //删除老的
-                this.delete(key);
+            const index = this.__list.indexOf(old);
+            if (index < 0) {
+                throw new Error("Dictionary内部逻辑错误！");
             }
+            this.__map.delete(key);
+            this.__list.splice(index, 1);
+            this.emit(Event.REMOVE, old);
         }
-        if (value) {
-            //添加新的
-            this.__map.set(key, value);
-            this.__dataChanged = true;
-        }
-        if (old && value) {
-            //派发更新事件
-            if (this.hasEvent(Event.UPDATE)) {
-                this.emit(Event.UPDATE, { oldValue: old, newValue: value });
-            }
-        }
-        else {
-            if (old) {
-                //派发删除事件
-                if (this.hasEvent(Event.REMOVE)) {
-                    this.emit(Event.REMOVE, old);
-                }
-            }
-            else if (value) {
-                //派发添加事件
-                if (this.hasEvent(Event.ADD)) {
-                    this.emit(Event.ADD, value);
-                }
-            }
-        }
+        this.__map.set(key, value);
+        this.__list.push(value);
+        this.emit(Event.ADD, value);
     }
     /**
      * 是否拥有指定KEY的元素
@@ -62,6 +43,17 @@ export class Dictionary extends EventDispatcher {
         return this.__map.get(key);
     }
     /**
+     * 通过索引获取元素
+     * @param index
+     * @returns
+     */
+    getValue(index) {
+        if (index >= this.__list.length) {
+            throw new Error(index + "索引超出0-" + this.__list.length + "范围");
+        }
+        return this.__list[index];
+    }
+    /**
      * 删除指定元素
      * @param key
      * @returns
@@ -71,8 +63,12 @@ export class Dictionary extends EventDispatcher {
             return undefined;
         }
         const result = this.__map.get(key);
+        const index = this.__list.indexOf(result);
+        if (index < 0) {
+            throw new Error("Dictionary内部逻辑错误！");
+        }
+        this.__list.splice(index, 1);
         this.__map.delete(key);
-        this.__dataChanged = true;
         //派发删除事件
         if (this.hasEvent(Event.REMOVE)) {
             this.emit(Event.REMOVE, result);
@@ -83,41 +79,22 @@ export class Dictionary extends EventDispatcher {
      * 清除所有元素
      */
     clear() {
-        this.__cacheElements.length = 0;
-        this.__dataChanged = false;
         this.__map.clear();
+        this.__list.length = 0;
     }
     /**
     * 元素列表
     */
     get elements() {
-        if (this.__dataChanged) {
-            this.__cacheElements.length = 0;
-            this.__map.forEach((value, key) => {
-                this.__cacheElements.push(value);
-            });
-            this.__dataChanged = false;
-        }
-        return this.__cacheElements;
-    }
-    /**
-     * key列表
-     */
-    get keys() {
-        let __keys = [];
-        this.__map.forEach((v, key) => {
-            __keys.push(key);
-        });
-        return __keys;
+        return this.__list;
     }
     get size() {
         return this.__map.size;
     }
-    ;
     destroy() {
         super.destroy();
-        this.__cacheElements = null;
         this.__map.clear();
         this.__map = null;
+        this.__list = null;
     }
 }

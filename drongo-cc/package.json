@@ -1,18 +1,19 @@
 {
-  "name": "dg-basics",
+  "name": "drongo-cc",
   "version": "1.0.0",
   "description": "基础库",
-  "main": "index.js",
+  "main": "dist/drongo-cc.mjs",
+  "types": "dist/drongo-cc.d.ts",
   "files": [
-    "dist/dg-basics.mjs",
-    "dist/dg-basics.min.mjs",
-    "dist/dg-basics.d.ts"
+    "dist/drongo-cc.mjs",
+    "dist/drongo-cc.min.mjs",
+    "dist/drongo-cc.d.ts"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "ccc3.0 基础库"
+    "ccc3.x + fgui 游戏基础库"
   ],
   "author": "guojie.greg",
   "license": "ISC",

@@ -1,7 +1,7 @@
 import { AudioSource, director } from "cc";
-import { Res } from "../dg-basics";
+import { Res } from "../drongo-cc";
 import { ResRef } from "../res/ResRef";
-import { ResURL2Key } from "../res/ResURL";
+import { resURL2Key } from "../res/ResURL";
 export class AudioChannel {
     constructor(node, source) {
         if (source == null) {
@@ -69,7 +69,7 @@ export class AudioChannel {
                     value.dispose();
                     return;
                 }
-                let resKey = ResURL2Key(this.url);
+                let resKey = resURL2Key(this.url);
                 if (resKey != value.key) {
                     value.dispose();
                     return;
@@ -156,7 +156,7 @@ export class AudioChannel {
             result.dispose();
             return;
         }
-        let resKey = ResURL2Key(this.url);
+        let resKey = resURL2Key(this.url);
         if (resKey != result.key) {
             result.dispose();
             return;

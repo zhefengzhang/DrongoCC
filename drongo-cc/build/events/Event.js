@@ -98,5 +98,6 @@ Event.ADD = "add";
 Event.REMOVE = "remove";
 Event.UPDATE = "update";
 Event.CLEAR = "clear";
+Event.State_Changed = "stateChanged";
 /**事件通道 */
 Event.channels = new Map();

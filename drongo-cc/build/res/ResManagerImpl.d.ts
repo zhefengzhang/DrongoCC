@@ -1,5 +1,5 @@
 import { List } from "../containers/List";
-import { Dictionary } from "../dg-basics";
+import { Dictionary } from "../drongo-cc";
 import { IResourceManager } from "./IResManager";
 import { IResource } from "./IResource";
 import { ResRef } from "./ResRef";

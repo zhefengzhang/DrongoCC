@@ -1,4 +1,4 @@
-import { Debuger } from "../dg-basics";
+import { Debuger } from "../drongo-cc";
 import { Event } from "../events/Event";
 import { EventDispatcher } from "../events/EventDispatcher";
 import { IState } from "./IState";

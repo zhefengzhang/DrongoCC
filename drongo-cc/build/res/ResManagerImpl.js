@@ -1,5 +1,5 @@
 import { List } from "../containers/List";
-import { Dictionary } from "../dg-basics";
+import { Dictionary } from "../drongo-cc";
 import { TickManager } from "../tick/TickerManager";
 import { Timer } from "../utils/Timer";
 import { ResManager } from "./ResManager";

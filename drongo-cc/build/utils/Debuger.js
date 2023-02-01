@@ -1,4 +1,4 @@
-import { Dictionary } from "../dg-basics";
+import { Dictionary } from "../drongo-cc";
 export class Debuger {
     /**
      * 设置过滤

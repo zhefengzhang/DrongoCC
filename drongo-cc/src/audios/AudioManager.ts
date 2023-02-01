@@ -1,4 +1,4 @@
-import { Injector } from "../dg-basics";
+import { Injector } from "../drongo-cc";
 import { ResURL } from "../res/ResURL";
 import { IAudioChannel } from "./IAudioChannel";
 import { IAudioManager } from "./IAudioManager";
