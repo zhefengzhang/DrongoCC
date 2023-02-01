@@ -5,6 +5,7 @@
     "version": "3.7.0"
   },
   "dependencies": {
+    "drongo-cc": "^1.0.1",
     "fairygui-cc": "^1.1.1"
   }
 }

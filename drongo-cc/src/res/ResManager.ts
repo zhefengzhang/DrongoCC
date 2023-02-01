@@ -1,5 +1,5 @@
 import { Injector } from "../utils/Injector";
-import { IResourceManager } from "./IResManager";
+import { IResManager } from "./IResManager";
 import { IResource } from "./IResource";
 import { ResRef } from "./ResRef";
 
@@ -67,8 +67,8 @@ export class ResManager {
         return this.impl.resList;
     }
 
-    private static __impl: IResourceManager;
-    private static get impl(): IResourceManager {
+    private static __impl: IResManager;
+    private static get impl(): IResManager {
         if (this.__impl == null) {
             this.__impl = Injector.getInject(this.KEY);
         }

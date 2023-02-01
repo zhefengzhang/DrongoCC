@@ -1,34 +1,32 @@
-'use strict';
+import { gfx, RenderComponent, Event as Event$1, Vec2, Node, game, director, macro, Color, Layers, Font, resources, Vec3, Rect, UITransform, UIOpacity, Component, Graphics, misc, Sprite, Size, view, ImageAsset, AudioClip, BufferAsset, AssetManager, Asset, assetManager, Texture2D, SpriteFrame, BitmapFont, sp, dragonBones, path, Label, LabelOutline, LabelShadow, SpriteAtlas, RichText, sys, EventMouse, EventTarget, Mask, math, isValid, View, AudioSourceComponent, EditBox } from 'cc';
+import { EDITOR } from 'cc/env';
 
-var cc = require('cc');
-var env = require('cc/env');
-
-exports.ButtonMode = void 0;
+var ButtonMode;
 (function (ButtonMode) {
     ButtonMode[ButtonMode["Common"] = 0] = "Common";
     ButtonMode[ButtonMode["Check"] = 1] = "Check";
     ButtonMode[ButtonMode["Radio"] = 2] = "Radio";
-})(exports.ButtonMode || (exports.ButtonMode = {}));
-exports.AutoSizeType = void 0;
+})(ButtonMode || (ButtonMode = {}));
+var AutoSizeType;
 (function (AutoSizeType) {
     AutoSizeType[AutoSizeType["None"] = 0] = "None";
     AutoSizeType[AutoSizeType["Both"] = 1] = "Both";
     AutoSizeType[AutoSizeType["Height"] = 2] = "Height";
     AutoSizeType[AutoSizeType["Shrink"] = 3] = "Shrink";
-})(exports.AutoSizeType || (exports.AutoSizeType = {}));
-exports.AlignType = void 0;
+})(AutoSizeType || (AutoSizeType = {}));
+var AlignType;
 (function (AlignType) {
     AlignType[AlignType["Left"] = 0] = "Left";
     AlignType[AlignType["Center"] = 1] = "Center";
     AlignType[AlignType["Right"] = 2] = "Right";
-})(exports.AlignType || (exports.AlignType = {}));
-exports.VertAlignType = void 0;
+})(AlignType || (AlignType = {}));
+var VertAlignType;
 (function (VertAlignType) {
     VertAlignType[VertAlignType["Top"] = 0] = "Top";
     VertAlignType[VertAlignType["Middle"] = 1] = "Middle";
     VertAlignType[VertAlignType["Bottom"] = 2] = "Bottom";
-})(exports.VertAlignType || (exports.VertAlignType = {}));
-exports.LoaderFillType = void 0;
+})(VertAlignType || (VertAlignType = {}));
+var LoaderFillType;
 (function (LoaderFillType) {
     LoaderFillType[LoaderFillType["None"] = 0] = "None";
     LoaderFillType[LoaderFillType["Scale"] = 1] = "Scale";
@@ -36,29 +34,29 @@ exports.LoaderFillType = void 0;
     LoaderFillType[LoaderFillType["ScaleMatchWidth"] = 3] = "ScaleMatchWidth";
     LoaderFillType[LoaderFillType["ScaleFree"] = 4] = "ScaleFree";
     LoaderFillType[LoaderFillType["ScaleNoBorder"] = 5] = "ScaleNoBorder";
-})(exports.LoaderFillType || (exports.LoaderFillType = {}));
-exports.ListLayoutType = void 0;
+})(LoaderFillType || (LoaderFillType = {}));
+var ListLayoutType;
 (function (ListLayoutType) {
     ListLayoutType[ListLayoutType["SingleColumn"] = 0] = "SingleColumn";
     ListLayoutType[ListLayoutType["SingleRow"] = 1] = "SingleRow";
     ListLayoutType[ListLayoutType["FlowHorizontal"] = 2] = "FlowHorizontal";
     ListLayoutType[ListLayoutType["FlowVertical"] = 3] = "FlowVertical";
     ListLayoutType[ListLayoutType["Pagination"] = 4] = "Pagination";
-})(exports.ListLayoutType || (exports.ListLayoutType = {}));
-exports.ListSelectionMode = void 0;
+})(ListLayoutType || (ListLayoutType = {}));
+var ListSelectionMode;
 (function (ListSelectionMode) {
     ListSelectionMode[ListSelectionMode["Single"] = 0] = "Single";
     ListSelectionMode[ListSelectionMode["Multiple"] = 1] = "Multiple";
     ListSelectionMode[ListSelectionMode["Multiple_SingleClick"] = 2] = "Multiple_SingleClick";
     ListSelectionMode[ListSelectionMode["None"] = 3] = "None";
-})(exports.ListSelectionMode || (exports.ListSelectionMode = {}));
-exports.OverflowType = void 0;
+})(ListSelectionMode || (ListSelectionMode = {}));
+var OverflowType;
 (function (OverflowType) {
     OverflowType[OverflowType["Visible"] = 0] = "Visible";
     OverflowType[OverflowType["Hidden"] = 1] = "Hidden";
     OverflowType[OverflowType["Scroll"] = 2] = "Scroll";
-})(exports.OverflowType || (exports.OverflowType = {}));
-exports.PackageItemType = void 0;
+})(OverflowType || (OverflowType = {}));
+var PackageItemType;
 (function (PackageItemType) {
     PackageItemType[PackageItemType["Image"] = 0] = "Image";
     PackageItemType[PackageItemType["MovieClip"] = 1] = "MovieClip";
@@ -71,8 +69,8 @@ exports.PackageItemType = void 0;
     PackageItemType[PackageItemType["Unknown"] = 8] = "Unknown";
     PackageItemType[PackageItemType["Spine"] = 9] = "Spine";
     PackageItemType[PackageItemType["DragonBones"] = 10] = "DragonBones";
-})(exports.PackageItemType || (exports.PackageItemType = {}));
-exports.ObjectType = void 0;
+})(PackageItemType || (PackageItemType = {}));
+var ObjectType;
 (function (ObjectType) {
     ObjectType[ObjectType["Image"] = 0] = "Image";
     ObjectType[ObjectType["MovieClip"] = 1] = "MovieClip";
@@ -93,53 +91,53 @@ exports.ObjectType = void 0;
     ObjectType[ObjectType["ScrollBar"] = 16] = "ScrollBar";
     ObjectType[ObjectType["Tree"] = 17] = "Tree";
     ObjectType[ObjectType["Loader3D"] = 18] = "Loader3D";
-})(exports.ObjectType || (exports.ObjectType = {}));
-exports.ProgressTitleType = void 0;
+})(ObjectType || (ObjectType = {}));
+var ProgressTitleType;
 (function (ProgressTitleType) {
     ProgressTitleType[ProgressTitleType["Percent"] = 0] = "Percent";
     ProgressTitleType[ProgressTitleType["ValueAndMax"] = 1] = "ValueAndMax";
     ProgressTitleType[ProgressTitleType["Value"] = 2] = "Value";
     ProgressTitleType[ProgressTitleType["Max"] = 3] = "Max";
-})(exports.ProgressTitleType || (exports.ProgressTitleType = {}));
-exports.ScrollBarDisplayType = void 0;
+})(ProgressTitleType || (ProgressTitleType = {}));
+var ScrollBarDisplayType;
 (function (ScrollBarDisplayType) {
     ScrollBarDisplayType[ScrollBarDisplayType["Default"] = 0] = "Default";
     ScrollBarDisplayType[ScrollBarDisplayType["Visible"] = 1] = "Visible";
     ScrollBarDisplayType[ScrollBarDisplayType["Auto"] = 2] = "Auto";
     ScrollBarDisplayType[ScrollBarDisplayType["Hidden"] = 3] = "Hidden";
-})(exports.ScrollBarDisplayType || (exports.ScrollBarDisplayType = {}));
-exports.ScrollType = void 0;
+})(ScrollBarDisplayType || (ScrollBarDisplayType = {}));
+var ScrollType;
 (function (ScrollType) {
     ScrollType[ScrollType["Horizontal"] = 0] = "Horizontal";
     ScrollType[ScrollType["Vertical"] = 1] = "Vertical";
     ScrollType[ScrollType["Both"] = 2] = "Both";
-})(exports.ScrollType || (exports.ScrollType = {}));
-exports.FlipType = void 0;
+})(ScrollType || (ScrollType = {}));
+var FlipType;
 (function (FlipType) {
     FlipType[FlipType["None"] = 0] = "None";
     FlipType[FlipType["Horizontal"] = 1] = "Horizontal";
     FlipType[FlipType["Vertical"] = 2] = "Vertical";
     FlipType[FlipType["Both"] = 3] = "Both";
-})(exports.FlipType || (exports.FlipType = {}));
-exports.ChildrenRenderOrder = void 0;
+})(FlipType || (FlipType = {}));
+var ChildrenRenderOrder;
 (function (ChildrenRenderOrder) {
     ChildrenRenderOrder[ChildrenRenderOrder["Ascent"] = 0] = "Ascent";
     ChildrenRenderOrder[ChildrenRenderOrder["Descent"] = 1] = "Descent";
     ChildrenRenderOrder[ChildrenRenderOrder["Arch"] = 2] = "Arch";
-})(exports.ChildrenRenderOrder || (exports.ChildrenRenderOrder = {}));
-exports.GroupLayoutType = void 0;
+})(ChildrenRenderOrder || (ChildrenRenderOrder = {}));
+var GroupLayoutType;
 (function (GroupLayoutType) {
     GroupLayoutType[GroupLayoutType["None"] = 0] = "None";
     GroupLayoutType[GroupLayoutType["Horizontal"] = 1] = "Horizontal";
     GroupLayoutType[GroupLayoutType["Vertical"] = 2] = "Vertical";
-})(exports.GroupLayoutType || (exports.GroupLayoutType = {}));
-exports.PopupDirection = void 0;
+})(GroupLayoutType || (GroupLayoutType = {}));
+var PopupDirection;
 (function (PopupDirection) {
     PopupDirection[PopupDirection["Auto"] = 0] = "Auto";
     PopupDirection[PopupDirection["Up"] = 1] = "Up";
     PopupDirection[PopupDirection["Down"] = 2] = "Down";
-})(exports.PopupDirection || (exports.PopupDirection = {}));
-exports.RelationType = void 0;
+})(PopupDirection || (PopupDirection = {}));
+var RelationType;
 (function (RelationType) {
     RelationType[RelationType["Left_Left"] = 0] = "Left_Left";
     RelationType[RelationType["Left_Center"] = 1] = "Left_Center";
@@ -166,8 +164,8 @@ exports.RelationType = void 0;
     RelationType[RelationType["BottomExt_Top"] = 22] = "BottomExt_Top";
     RelationType[RelationType["BottomExt_Bottom"] = 23] = "BottomExt_Bottom";
     RelationType[RelationType["Size"] = 24] = "Size";
-})(exports.RelationType || (exports.RelationType = {}));
-exports.FillMethod = void 0;
+})(RelationType || (RelationType = {}));
+var FillMethod;
 (function (FillMethod) {
     FillMethod[FillMethod["None"] = 0] = "None";
     FillMethod[FillMethod["Horizontal"] = 1] = "Horizontal";
@@ -175,15 +173,15 @@ exports.FillMethod = void 0;
     FillMethod[FillMethod["Radial90"] = 3] = "Radial90";
     FillMethod[FillMethod["Radial180"] = 4] = "Radial180";
     FillMethod[FillMethod["Radial360"] = 5] = "Radial360";
-})(exports.FillMethod || (exports.FillMethod = {}));
-exports.FillOrigin = void 0;
+})(FillMethod || (FillMethod = {}));
+var FillOrigin;
 (function (FillOrigin) {
     FillOrigin[FillOrigin["Top"] = 0] = "Top";
     FillOrigin[FillOrigin["Bottom"] = 1] = "Bottom";
     FillOrigin[FillOrigin["Left"] = 2] = "Left";
     FillOrigin[FillOrigin["Right"] = 3] = "Right";
-})(exports.FillOrigin || (exports.FillOrigin = {}));
-exports.ObjectPropID = void 0;
+})(FillOrigin || (FillOrigin = {}));
+var ObjectPropID;
 (function (ObjectPropID) {
     ObjectPropID[ObjectPropID["Text"] = 0] = "Text";
     ObjectPropID[ObjectPropID["Icon"] = 1] = "Icon";
@@ -195,9 +193,9 @@ exports.ObjectPropID = void 0;
     ObjectPropID[ObjectPropID["TimeScale"] = 7] = "TimeScale";
     ObjectPropID[ObjectPropID["FontSize"] = 8] = "FontSize";
     ObjectPropID[ObjectPropID["Selected"] = 9] = "Selected";
-})(exports.ObjectPropID || (exports.ObjectPropID = {}));
+})(ObjectPropID || (ObjectPropID = {}));
 
-exports.BlendMode = void 0;
+var BlendMode;
 (function (BlendMode) {
     BlendMode[BlendMode["Normal"] = 0] = "Normal";
     BlendMode[BlendMode["None"] = 1] = "None";
@@ -211,11 +209,11 @@ exports.BlendMode = void 0;
     BlendMode[BlendMode["Custom1"] = 9] = "Custom1";
     BlendMode[BlendMode["Custom2"] = 10] = "Custom2";
     BlendMode[BlendMode["Custom3"] = 11] = "Custom3";
-})(exports.BlendMode || (exports.BlendMode = {}));
+})(BlendMode || (BlendMode = {}));
 class BlendModeUtils {
     static apply(node, blendMode) {
         let f = factors[blendMode];
-        let renderers = node.getComponentsInChildren(cc.RenderComponent);
+        let renderers = node.getComponentsInChildren(RenderComponent);
         renderers.forEach(element => {
             element.srcBlendFactor = f[0];
             element.dstBlendFactor = f[1];
@@ -227,24 +225,24 @@ class BlendModeUtils {
     }
 }
 const factors = [
-    [cc.gfx.BlendFactor.SRC_ALPHA, cc.gfx.BlendFactor.ONE_MINUS_SRC_ALPHA],
-    [cc.gfx.BlendFactor.ONE, cc.gfx.BlendFactor.ONE],
-    [cc.gfx.BlendFactor.SRC_ALPHA, cc.gfx.BlendFactor.ONE],
-    [cc.gfx.BlendFactor.DST_COLOR, cc.gfx.BlendFactor.ONE_MINUS_SRC_ALPHA],
-    [cc.gfx.BlendFactor.ONE, cc.gfx.BlendFactor.ONE_MINUS_SRC_COLOR],
-    [cc.gfx.BlendFactor.ZERO, cc.gfx.BlendFactor.ONE_MINUS_SRC_ALPHA],
-    [cc.gfx.BlendFactor.ZERO, cc.gfx.BlendFactor.SRC_ALPHA],
-    [cc.gfx.BlendFactor.ONE_MINUS_DST_ALPHA, cc.gfx.BlendFactor.DST_ALPHA],
-    [cc.gfx.BlendFactor.ONE, cc.gfx.BlendFactor.ZERO],
-    [cc.gfx.BlendFactor.SRC_ALPHA, cc.gfx.BlendFactor.ONE_MINUS_SRC_ALPHA],
-    [cc.gfx.BlendFactor.SRC_ALPHA, cc.gfx.BlendFactor.ONE_MINUS_SRC_ALPHA],
-    [cc.gfx.BlendFactor.SRC_ALPHA, cc.gfx.BlendFactor.ONE_MINUS_SRC_ALPHA], //custom2
+    [gfx.BlendFactor.SRC_ALPHA, gfx.BlendFactor.ONE_MINUS_SRC_ALPHA],
+    [gfx.BlendFactor.ONE, gfx.BlendFactor.ONE],
+    [gfx.BlendFactor.SRC_ALPHA, gfx.BlendFactor.ONE],
+    [gfx.BlendFactor.DST_COLOR, gfx.BlendFactor.ONE_MINUS_SRC_ALPHA],
+    [gfx.BlendFactor.ONE, gfx.BlendFactor.ONE_MINUS_SRC_COLOR],
+    [gfx.BlendFactor.ZERO, gfx.BlendFactor.ONE_MINUS_SRC_ALPHA],
+    [gfx.BlendFactor.ZERO, gfx.BlendFactor.SRC_ALPHA],
+    [gfx.BlendFactor.ONE_MINUS_DST_ALPHA, gfx.BlendFactor.DST_ALPHA],
+    [gfx.BlendFactor.ONE, gfx.BlendFactor.ZERO],
+    [gfx.BlendFactor.SRC_ALPHA, gfx.BlendFactor.ONE_MINUS_SRC_ALPHA],
+    [gfx.BlendFactor.SRC_ALPHA, gfx.BlendFactor.ONE_MINUS_SRC_ALPHA],
+    [gfx.BlendFactor.SRC_ALPHA, gfx.BlendFactor.ONE_MINUS_SRC_ALPHA], //custom2
 ];
 
-class Event extends cc.Event {
+class Event extends Event$1 {
     constructor(type, bubbles) {
         super(type, bubbles);
-        this.pos = new cc.Vec2();
+        this.pos = new Vec2();
         this.touchId = 0;
         this.clickCount = 0;
         this.button = 0;
@@ -311,7 +309,7 @@ function returnEvent(evt) {
     eventPool.push(evt);
 }
 
-exports.EaseType = void 0;
+var EaseType;
 (function (EaseType) {
     EaseType[EaseType["Linear"] = 0] = "Linear";
     EaseType[EaseType["SineIn"] = 1] = "SineIn";
@@ -345,7 +343,7 @@ exports.EaseType = void 0;
     EaseType[EaseType["BounceOut"] = 29] = "BounceOut";
     EaseType[EaseType["BounceInOut"] = 30] = "BounceInOut";
     EaseType[EaseType["Custom"] = 31] = "Custom";
-})(exports.EaseType || (exports.EaseType = {}));
+})(EaseType || (EaseType = {}));
 
 class GearBase {
     dispose() {
@@ -429,7 +427,7 @@ class GearBase {
 class GearTweenConfig {
     constructor() {
         this.tween = true;
-        this.easeType = exports.EaseType.QuadOut;
+        this.easeType = EaseType.QuadOut;
         this.duration = 0.3;
         this.delay = 0;
     }
@@ -438,8 +436,8 @@ class GearTweenConfig {
 class GearAnimation extends GearBase {
     init() {
         this._default = {
-            playing: this._owner.getProp(exports.ObjectPropID.Playing),
-            frame: this._owner.getProp(exports.ObjectPropID.Frame)
+            playing: this._owner.getProp(ObjectPropID.Playing),
+            frame: this._owner.getProp(ObjectPropID.Frame)
         };
         this._storage = {};
     }
@@ -457,8 +455,8 @@ class GearAnimation extends GearBase {
     apply() {
         this._owner._gearLocked = true;
         var gv = this._storage[this._controller.selectedPageId] || this._default;
-        this._owner.setProp(exports.ObjectPropID.Playing, gv.playing);
-        this._owner.setProp(exports.ObjectPropID.Frame, gv.frame);
+        this._owner.setProp(ObjectPropID.Playing, gv.playing);
+        this._owner.setProp(ObjectPropID.Frame, gv.frame);
         this._owner._gearLocked = false;
     }
     updateState() {
@@ -467,16 +465,16 @@ class GearAnimation extends GearBase {
             gv = {};
             this._storage[this._controller.selectedPageId] = gv;
         }
-        gv.playing = this._owner.getProp(exports.ObjectPropID.Playing);
-        gv.frame = this._owner.getProp(exports.ObjectPropID.Frame);
+        gv.playing = this._owner.getProp(ObjectPropID.Playing);
+        gv.frame = this._owner.getProp(ObjectPropID.Frame);
     }
 }
 
 class GearColor extends GearBase {
     init() {
         this._default = {
-            color: this._owner.getProp(exports.ObjectPropID.Color),
-            strokeColor: this._owner.getProp(exports.ObjectPropID.OutlineColor)
+            color: this._owner.getProp(ObjectPropID.Color),
+            strokeColor: this._owner.getProp(ObjectPropID.OutlineColor)
         };
         this._storage = {};
     }
@@ -494,8 +492,8 @@ class GearColor extends GearBase {
     apply() {
         this._owner._gearLocked = true;
         var gv = this._storage[this._controller.selectedPageId] || this._default;
-        this._owner.setProp(exports.ObjectPropID.Color, gv.color);
-        this._owner.setProp(exports.ObjectPropID.OutlineColor, gv.strokeColor);
+        this._owner.setProp(ObjectPropID.Color, gv.color);
+        this._owner.setProp(ObjectPropID.OutlineColor, gv.strokeColor);
         this._owner._gearLocked = false;
     }
     updateState() {
@@ -504,8 +502,8 @@ class GearColor extends GearBase {
             gv = {};
             this._storage[this._controller.selectedPageId] = gv;
         }
-        gv.color = this._owner.getProp(exports.ObjectPropID.Color);
-        gv.strokeColor = this._owner.getProp(exports.ObjectPropID.OutlineColor);
+        gv.color = this._owner.getProp(ObjectPropID.Color);
+        gv.strokeColor = this._owner.getProp(ObjectPropID.OutlineColor);
     }
 }
 
@@ -575,7 +573,7 @@ class GearFontSize extends GearBase {
         this._default = 0;
     }
     init() {
-        this._default = this._owner.getProp(exports.ObjectPropID.FontSize);
+        this._default = this._owner.getProp(ObjectPropID.FontSize);
         this._storage = {};
     }
     addStatus(pageId, buffer) {
@@ -588,13 +586,13 @@ class GearFontSize extends GearBase {
         this._owner._gearLocked = true;
         var data = this._storage[this._controller.selectedPageId];
         if (data !== undefined)
-            this._owner.setProp(exports.ObjectPropID.FontSize, data);
+            this._owner.setProp(ObjectPropID.FontSize, data);
         else
-            this._owner.setProp(exports.ObjectPropID.FontSize, this._default);
+            this._owner.setProp(ObjectPropID.FontSize, this._default);
         this._owner._gearLocked = false;
     }
     updateState() {
-        this._storage[this._controller.selectedPageId] = this._owner.getProp(exports.ObjectPropID.FontSize);
+        this._storage[this._controller.selectedPageId] = this._owner.getProp(ObjectPropID.FontSize);
     }
 }
 
@@ -664,53 +662,53 @@ const _PiOver2 = Math.PI * 0.5;
 const _TwoPi = Math.PI * 2;
 function evaluateEase(easeType, time, duration, overshootOrAmplitude, period) {
     switch (easeType) {
-        case exports.EaseType.Linear:
+        case EaseType.Linear:
             return time / duration;
-        case exports.EaseType.SineIn:
+        case EaseType.SineIn:
             return -Math.cos(time / duration * _PiOver2) + 1;
-        case exports.EaseType.SineOut:
+        case EaseType.SineOut:
             return Math.sin(time / duration * _PiOver2);
-        case exports.EaseType.SineInOut:
+        case EaseType.SineInOut:
             return -0.5 * (Math.cos(Math.PI * time / duration) - 1);
-        case exports.EaseType.QuadIn:
+        case EaseType.QuadIn:
             return (time /= duration) * time;
-        case exports.EaseType.QuadOut:
+        case EaseType.QuadOut:
             return -(time /= duration) * (time - 2);
-        case exports.EaseType.QuadInOut:
+        case EaseType.QuadInOut:
             if ((time /= duration * 0.5) < 1)
                 return 0.5 * time * time;
             return -0.5 * ((--time) * (time - 2) - 1);
-        case exports.EaseType.CubicIn:
+        case EaseType.CubicIn:
             return (time /= duration) * time * time;
-        case exports.EaseType.CubicOut:
+        case EaseType.CubicOut:
             return ((time = time / duration - 1) * time * time + 1);
-        case exports.EaseType.CubicInOut:
+        case EaseType.CubicInOut:
             if ((time /= duration * 0.5) < 1)
                 return 0.5 * time * time * time;
             return 0.5 * ((time -= 2) * time * time + 2);
-        case exports.EaseType.QuartIn:
+        case EaseType.QuartIn:
             return (time /= duration) * time * time * time;
-        case exports.EaseType.QuartOut:
+        case EaseType.QuartOut:
             return -((time = time / duration - 1) * time * time * time - 1);
-        case exports.EaseType.QuartInOut:
+        case EaseType.QuartInOut:
             if ((time /= duration * 0.5) < 1)
                 return 0.5 * time * time * time * time;
             return -0.5 * ((time -= 2) * time * time * time - 2);
-        case exports.EaseType.QuintIn:
+        case EaseType.QuintIn:
             return (time /= duration) * time * time * time * time;
-        case exports.EaseType.QuintOut:
+        case EaseType.QuintOut:
             return ((time = time / duration - 1) * time * time * time * time + 1);
-        case exports.EaseType.QuintInOut:
+        case EaseType.QuintInOut:
             if ((time /= duration * 0.5) < 1)
                 return 0.5 * time * time * time * time * time;
             return 0.5 * ((time -= 2) * time * time * time * time + 2);
-        case exports.EaseType.ExpoIn:
+        case EaseType.ExpoIn:
             return (time == 0) ? 0 : Math.pow(2, 10 * (time / duration - 1));
-        case exports.EaseType.ExpoOut:
+        case EaseType.ExpoOut:
             if (time == duration)
                 return 1;
             return (-Math.pow(2, -10 * time / duration) + 1);
-        case exports.EaseType.ExpoInOut:
+        case EaseType.ExpoInOut:
             if (time == 0)
                 return 0;
             if (time == duration)
@@ -718,15 +716,15 @@ function evaluateEase(easeType, time, duration, overshootOrAmplitude, period) {
             if ((time /= duration * 0.5) < 1)
                 return 0.5 * Math.pow(2, 10 * (time - 1));
             return 0.5 * (-Math.pow(2, -10 * --time) + 2);
-        case exports.EaseType.CircIn:
+        case EaseType.CircIn:
             return -(Math.sqrt(1 - (time /= duration) * time) - 1);
-        case exports.EaseType.CircOut:
+        case EaseType.CircOut:
             return Math.sqrt(1 - (time = time / duration - 1) * time);
-        case exports.EaseType.CircInOut:
+        case EaseType.CircInOut:
             if ((time /= duration * 0.5) < 1)
                 return -0.5 * (Math.sqrt(1 - time * time) - 1);
             return 0.5 * (Math.sqrt(1 - (time -= 2) * time) + 1);
-        case exports.EaseType.ElasticIn:
+        case EaseType.ElasticIn:
             var s0;
             if (time == 0)
                 return 0;
@@ -741,7 +739,7 @@ function evaluateEase(easeType, time, duration, overshootOrAmplitude, period) {
             else
                 s0 = period / _TwoPi * Math.asin(1 / overshootOrAmplitude);
             return -(overshootOrAmplitude * Math.pow(2, 10 * (time -= 1)) * Math.sin((time * duration - s0) * _TwoPi / period));
-        case exports.EaseType.ElasticOut:
+        case EaseType.ElasticOut:
             var s1;
             if (time == 0)
                 return 0;
@@ -756,7 +754,7 @@ function evaluateEase(easeType, time, duration, overshootOrAmplitude, period) {
             else
                 s1 = period / _TwoPi * Math.asin(1 / overshootOrAmplitude);
             return (overshootOrAmplitude * Math.pow(2, -10 * time) * Math.sin((time * duration - s1) * _TwoPi / period) + 1);
-        case exports.EaseType.ElasticInOut:
+        case EaseType.ElasticInOut:
             var s;
             if (time == 0)
                 return 0;
@@ -773,19 +771,19 @@ function evaluateEase(easeType, time, duration, overshootOrAmplitude, period) {
             if (time < 1)
                 return -0.5 * (overshootOrAmplitude * Math.pow(2, 10 * (time -= 1)) * Math.sin((time * duration - s) * _TwoPi / period));
             return overshootOrAmplitude * Math.pow(2, -10 * (time -= 1)) * Math.sin((time * duration - s) * _TwoPi / period) * 0.5 + 1;
-        case exports.EaseType.BackIn:
+        case EaseType.BackIn:
             return (time /= duration) * time * ((overshootOrAmplitude + 1) * time - overshootOrAmplitude);
-        case exports.EaseType.BackOut:
+        case EaseType.BackOut:
             return ((time = time / duration - 1) * time * ((overshootOrAmplitude + 1) * time + overshootOrAmplitude) + 1);
-        case exports.EaseType.BackInOut:
+        case EaseType.BackInOut:
             if ((time /= duration * 0.5) < 1)
                 return 0.5 * (time * time * (((overshootOrAmplitude *= (1.525)) + 1) * time - overshootOrAmplitude));
             return 0.5 * ((time -= 2) * time * (((overshootOrAmplitude *= (1.525)) + 1) * time + overshootOrAmplitude) + 2);
-        case exports.EaseType.BounceIn:
+        case EaseType.BounceIn:
             return bounce_easeIn(time, duration);
-        case exports.EaseType.BounceOut:
+        case EaseType.BounceOut:
             return bounce_easeOut(time, duration);
-        case exports.EaseType.BounceInOut:
+        case EaseType.BounceInOut:
             return bounce_easeInOut(time, duration);
         default:
             return -(time /= duration) * (time - 2);
@@ -863,7 +861,7 @@ class TweenValue {
     }
 }
 
-var s_vec2$5 = new cc.Vec2();
+var s_vec2$5 = new Vec2();
 class GTweener {
     constructor() {
         this._delay = 0;
@@ -1089,7 +1087,7 @@ class GTweener {
         this._delay = 0;
         this._duration = 0;
         this._breakpoint = -1;
-        this._easeType = exports.EaseType.QuadOut;
+        this._easeType = EaseType.QuadOut;
         this._timeScale = 1;
         this._easePeriod = 0;
         this._easeOvershootOrAmplitude = 1.70158;
@@ -1278,9 +1276,9 @@ class GTweener {
 class TweenManager {
     static createTween() {
         if (!_root) {
-            _root = new cc.Node("[TweenManager]");
-            cc.game.addPersistRootNode(_root);
-            cc.director.getScheduler().schedule(TweenManager.update, _root, 0, cc.macro.REPEAT_FOREVER, 0, false);
+            _root = new Node("[TweenManager]");
+            game.addPersistRootNode(_root);
+            director.getScheduler().schedule(TweenManager.update, _root, 0, macro.REPEAT_FOREVER, 0, false);
         }
         var tweener = _tweenerPool.borrow();
         _activeTweens[_totalActiveTweens++] = tweener;
@@ -1749,9 +1747,9 @@ class RelationItem {
         return this._target;
     }
     add(relationType, usePercent) {
-        if (relationType == exports.RelationType.Size) {
-            this.add(exports.RelationType.Width, usePercent);
-            this.add(exports.RelationType.Height, usePercent);
+        if (relationType == RelationType.Size) {
+            this.add(RelationType.Width, usePercent);
+            this.add(RelationType.Height, usePercent);
             return;
         }
         var length = this._defs.length;
@@ -1763,21 +1761,21 @@ class RelationItem {
         this.internalAdd(relationType, usePercent);
     }
     internalAdd(relationType, usePercent) {
-        if (relationType == exports.RelationType.Size) {
-            this.internalAdd(exports.RelationType.Width, usePercent);
-            this.internalAdd(exports.RelationType.Height, usePercent);
+        if (relationType == RelationType.Size) {
+            this.internalAdd(RelationType.Width, usePercent);
+            this.internalAdd(RelationType.Height, usePercent);
             return;
         }
         var info = new RelationDef();
         info.percent = usePercent;
         info.type = relationType;
-        info.axis = (relationType <= exports.RelationType.Right_Right || relationType == exports.RelationType.Width || relationType >= exports.RelationType.LeftExt_Left && relationType <= exports.RelationType.RightExt_Right) ? 0 : 1;
+        info.axis = (relationType <= RelationType.Right_Right || relationType == RelationType.Width || relationType >= RelationType.LeftExt_Left && relationType <= RelationType.RightExt_Right) ? 0 : 1;
         this._defs.push(info);
     }
     remove(relationType) {
-        if (relationType == exports.RelationType.Size) {
-            this.remove(exports.RelationType.Width);
-            this.remove(exports.RelationType.Height);
+        if (relationType == RelationType.Size) {
+            this.remove(RelationType.Width);
+            this.remove(RelationType.Height);
             return;
         }
         var dc = this._defs.length;
@@ -1815,20 +1813,20 @@ class RelationItem {
         for (var i = 0; i < length; i++) {
             var info = this._defs[i];
             switch (info.type) {
-                case exports.RelationType.Center_Center:
+                case RelationType.Center_Center:
                     this._owner.x -= (0.5 - (applyPivot ? this._owner.pivotX : 0)) * dWidth;
                     break;
-                case exports.RelationType.Right_Center:
-                case exports.RelationType.Right_Left:
-                case exports.RelationType.Right_Right:
+                case RelationType.Right_Center:
+                case RelationType.Right_Left:
+                case RelationType.Right_Right:
                     this._owner.x -= (1 - (applyPivot ? this._owner.pivotX : 0)) * dWidth;
                     break;
-                case exports.RelationType.Middle_Middle:
+                case RelationType.Middle_Middle:
                     this._owner.y -= (0.5 - (applyPivot ? this._owner.pivotY : 0)) * dHeight;
                     break;
-                case exports.RelationType.Bottom_Middle:
-                case exports.RelationType.Bottom_Top:
-                case exports.RelationType.Bottom_Bottom:
+                case RelationType.Bottom_Middle:
+                case RelationType.Bottom_Top:
+                case RelationType.Bottom_Bottom:
                     this._owner.y -= (1 - (applyPivot ? this._owner.pivotY : 0)) * dHeight;
                     break;
             }
@@ -1850,29 +1848,29 @@ class RelationItem {
     applyOnXYChanged(info, dx, dy) {
         var tmp;
         switch (info.type) {
-            case exports.RelationType.Left_Left:
-            case exports.RelationType.Left_Center:
-            case exports.RelationType.Left_Right:
-            case exports.RelationType.Center_Center:
-            case exports.RelationType.Right_Left:
-            case exports.RelationType.Right_Center:
-            case exports.RelationType.Right_Right:
+            case RelationType.Left_Left:
+            case RelationType.Left_Center:
+            case RelationType.Left_Right:
+            case RelationType.Center_Center:
+            case RelationType.Right_Left:
+            case RelationType.Right_Center:
+            case RelationType.Right_Right:
                 this._owner.x += dx;
                 break;
-            case exports.RelationType.Top_Top:
-            case exports.RelationType.Top_Middle:
-            case exports.RelationType.Top_Bottom:
-            case exports.RelationType.Middle_Middle:
-            case exports.RelationType.Bottom_Top:
-            case exports.RelationType.Bottom_Middle:
-            case exports.RelationType.Bottom_Bottom:
+            case RelationType.Top_Top:
+            case RelationType.Top_Middle:
+            case RelationType.Top_Bottom:
+            case RelationType.Middle_Middle:
+            case RelationType.Bottom_Top:
+            case RelationType.Bottom_Middle:
+            case RelationType.Bottom_Bottom:
                 this._owner.y += dy;
                 break;
-            case exports.RelationType.Width:
-            case exports.RelationType.Height:
+            case RelationType.Width:
+            case RelationType.Height:
                 break;
-            case exports.RelationType.LeftExt_Left:
-            case exports.RelationType.LeftExt_Right:
+            case RelationType.LeftExt_Left:
+            case RelationType.LeftExt_Right:
                 if (this._owner != this._target.parent) {
                     tmp = this._owner.xMin;
                     this._owner.width = this._owner._rawWidth - dx;
@@ -1881,8 +1879,8 @@ class RelationItem {
                 else
                     this._owner.width = this._owner._rawWidth - dx;
                 break;
-            case exports.RelationType.RightExt_Left:
-            case exports.RelationType.RightExt_Right:
+            case RelationType.RightExt_Left:
+            case RelationType.RightExt_Right:
                 if (this._owner != this._target.parent) {
                     tmp = this._owner.xMin;
                     this._owner.width = this._owner._rawWidth + dx;
@@ -1891,8 +1889,8 @@ class RelationItem {
                 else
                     this._owner.width = this._owner._rawWidth + dx;
                 break;
-            case exports.RelationType.TopExt_Top:
-            case exports.RelationType.TopExt_Bottom:
+            case RelationType.TopExt_Top:
+            case RelationType.TopExt_Bottom:
                 if (this._owner != this._target.parent) {
                     tmp = this._owner.yMin;
                     this._owner.height = this._owner._rawHeight - dy;
@@ -1901,8 +1899,8 @@ class RelationItem {
                 else
                     this._owner.height = this._owner._rawHeight - dy;
                 break;
-            case exports.RelationType.BottomExt_Top:
-            case exports.RelationType.BottomExt_Bottom:
+            case RelationType.BottomExt_Top:
+            case RelationType.BottomExt_Bottom:
                 if (this._owner != this._target.parent) {
                     tmp = this._owner.yMin;
                     this._owner.height = this._owner._rawHeight + dy;
@@ -1943,91 +1941,91 @@ class RelationItem {
                 delta = this._target._height - this._targetHeight;
         }
         switch (info.type) {
-            case exports.RelationType.Left_Left:
+            case RelationType.Left_Left:
                 if (info.percent)
                     this._owner.xMin = pos + (this._owner.xMin - pos) * delta;
                 else if (pivot != 0)
                     this._owner.x += delta * (-pivot);
                 break;
-            case exports.RelationType.Left_Center:
+            case RelationType.Left_Center:
                 if (info.percent)
                     this._owner.xMin = pos + (this._owner.xMin - pos) * delta;
                 else
                     this._owner.x += delta * (0.5 - pivot);
                 break;
-            case exports.RelationType.Left_Right:
+            case RelationType.Left_Right:
                 if (info.percent)
                     this._owner.xMin = pos + (this._owner.xMin - pos) * delta;
                 else
                     this._owner.x += delta * (1 - pivot);
                 break;
-            case exports.RelationType.Center_Center:
+            case RelationType.Center_Center:
                 if (info.percent)
                     this._owner.xMin = pos + (this._owner.xMin + this._owner._rawWidth * 0.5 - pos) * delta - this._owner._rawWidth * 0.5;
                 else
                     this._owner.x += delta * (0.5 - pivot);
                 break;
-            case exports.RelationType.Right_Left:
+            case RelationType.Right_Left:
                 if (info.percent)
                     this._owner.xMin = pos + (this._owner.xMin + this._owner._rawWidth - pos) * delta - this._owner._rawWidth;
                 else if (pivot != 0)
                     this._owner.x += delta * (-pivot);
                 break;
-            case exports.RelationType.Right_Center:
+            case RelationType.Right_Center:
                 if (info.percent)
                     this._owner.xMin = pos + (this._owner.xMin + this._owner._rawWidth - pos) * delta - this._owner._rawWidth;
                 else
                     this._owner.x += delta * (0.5 - pivot);
                 break;
-            case exports.RelationType.Right_Right:
+            case RelationType.Right_Right:
                 if (info.percent)
                     this._owner.xMin = pos + (this._owner.xMin + this._owner._rawWidth - pos) * delta - this._owner._rawWidth;
                 else
                     this._owner.x += delta * (1 - pivot);
                 break;
-            case exports.RelationType.Top_Top:
+            case RelationType.Top_Top:
                 if (info.percent)
                     this._owner.yMin = pos + (this._owner.yMin - pos) * delta;
                 else if (pivot != 0)
                     this._owner.y += delta * (-pivot);
                 break;
-            case exports.RelationType.Top_Middle:
+            case RelationType.Top_Middle:
                 if (info.percent)
                     this._owner.yMin = pos + (this._owner.yMin - pos) * delta;
                 else
                     this._owner.y += delta * (0.5 - pivot);
                 break;
-            case exports.RelationType.Top_Bottom:
+            case RelationType.Top_Bottom:
                 if (info.percent)
                     this._owner.yMin = pos + (this._owner.yMin - pos) * delta;
                 else
                     this._owner.y += delta * (1 - pivot);
                 break;
-            case exports.RelationType.Middle_Middle:
+            case RelationType.Middle_Middle:
                 if (info.percent)
                     this._owner.yMin = pos + (this._owner.yMin + this._owner._rawHeight * 0.5 - pos) * delta - this._owner._rawHeight * 0.5;
                 else
                     this._owner.y += delta * (0.5 - pivot);
                 break;
-            case exports.RelationType.Bottom_Top:
+            case RelationType.Bottom_Top:
                 if (info.percent)
                     this._owner.yMin = pos + (this._owner.yMin + this._owner._rawHeight - pos) * delta - this._owner._rawHeight;
                 else if (pivot != 0)
                     this._owner.y += delta * (-pivot);
                 break;
-            case exports.RelationType.Bottom_Middle:
+            case RelationType.Bottom_Middle:
                 if (info.percent)
                     this._owner.yMin = pos + (this._owner.yMin + this._owner._rawHeight - pos) * delta - this._owner._rawHeight;
                 else
                     this._owner.y += delta * (0.5 - pivot);
                 break;
-            case exports.RelationType.Bottom_Bottom:
+            case RelationType.Bottom_Bottom:
                 if (info.percent)
                     this._owner.yMin = pos + (this._owner.yMin + this._owner._rawHeight - pos) * delta - this._owner._rawHeight;
                 else
                     this._owner.y += delta * (1 - pivot);
                 break;
-            case exports.RelationType.Width:
+            case RelationType.Width:
                 if (this._owner._underConstruct && this._owner == this._target.parent)
                     v = this._owner.sourceWidth - this._target.initWidth;
                 else
@@ -2046,7 +2044,7 @@ class RelationItem {
                 else
                     this._owner.width = this._target._width + v;
                 break;
-            case exports.RelationType.Height:
+            case RelationType.Height:
                 if (this._owner._underConstruct && this._owner == this._target.parent)
                     v = this._owner.sourceHeight - this._target.initHeight;
                 else
@@ -2065,7 +2063,7 @@ class RelationItem {
                 else
                     this._owner.height = this._target._height + v;
                 break;
-            case exports.RelationType.LeftExt_Left:
+            case RelationType.LeftExt_Left:
                 tmp = this._owner.xMin;
                 if (info.percent)
                     v = pos + (tmp - pos) * delta - tmp;
@@ -2074,7 +2072,7 @@ class RelationItem {
                 this._owner.width = this._owner._rawWidth - v;
                 this._owner.xMin = tmp + v;
                 break;
-            case exports.RelationType.LeftExt_Right:
+            case RelationType.LeftExt_Right:
                 tmp = this._owner.xMin;
                 if (info.percent)
                     v = pos + (tmp - pos) * delta - tmp;
@@ -2083,7 +2081,7 @@ class RelationItem {
                 this._owner.width = this._owner._rawWidth - v;
                 this._owner.xMin = tmp + v;
                 break;
-            case exports.RelationType.RightExt_Left:
+            case RelationType.RightExt_Left:
                 tmp = this._owner.xMin;
                 if (info.percent)
                     v = pos + (tmp + this._owner._rawWidth - pos) * delta - (tmp + this._owner._rawWidth);
@@ -2092,7 +2090,7 @@ class RelationItem {
                 this._owner.width = this._owner._rawWidth + v;
                 this._owner.xMin = tmp;
                 break;
-            case exports.RelationType.RightExt_Right:
+            case RelationType.RightExt_Right:
                 tmp = this._owner.xMin;
                 if (info.percent) {
                     if (this._owner == this._target.parent) {
@@ -2122,7 +2120,7 @@ class RelationItem {
                     }
                 }
                 break;
-            case exports.RelationType.TopExt_Top:
+            case RelationType.TopExt_Top:
                 tmp = this._owner.yMin;
                 if (info.percent)
                     v = pos + (tmp - pos) * delta - tmp;
@@ -2131,7 +2129,7 @@ class RelationItem {
                 this._owner.height = this._owner._rawHeight - v;
                 this._owner.yMin = tmp + v;
                 break;
-            case exports.RelationType.TopExt_Bottom:
+            case RelationType.TopExt_Bottom:
                 tmp = this._owner.yMin;
                 if (info.percent)
                     v = pos + (tmp - pos) * delta - tmp;
@@ -2140,7 +2138,7 @@ class RelationItem {
                 this._owner.height = this._owner._rawHeight - v;
                 this._owner.yMin = tmp + v;
                 break;
-            case exports.RelationType.BottomExt_Top:
+            case RelationType.BottomExt_Top:
                 tmp = this._owner.yMin;
                 if (info.percent)
                     v = pos + (tmp + this._owner._rawHeight - pos) * delta - (tmp + this._owner._rawHeight);
@@ -2149,7 +2147,7 @@ class RelationItem {
                 this._owner.height = this._owner._rawHeight + v;
                 this._owner.yMin = tmp;
                 break;
-            case exports.RelationType.BottomExt_Bottom:
+            case RelationType.BottomExt_Bottom:
                 tmp = this._owner.yMin;
                 if (info.percent) {
                     if (this._owner == this._target.parent) {
@@ -2421,14 +2419,14 @@ class UIConfig {
 //Default font name
 UIConfig.defaultFont = "Arial";
 //When a modal window is in front, the background becomes dark.
-UIConfig.modalLayerColor = new cc.Color(0x33, 0x33, 0x33, 0x33);
+UIConfig.modalLayerColor = new Color(0x33, 0x33, 0x33, 0x33);
 UIConfig.buttonSoundVolumeScale = 1;
 //Scrolling step in pixels
 UIConfig.defaultScrollStep = 25;
 //Deceleration ratio of scrollpane when its in touch dragging.
 UIConfig.defaultScrollDecelerationRate = 0.967;
 //Default scrollbar display mode. Recommened visible for Desktop and Auto for mobile.
-UIConfig.defaultScrollBarDisplay = exports.ScrollBarDisplayType.Visible;
+UIConfig.defaultScrollBarDisplay = ScrollBarDisplayType.Visible;
 //Allow dragging the content to scroll. Recommeded true for mobile.
 UIConfig.defaultScrollTouchEffect = true;
 //The "rebound" effect in the scolling container. Recommeded true for mobile.
@@ -2446,13 +2444,13 @@ UIConfig.bringWindowToFrontOnClick = true;
 UIConfig.frameTimeForAsyncUIConstruction = 0.002;
 UIConfig.linkUnderline = true;
 //Default group name of UI node.<br/>
-UIConfig.defaultUILayer = cc.Layers.Enum.UI_2D;
+UIConfig.defaultUILayer = Layers.Enum.UI_2D;
 let _fontRegistry = {};
 function registerFont(name, font, bundle) {
-    if (font instanceof cc.Font)
+    if (font instanceof Font)
         _fontRegistry[name] = font;
     else {
-        (bundle || cc.resources).load(name, cc.Font, (err, asset) => {
+        (bundle || resources).load(name, Font, (err, asset) => {
             _fontRegistry[name] = asset;
         });
     }
@@ -2486,18 +2484,18 @@ class GObject {
         this._rawHeight = 0;
         this._underConstruct = false;
         this._sizePercentInGroup = 0;
-        this._node = new cc.Node();
-        this._uiTrans = this._node.addComponent(cc.UITransform);
-        this._uiOpacity = this.node.addComponent(cc.UIOpacity);
+        this._node = new Node();
+        this._uiTrans = this._node.addComponent(UITransform);
+        this._uiOpacity = this.node.addComponent(UIOpacity);
         this._node["$gobj"] = this;
         this._node.layer = UIConfig.defaultUILayer;
         this._uiTrans.setAnchorPoint(0, 1);
-        this._node.on(cc.Node.EventType.ANCHOR_CHANGED, this.handleAnchorChanged, this);
+        this._node.on(Node.EventType.ANCHOR_CHANGED, this.handleAnchorChanged, this);
         this._id = this._node.uuid;
         this._name = "";
         this._relations = new Relations(this);
         this._gears = new Array(10);
-        this._blendMode = exports.BlendMode.Normal;
+        this._blendMode = BlendMode.Normal;
         this._partner = this._node.addComponent(GObjectPartner);
     }
     get id() {
@@ -2576,8 +2574,8 @@ class GObject {
             r = Decls$1.GRoot.inst;
         this.setPosition((r.width - this._width) / 2, (r.height - this._height) / 2);
         if (restraint) {
-            this.addRelation(r, exports.RelationType.Center_Center);
-            this.addRelation(r, exports.RelationType.Middle_Middle);
+            this.addRelation(r, RelationType.Center_Center);
+            this.addRelation(r, RelationType.Middle_Middle);
         }
     }
     get width() {
@@ -3012,7 +3010,7 @@ class GObject {
         }
         this._uiTrans.convertToWorldSpaceAR(s_vec3$1, s_vec3$1);
         s_vec3$1.y = Decls$1.GRoot.inst.height - s_vec3$1.y;
-        result = result || new cc.Vec2();
+        result = result || new Vec2();
         result.x = s_vec3$1.x;
         result.y = s_vec3$1.y;
         return result;
@@ -3027,7 +3025,7 @@ class GObject {
             s_vec3$1.x += this._uiTrans.anchorX * this._width;
             s_vec3$1.y -= (1 - this._uiTrans.anchorY) * this._height;
         }
-        result = result || new cc.Vec2();
+        result = result || new Vec2();
         result.x = s_vec3$1.x;
         result.y = -s_vec3$1.y;
         return result;
@@ -3037,7 +3035,7 @@ class GObject {
         ay = ay || 0;
         aw = aw || 0;
         ah = ah || 0;
-        result = result || new cc.Rect();
+        result = result || new Rect();
         var pt = this.localToGlobal(ax, ay);
         result.x = pt.x;
         result.y = pt.y;
@@ -3051,7 +3049,7 @@ class GObject {
         ay = ay || 0;
         aw = aw || 0;
         ah = ah || 0;
-        result = result || new cc.Rect();
+        result = result || new Rect();
         var pt = this.globalToLocal(ax, ay);
         result.x = pt.x;
         result.y = pt.y;
@@ -3105,7 +3103,7 @@ class GObject {
         if (forTouch && (this._touchDisabled || !this._touchable || !this._node.activeInHierarchy))
             return null;
         if (!this._hitTestPt)
-            this._hitTestPt = new cc.Vec2();
+            this._hitTestPt = new Vec2();
         this.globalToLocal(globalPt.x, globalPt.y, this._hitTestPt);
         if (this._pivotAsAnchor) {
             this._hitTestPt.x += this._uiTrans.anchorX * this._width;
@@ -3121,25 +3119,25 @@ class GObject {
     }
     getProp(index) {
         switch (index) {
-            case exports.ObjectPropID.Text:
+            case ObjectPropID.Text:
                 return this.text;
-            case exports.ObjectPropID.Icon:
+            case ObjectPropID.Icon:
                 return this.icon;
-            case exports.ObjectPropID.Color:
+            case ObjectPropID.Color:
                 return null;
-            case exports.ObjectPropID.OutlineColor:
+            case ObjectPropID.OutlineColor:
                 return null;
-            case exports.ObjectPropID.Playing:
+            case ObjectPropID.Playing:
                 return false;
-            case exports.ObjectPropID.Frame:
+            case ObjectPropID.Frame:
                 return 0;
-            case exports.ObjectPropID.DeltaTime:
+            case ObjectPropID.DeltaTime:
                 return 0;
-            case exports.ObjectPropID.TimeScale:
+            case ObjectPropID.TimeScale:
                 return 1;
-            case exports.ObjectPropID.FontSize:
+            case ObjectPropID.FontSize:
                 return 0;
-            case exports.ObjectPropID.Selected:
+            case ObjectPropID.Selected:
                 return false;
             default:
                 return undefined;
@@ -3147,10 +3145,10 @@ class GObject {
     }
     setProp(index, value) {
         switch (index) {
-            case exports.ObjectPropID.Text:
+            case ObjectPropID.Text:
                 this.text = value;
                 break;
-            case exports.ObjectPropID.Icon:
+            case ObjectPropID.Icon:
                 this.icon = value;
                 break;
         }
@@ -3278,7 +3276,7 @@ class GObject {
     }
     onTouchBegin_0(evt) {
         if (this._dragStartPos == null)
-            this._dragStartPos = new cc.Vec2();
+            this._dragStartPos = new Vec2();
         this._dragStartPos.set(evt.pos);
         this._dragTesting = true;
         evt.captureTouch();
@@ -3331,9 +3329,9 @@ class GObject {
     }
 }
 //-------------------------------------------------------------------
-class GObjectPartner extends cc.Component {
+class GObjectPartner extends Component {
     callLater(callback, delay) {
-        if (!cc.director.getScheduler().isScheduled(callback, this))
+        if (!director.getScheduler().isScheduled(callback, this))
             this.scheduleOnce(callback, delay);
     }
     onClickLink(evt, text) {
@@ -3366,11 +3364,11 @@ function createGear(owner, index) {
     ret._owner = owner;
     return ret;
 }
-var s_vec2$4 = new cc.Vec2();
-var s_vec3$1 = new cc.Vec3();
-var s_rect$1 = new cc.Rect();
-var sGlobalDragStart = new cc.Vec2();
-var sGlobalRect = new cc.Rect();
+var s_vec2$4 = new Vec2();
+var s_vec3$1 = new Vec3();
+var s_rect$1 = new Rect();
+var sGlobalDragStart = new Vec2();
+var sGlobalRect = new Rect();
 var s_dragging;
 var s_dragQuery;
 var Decls$1 = {};
@@ -3461,7 +3459,7 @@ class GGroup extends GObject {
                 this._percentReady = false;
             if (!this._boundsChanged) {
                 this._boundsChanged = true;
-                if (this._layout != exports.GroupLayoutType.None)
+                if (this._layout != GroupLayoutType.None)
                     this._partner.callLater(this._ensureBoundsCorrect);
             }
         }
@@ -3546,7 +3544,7 @@ class GGroup extends GObject {
         var child;
         var i;
         var cnt;
-        if (this._layout == exports.GroupLayoutType.Horizontal) {
+        if (this._layout == GroupLayoutType.Horizontal) {
             var curX = this.x;
             cnt = this._parent.numChildren;
             for (i = 0; i < cnt; i++) {
@@ -3560,7 +3558,7 @@ class GGroup extends GObject {
                     curX += child.width + this._columnGap;
             }
         }
-        else if (this._layout == exports.GroupLayoutType.Vertical) {
+        else if (this._layout == GroupLayoutType.Vertical) {
             var curY = this.y;
             cnt = this._parent.numChildren;
             for (i = 0; i < cnt; i++) {
@@ -3592,7 +3590,7 @@ class GGroup extends GObject {
         this._updating &= 2;
     }
     resizeChildren(dw, dh) {
-        if (this._layout == exports.GroupLayoutType.None || (this._updating & 2) != 0 || this._parent == null)
+        if (this._layout == GroupLayoutType.None || (this._updating & 2) != 0 || this._parent == null)
             return;
         this._updating |= 2;
         if (this._boundsChanged) {
@@ -3757,9 +3755,9 @@ class GGraph extends GObject {
         this._lineSize = 0;
         this._node.name = "GGraph";
         this._lineSize = 1;
-        this._lineColor = new cc.Color();
-        this._fillColor = new cc.Color(255, 255, 255, 255);
-        this._content = this._node.addComponent(cc.Graphics);
+        this._lineColor = new Color();
+        this._fillColor = new Color(255, 255, 255, 255);
+        this._content = this._node.addComponent(Graphics);
     }
     drawRect(lineSize, lineColor, fillColor, corner) {
         this._type = 1;
@@ -3854,7 +3852,7 @@ class GGraph extends GObject {
                 this._polygonPoints = [];
             var radius = Math.min(w, h) / 2 - ls;
             this._polygonPoints.length = 0;
-            var angle = cc.misc.degreesToRadians(this._startAngle);
+            var angle = misc.degreesToRadians(this._startAngle);
             var deltaAngle = 2 * Math.PI / this._sides;
             var dist;
             for (var i = 0; i < this._sides; i++) {
@@ -3896,13 +3894,13 @@ class GGraph extends GObject {
             this.updateGraph();
     }
     getProp(index) {
-        if (index == exports.ObjectPropID.Color)
+        if (index == ObjectPropID.Color)
             return this.color;
         else
             return super.getProp(index);
     }
     setProp(index, value) {
-        if (index == exports.ObjectPropID.Color)
+        if (index == ObjectPropID.Color)
             this.color = value;
         else
             super.setProp(index, value);
@@ -3973,12 +3971,12 @@ class GGraph extends GObject {
     }
 }
 
-class Image extends cc.Sprite {
+class Image extends Sprite {
     constructor() {
         super();
-        this._flip = exports.FlipType.None;
-        this._fillMethod = exports.FillMethod.None;
-        this._fillOrigin = exports.FillOrigin.Left;
+        this._flip = FlipType.None;
+        this._fillMethod = FillMethod.None;
+        this._fillOrigin = FillOrigin.Left;
         this._fillAmount = 0;
     }
     get flip() {
@@ -3988,12 +3986,12 @@ class Image extends cc.Sprite {
         if (this._flip != value) {
             this._flip = value;
             let sx = 1, sy = 1;
-            if (this._flip == exports.FlipType.Horizontal || this._flip == exports.FlipType.Both)
+            if (this._flip == FlipType.Horizontal || this._flip == FlipType.Both)
                 sx = -1;
-            if (this._flip == exports.FlipType.Vertical || this._flip == exports.FlipType.Both)
+            if (this._flip == FlipType.Vertical || this._flip == FlipType.Both)
                 sy = -1;
             if (sx != 1 || sy != 1) {
-                let uiTrans = this.node.getComponent(cc.UITransform);
+                let uiTrans = this.node.getComponent(UITransform);
                 uiTrans.setAnchorPoint(0.5, 0.5);
             }
             this.node.setScale(sx, sy);
@@ -4006,16 +4004,16 @@ class Image extends cc.Sprite {
         if (this._fillMethod != value) {
             this._fillMethod = value;
             if (this._fillMethod != 0) {
-                this.type = cc.Sprite.Type.FILLED;
+                this.type = Sprite.Type.FILLED;
                 if (this._fillMethod <= 3)
                     this.fillType = this._fillMethod - 1;
                 else
-                    this.fillType = cc.Sprite.FillType.RADIAL;
-                this.fillCenter = new cc.Vec2(0.5, 0.5);
+                    this.fillType = Sprite.FillType.RADIAL;
+                this.fillCenter = new Vec2(0.5, 0.5);
                 this.setupFill();
             }
             else {
-                this.type = cc.Sprite.Type.SIMPLE;
+                this.type = Sprite.Type.SIMPLE;
             }
         }
     }
@@ -4054,26 +4052,26 @@ class Image extends cc.Sprite {
         }
     }
     setupFill() {
-        if (this._fillMethod == exports.FillMethod.Horizontal) {
-            this._fillClockwise = this._fillOrigin == exports.FillOrigin.Right || this._fillOrigin == exports.FillOrigin.Bottom;
+        if (this._fillMethod == FillMethod.Horizontal) {
+            this._fillClockwise = this._fillOrigin == FillOrigin.Right || this._fillOrigin == FillOrigin.Bottom;
             this.fillStart = this._fillClockwise ? 1 : 0;
         }
-        else if (this._fillMethod == exports.FillMethod.Vertical) {
-            this._fillClockwise = this._fillOrigin == exports.FillOrigin.Left || this._fillOrigin == exports.FillOrigin.Top;
+        else if (this._fillMethod == FillMethod.Vertical) {
+            this._fillClockwise = this._fillOrigin == FillOrigin.Left || this._fillOrigin == FillOrigin.Top;
             this.fillStart = this._fillClockwise ? 1 : 0;
         }
         else {
             switch (this._fillOrigin) {
-                case exports.FillOrigin.Right:
+                case FillOrigin.Right:
                     this.fillOrigin = 0;
                     break;
-                case exports.FillOrigin.Top:
+                case FillOrigin.Top:
                     this.fillStart = 0.25;
                     break;
-                case exports.FillOrigin.Left:
+                case FillOrigin.Left:
                     this.fillStart = 0.5;
                     break;
-                case exports.FillOrigin.Bottom:
+                case FillOrigin.Bottom:
                     this.fillStart = 0.75;
                     break;
             }
@@ -4087,7 +4085,7 @@ class GImage extends GObject {
         this._node.name = "GImage";
         this._touchDisabled = true;
         this._content = this._node.addComponent(Image);
-        this._content.sizeMode = cc.Sprite.SizeMode.CUSTOM;
+        this._content.sizeMode = Sprite.SizeMode.CUSTOM;
         this._content.trim = false;
     }
     get color() {
@@ -4137,22 +4135,22 @@ class GImage extends GObject {
         contentItem = contentItem.getHighResolution();
         contentItem.load();
         if (contentItem.scale9Grid)
-            this._content.type = cc.Sprite.Type.SLICED;
+            this._content.type = Sprite.Type.SLICED;
         else if (contentItem.scaleByTile)
-            this._content.type = cc.Sprite.Type.TILED;
+            this._content.type = Sprite.Type.TILED;
         this._content.spriteFrame = contentItem.asset;
     }
     handleGrayedChanged() {
         this._content.grayscale = this._grayed;
     }
     getProp(index) {
-        if (index == exports.ObjectPropID.Color)
+        if (index == ObjectPropID.Color)
             return this.color;
         else
             return super.getProp(index);
     }
     setProp(index, value) {
-        if (index == exports.ObjectPropID.Color)
+        if (index == ObjectPropID.Color)
             this.color = value;
         else
             super.setProp(index, value);
@@ -4205,7 +4203,7 @@ class MovieClip extends Image {
                 this._endAt = this._frameCount - 1;
             if (this._frame < 0 || this._frame > this._frameCount - 1)
                 this._frame = this._frameCount - 1;
-            this.type = cc.Sprite.Type.SIMPLE;
+            this.type = Sprite.Type.SIMPLE;
             this.drawFrame();
             this._frameElapsed = 0;
             this._repeatedCount = 0;
@@ -4412,7 +4410,7 @@ class GMovieClip extends GObject {
         this._node.name = "GMovieClip";
         this._touchDisabled = true;
         this._content = this._node.addComponent(MovieClip);
-        this._content.sizeMode = cc.Sprite.SizeMode.CUSTOM;
+        this._content.sizeMode = Sprite.SizeMode.CUSTOM;
         this._content.trim = false;
         this._content.setPlaySettings();
     }
@@ -4466,17 +4464,17 @@ class GMovieClip extends GObject {
     handleSizeChanged() {
         super.handleSizeChanged();
         //不知道原因，尺寸改变必须调用一次这个，否则大小不对
-        this._content.sizeMode = cc.Sprite.SizeMode.CUSTOM;
+        this._content.sizeMode = Sprite.SizeMode.CUSTOM;
     }
     getProp(index) {
         switch (index) {
-            case exports.ObjectPropID.Color:
+            case ObjectPropID.Color:
                 return this.color;
-            case exports.ObjectPropID.Playing:
+            case ObjectPropID.Playing:
                 return this.playing;
-            case exports.ObjectPropID.Frame:
+            case ObjectPropID.Frame:
                 return this.frame;
-            case exports.ObjectPropID.TimeScale:
+            case ObjectPropID.TimeScale:
                 return this.timeScale;
             default:
                 return super.getProp(index);
@@ -4484,19 +4482,19 @@ class GMovieClip extends GObject {
     }
     setProp(index, value) {
         switch (index) {
-            case exports.ObjectPropID.Color:
+            case ObjectPropID.Color:
                 this.color = value;
                 break;
-            case exports.ObjectPropID.Playing:
+            case ObjectPropID.Playing:
                 this.playing = value;
                 break;
-            case exports.ObjectPropID.Frame:
+            case ObjectPropID.Frame:
                 this.frame = value;
                 break;
-            case exports.ObjectPropID.TimeScale:
+            case ObjectPropID.TimeScale:
                 this.timeScale = value;
                 break;
-            case exports.ObjectPropID.DeltaTime:
+            case ObjectPropID.DeltaTime:
                 this.advance(value);
                 break;
             default:
@@ -4534,13 +4532,13 @@ class UIContentScaler {
 }
 UIContentScaler.scaleFactor = 1;
 UIContentScaler.scaleLevel = 0;
-UIContentScaler.rootSize = new cc.Size();
+UIContentScaler.rootSize = new Size();
 function updateScaler() {
-    let size = cc.view.getCanvasSize();
-    size.width /= cc.view.getScaleX();
-    size.height /= cc.view.getScaleY();
+    let size = view.getCanvasSize();
+    size.width /= view.getScaleX();
+    size.height /= view.getScaleY();
     UIContentScaler.rootSize.set(size);
-    var ss = Math.max(cc.view.getScaleX(), cc.view.getScaleY());
+    var ss = Math.max(view.getScaleX(), view.getScaleY());
     UIContentScaler.scaleFactor = ss;
     if (ss >= 3.5)
         UIContentScaler.scaleLevel = 3; //x4
@@ -4632,7 +4630,7 @@ class TranslationHelper {
             var type = baseType;
             buffer.skip(4);
             elementId = buffer.readS();
-            if (type == exports.ObjectType.Component) {
+            if (type == ObjectType.Component) {
                 if (buffer.seek(curPos, 6))
                     type = buffer.readByte();
             }
@@ -4662,7 +4660,7 @@ class TranslationHelper {
                 }
                 buffer.position = nextPos;
             }
-            if (baseType == exports.ObjectType.Component && buffer.version >= 2) {
+            if (baseType == ObjectType.Component && buffer.version >= 2) {
                 buffer.seek(curPos, 4);
                 buffer.skip(2); //pageController
                 buffer.skip(4 * buffer.readShort());
@@ -4677,9 +4675,9 @@ class TranslationHelper {
                 }
             }
             switch (type) {
-                case exports.ObjectType.Text:
-                case exports.ObjectType.RichText:
-                case exports.ObjectType.InputText:
+                case ObjectType.Text:
+                case ObjectType.RichText:
+                case ObjectType.InputText:
                     {
                         if ((value = compStrings[elementId]) != null) {
                             buffer.seek(curPos, 6);
@@ -4691,8 +4689,8 @@ class TranslationHelper {
                         }
                         break;
                     }
-                case exports.ObjectType.List:
-                case exports.ObjectType.Tree:
+                case ObjectType.List:
+                case ObjectType.Tree:
                     {
                         buffer.seek(curPos, 8);
                         buffer.skip(2);
@@ -4701,7 +4699,7 @@ class TranslationHelper {
                             nextPos = buffer.readShort();
                             nextPos += buffer.position;
                             buffer.skip(2); //url
-                            if (type == exports.ObjectType.Tree)
+                            if (type == ObjectType.Tree)
                                 buffer.skip(2);
                             //title
                             if ((value = compStrings[elementId + "-" + j]) != null)
@@ -4730,7 +4728,7 @@ class TranslationHelper {
                         }
                         break;
                     }
-                case exports.ObjectType.Label:
+                case ObjectType.Label:
                     {
                         if (buffer.seek(curPos, 6) && buffer.readByte() == type) {
                             if ((value = compStrings[elementId]) != null)
@@ -4746,7 +4744,7 @@ class TranslationHelper {
                         }
                         break;
                     }
-                case exports.ObjectType.Button:
+                case ObjectType.Button:
                     {
                         if (buffer.seek(curPos, 6) && buffer.readByte() == type) {
                             if ((value = compStrings[elementId]) != null)
@@ -4758,7 +4756,7 @@ class TranslationHelper {
                         }
                         break;
                     }
-                case exports.ObjectType.ComboBox:
+                case ObjectType.ComboBox:
                     {
                         if (buffer.seek(curPos, 6) && buffer.readByte() == type) {
                             itemCount = buffer.readShort();
@@ -4901,7 +4899,7 @@ class ByteBuffer {
         var g = this.readByte();
         var b = this.readByte();
         var a = this.readByte();
-        return new cc.Color(r, g, b, (hasAlpha ? a : 255));
+        return new Color(r, g, b, (hasAlpha ? a : 255));
     }
     readChar() {
         var i = this.readUshort();
@@ -4986,7 +4984,7 @@ class ChildHitArea {
     }
 }
 
-var PathUtils = cc.path;
+var PathUtils = path;
 class UIPackage {
     constructor() {
         this._items = [];
@@ -5029,13 +5027,13 @@ class UIPackage {
         let pkg = _instById[path];
         if (pkg)
             return pkg;
-        let asset = cc.resources.get(path, cc.BufferAsset);
+        let asset = resources.get(path, BufferAsset);
         if (!asset)
             throw "Resource '" + path + "' not ready";
         if (!asset._buffer)
             throw "Missing asset data.";
         pkg = new UIPackage();
-        pkg._bundle = cc.resources;
+        pkg._bundle = resources;
         pkg.loadPackage(new ByteBuffer(asset._buffer), path);
         _instById[pkg.id] = pkg;
         _instByName[pkg.name] = pkg;
@@ -5047,7 +5045,7 @@ class UIPackage {
         let onProgress;
         let onComplete;
         let bundle;
-        if (args[0] instanceof cc.AssetManager.Bundle) {
+        if (args[0] instanceof AssetManager.Bundle) {
             bundle = args[0];
             path = args[1];
             if (args.length > 3) {
@@ -5066,8 +5064,8 @@ class UIPackage {
             else
                 onComplete = args[1];
         }
-        bundle = bundle || cc.resources;
-        bundle.load(path, cc.Asset, onProgress, (err, asset) => {
+        bundle = bundle || resources;
+        bundle.load(path, Asset, onProgress, (err, asset) => {
             if (err) {
                 if (onComplete != null)
                     onComplete(err, null);
@@ -5081,7 +5079,7 @@ class UIPackage {
             let urls = [];
             for (var i = 0; i < cnt; i++) {
                 var pi = pkg._items[i];
-                if (pi.type == exports.PackageItemType.Atlas || pi.type == exports.PackageItemType.Sound) {
+                if (pi.type == PackageItemType.Atlas || pi.type == PackageItemType.Sound) {
                     ItemTypeToAssetType[pi.type];
                     urls.push(pi.file);
                 }
@@ -5103,7 +5101,7 @@ class UIPackage {
             };
             if (total > 0) {
                 urls.forEach((url, index) => {
-                    bundle.load(url, cc.Asset, onProgress, taskComplete);
+                    bundle.load(url, Asset, onProgress, taskComplete);
                 });
             }
             else
@@ -5249,12 +5247,12 @@ class UIPackage {
             pi.width = buffer.readInt();
             pi.height = buffer.readInt();
             switch (pi.type) {
-                case exports.PackageItemType.Image:
+                case PackageItemType.Image:
                     {
-                        pi.objectType = exports.ObjectType.Image;
+                        pi.objectType = ObjectType.Image;
                         var scaleOption = buffer.readByte();
                         if (scaleOption == 1) {
-                            pi.scale9Grid = new cc.Rect();
+                            pi.scale9Grid = new Rect();
                             pi.scale9Grid.x = buffer.readInt();
                             pi.scale9Grid.y = buffer.readInt();
                             pi.scale9Grid.width = buffer.readInt();
@@ -5266,41 +5264,41 @@ class UIPackage {
                         pi.smoothing = buffer.readBool();
                         break;
                     }
-                case exports.PackageItemType.MovieClip:
+                case PackageItemType.MovieClip:
                     {
                         pi.smoothing = buffer.readBool();
-                        pi.objectType = exports.ObjectType.MovieClip;
+                        pi.objectType = ObjectType.MovieClip;
                         pi.rawData = buffer.readBuffer();
                         break;
                     }
-                case exports.PackageItemType.Font:
+                case PackageItemType.Font:
                     {
                         pi.rawData = buffer.readBuffer();
                         break;
                     }
-                case exports.PackageItemType.Component:
+                case PackageItemType.Component:
                     {
                         var extension = buffer.readByte();
                         if (extension > 0)
                             pi.objectType = extension;
                         else
-                            pi.objectType = exports.ObjectType.Component;
+                            pi.objectType = ObjectType.Component;
                         pi.rawData = buffer.readBuffer();
                         Decls.UIObjectFactory.resolveExtension(pi);
                         break;
                     }
-                case exports.PackageItemType.Atlas:
-                case exports.PackageItemType.Sound:
-                case exports.PackageItemType.Misc:
+                case PackageItemType.Atlas:
+                case PackageItemType.Sound:
+                case PackageItemType.Misc:
                     {
                         pi.file = path + PathUtils.mainFileName(pi.file);
                         break;
                     }
-                case exports.PackageItemType.Spine:
-                case exports.PackageItemType.DragonBones:
+                case PackageItemType.Spine:
+                case PackageItemType.DragonBones:
                     {
                         pi.file = shortPath + PathUtils.mainFileName(pi.file);
-                        pi.skeletonAnchor = new cc.Vec2();
+                        pi.skeletonAnchor = new Vec2();
                         pi.skeletonAnchor.x = buffer.readFloat();
                         pi.skeletonAnchor.y = buffer.readFloat();
                         break;
@@ -5334,12 +5332,12 @@ class UIPackage {
             nextPos += buffer.position;
             var itemId = buffer.readS();
             pi = this._itemsById[buffer.readS()];
-            let rect = new cc.Rect();
+            let rect = new Rect();
             rect.x = buffer.readInt();
             rect.y = buffer.readInt();
             rect.width = buffer.readInt();
             rect.height = buffer.readInt();
-            var sprite = { atlas: pi, rect: rect, offset: new cc.Vec2(), originalSize: new cc.Size(0, 0) };
+            var sprite = { atlas: pi, rect: rect, offset: new Vec2(), originalSize: new Size(0, 0) };
             sprite.rotated = buffer.readBool();
             if (ver2 && buffer.readBool()) {
                 sprite.offset.x = buffer.readInt();
@@ -5360,7 +5358,7 @@ class UIPackage {
                 nextPos = buffer.readInt();
                 nextPos += buffer.position;
                 pi = this._itemsById[buffer.readS()];
-                if (pi && pi.type == exports.PackageItemType.Image)
+                if (pi && pi.type == PackageItemType.Image)
                     pi.hitTestData = new PixelHitTestData(buffer);
                 buffer.position = nextPos;
             }
@@ -5371,7 +5369,7 @@ class UIPackage {
         for (var i = 0; i < cnt; i++) {
             var pi = this._items[i];
             if (pi.asset)
-                cc.assetManager.releaseAsset(pi.asset);
+                assetManager.releaseAsset(pi.asset);
         }
     }
     get id() {
@@ -5417,18 +5415,18 @@ class UIPackage {
     }
     getItemAsset(item) {
         switch (item.type) {
-            case exports.PackageItemType.Image:
+            case PackageItemType.Image:
                 if (!item.decoded) {
                     item.decoded = true;
                     var sprite = this._sprites[item.id];
                     if (sprite) {
                         let atlasTexture = this.getItemAsset(sprite.atlas);
                         if (atlasTexture) {
-                            let sf = new cc.SpriteFrame();
+                            let sf = new SpriteFrame();
                             sf.texture = atlasTexture;
                             sf.rect = sprite.rect;
                             sf.rotated = sprite.rotated;
-                            sf.offset = new cc.Vec2(sprite.offset.x - (sprite.originalSize.width - sprite.rect.width) / 2, -(sprite.offset.y - (sprite.originalSize.height - sprite.rect.height) / 2));
+                            sf.offset = new Vec2(sprite.offset.x - (sprite.originalSize.width - sprite.rect.width) / 2, -(sprite.offset.y - (sprite.originalSize.height - sprite.rect.height) / 2));
                             sf.originalSize = sprite.originalSize;
                             if (item.scale9Grid) {
                                 sf.insetLeft = item.scale9Grid.x;
@@ -5441,18 +5439,18 @@ class UIPackage {
                     }
                 }
                 break;
-            case exports.PackageItemType.Atlas:
-            case exports.PackageItemType.Sound:
+            case PackageItemType.Atlas:
+            case PackageItemType.Sound:
                 if (!item.decoded) {
                     item.decoded = true;
                     item.asset = this._bundle.get(item.file, ItemTypeToAssetType[item.type]);
                     if (!item.asset)
                         console.log("Resource '" + item.file + "' not found");
-                    else if (item.type == exports.PackageItemType.Atlas) {
+                    else if (item.type == PackageItemType.Atlas) {
                         const asset = item.asset;
                         let tex = asset['_texture'];
                         if (!tex) {
-                            tex = new cc.Texture2D();
+                            tex = new Texture2D();
                             tex.name = asset.nativeUrl;
                             tex.image = asset;
                         }
@@ -5463,13 +5461,13 @@ class UIPackage {
                     }
                 }
                 break;
-            case exports.PackageItemType.Font:
+            case PackageItemType.Font:
                 if (!item.decoded) {
                     item.decoded = true;
                     this.loadFont(item);
                 }
                 break;
-            case exports.PackageItemType.MovieClip:
+            case PackageItemType.MovieClip:
                 if (!item.decoded) {
                     item.decoded = true;
                     this.loadMovieClip(item);
@@ -5488,11 +5486,11 @@ class UIPackage {
             return;
         }
         switch (item.type) {
-            case exports.PackageItemType.Spine:
+            case PackageItemType.Spine:
                 item.loading = [onComplete];
                 this.loadSpine(item);
                 break;
-            case exports.PackageItemType.DragonBones:
+            case PackageItemType.DragonBones:
                 item.loading = [onComplete];
                 this.loadDragonBones(item);
                 break;
@@ -5523,7 +5521,7 @@ class UIPackage {
         for (var i = 0; i < frameCount; i++) {
             var nextPos = buffer.readShort();
             nextPos += buffer.position;
-            let rect = new cc.Rect();
+            let rect = new Rect();
             rect.x = buffer.readInt();
             rect.y = buffer.readInt();
             rect.width = buffer.readInt();
@@ -5535,12 +5533,12 @@ class UIPackage {
                 let atlasTexture = this.getItemAsset(sprite.atlas);
                 if (atlasTexture) {
                     item.width / frame.rect.width;
-                    let sf = new cc.SpriteFrame();
+                    let sf = new SpriteFrame();
                     sf.texture = atlasTexture;
                     sf.rect = sprite.rect;
                     sf.rotated = sprite.rotated;
-                    sf.offset = new cc.Vec2(frame.rect.x - (item.width - frame.rect.width) / 2, -(frame.rect.y - (item.height - frame.rect.height) / 2));
-                    sf.originalSize = new cc.Size(item.width, item.height);
+                    sf.offset = new Vec2(frame.rect.x - (item.width - frame.rect.width) / 2, -(frame.rect.y - (item.height - frame.rect.height) / 2));
+                    sf.originalSize = new Size(item.width, item.height);
                     frame.texture = sf;
                 }
             }
@@ -5549,7 +5547,7 @@ class UIPackage {
         }
     }
     loadFont(item) {
-        var font = new cc.BitmapFont();
+        var font = new BitmapFont();
         item.asset = font;
         font.fntConfig = {
             commonHeight: 0,
@@ -5580,7 +5578,7 @@ class UIPackage {
             bg = {};
             var ch = buffer.readUshort();
             dict[ch] = bg;
-            let rect = new cc.Rect();
+            let rect = new Rect();
             bg.rect = rect;
             var img = buffer.readS();
             rect.x = buffer.readInt();
@@ -5628,13 +5626,13 @@ class UIPackage {
         font.fntConfig.commonHeight = lineHeight == 0 ? fontSize : lineHeight;
         font.fntConfig.resizable = resizable;
         font.fntConfig.canTint = canTint;
-        let spriteFrame = new cc.SpriteFrame();
+        let spriteFrame = new SpriteFrame();
         spriteFrame.texture = mainTexture;
         font.spriteFrame = spriteFrame;
         font.onLoaded();
     }
     loadSpine(item) {
-        this._bundle.load(item.file, cc.sp.SkeletonData, (err, asset) => {
+        this._bundle.load(item.file, sp.SkeletonData, (err, asset) => {
             item.decoded = true;
             item.asset = asset;
             let arr = item.loading;
@@ -5643,7 +5641,7 @@ class UIPackage {
         });
     }
     loadDragonBones(item) {
-        this._bundle.load(item.file, cc.dragonBones.DragonBonesAsset, (err, asset) => {
+        this._bundle.load(item.file, dragonBones.DragonBonesAsset, (err, asset) => {
             if (err) {
                 item.decoded = true;
                 let arr = item.loading;
@@ -5656,7 +5654,7 @@ class UIPackage {
             let pos = atlasFile.lastIndexOf('.');
             if (pos != -1)
                 atlasFile = atlasFile.substr(0, pos + 1) + "json";
-            this._bundle.load(atlasFile, cc.dragonBones.DragonBonesAtlasAsset, (err, asset) => {
+            this._bundle.load(atlasFile, dragonBones.DragonBonesAtlasAsset, (err, asset) => {
                 item.decoded = true;
                 item.atlasAsset = asset;
                 let arr = item.loading;
@@ -5667,8 +5665,8 @@ class UIPackage {
     }
 }
 const ItemTypeToAssetType = {
-    [exports.PackageItemType.Atlas]: cc.ImageAsset,
-    [exports.PackageItemType.Sound]: cc.AudioClip
+    [PackageItemType.Atlas]: ImageAsset,
+    [PackageItemType.Sound]: AudioClip
 };
 var _instById = {};
 var _instByName = {};
@@ -5678,7 +5676,7 @@ var Decls = {};
 
 function toGrayedColor(c) {
     let v = c.r * 0.299 + c.g * 0.587 + c.b * 0.114;
-    return new cc.Color(v, v, v, c.a);
+    return new Color(v, v, v, c.a);
 }
 
 class UBBParser {
@@ -5838,18 +5836,18 @@ class GTextField extends GObject {
         this._node.name = "GTextField";
         this._touchDisabled = true;
         this._text = "";
-        this._color = new cc.Color(255, 255, 255, 255);
+        this._color = new Color(255, 255, 255, 255);
         this.createRenderer();
         this.fontSize = 12;
         this.leading = 3;
         this.singleLine = false;
         this._sizeDirty = false;
-        this._node.on(cc.Node.EventType.SIZE_CHANGED, this.onLabelSizeChanged, this);
+        this._node.on(Node.EventType.SIZE_CHANGED, this.onLabelSizeChanged, this);
     }
     createRenderer() {
-        this._label = this._node.addComponent(cc.Label);
+        this._label = this._node.addComponent(Label);
         this._label.string = "";
-        this.autoSize = exports.AutoSizeType.Both;
+        this.autoSize = AutoSizeType.Both;
     }
     set text(value) {
         this._text = value;
@@ -5972,7 +5970,7 @@ class GTextField extends GObject {
         }
         else {
             if (!this._outline) {
-                this._outline = this._node.addComponent(cc.LabelOutline);
+                this._outline = this._node.addComponent(LabelOutline);
                 this.updateStrokeColor();
             }
             else
@@ -5985,7 +5983,7 @@ class GTextField extends GObject {
     }
     set strokeColor(value) {
         if (!this._strokeColor)
-            this._strokeColor = new cc.Color();
+            this._strokeColor = new Color();
         this._strokeColor.set(value);
         this.updateGear(4);
         this.updateStrokeColor();
@@ -5995,11 +5993,11 @@ class GTextField extends GObject {
     }
     set shadowOffset(value) {
         if (!this._shadowOffset)
-            this._shadowOffset = new cc.Vec2();
+            this._shadowOffset = new Vec2();
         this._shadowOffset.set(value);
         if (this._shadowOffset.x != 0 || this._shadowOffset.y != 0) {
             if (!this._shadow) {
-                this._shadow = this._node.addComponent(cc.LabelShadow);
+                this._shadow = this._node.addComponent(LabelShadow);
                 this.updateShadowColor();
             }
             else
@@ -6015,7 +6013,7 @@ class GTextField extends GObject {
     }
     set shadowColor(value) {
         if (!this._shadowColor)
-            this._shadowColor = new cc.Color();
+            this._shadowColor = new Color();
         this._shadowColor.set(value);
         this.updateShadowColor();
     }
@@ -6120,7 +6118,7 @@ class GTextField extends GObject {
         this._label.string = text2;
     }
     assignFont(label, value) {
-        if (value instanceof cc.Font)
+        if (value instanceof Font)
             label.font = value;
         else {
             let font = getFontByName(value);
@@ -6134,8 +6132,8 @@ class GTextField extends GObject {
     }
     assignFontColor(label, value) {
         let font = label.font;
-        if ((font instanceof cc.BitmapFont) && !(font.fntConfig.canTint))
-            value = cc.Color.WHITE;
+        if ((font instanceof BitmapFont) && !(font.fntConfig.canTint))
+            value = Color.WHITE;
         if (this._grayed)
             value = toGrayedColor(value);
         label.color = value;
@@ -6150,7 +6148,7 @@ class GTextField extends GObject {
         if (!this._outline)
             return;
         if (!this._strokeColor)
-            this._strokeColor = new cc.Color();
+            this._strokeColor = new Color();
         if (this._grayed)
             this._outline.color = toGrayedColor(this._strokeColor);
         else
@@ -6160,7 +6158,7 @@ class GTextField extends GObject {
         if (!this._shadow)
             return;
         if (!this._shadowColor)
-            this._shadowColor = new cc.Color();
+            this._shadowColor = new Color();
         if (this._grayed)
             this._shadow.color = toGrayedColor(this._shadowColor);
         else
@@ -6168,7 +6166,7 @@ class GTextField extends GObject {
     }
     updateFontSize() {
         let font = this._label.font;
-        if (font instanceof cc.BitmapFont) {
+        if (font instanceof BitmapFont) {
             let fntConfig = font.fntConfig;
             if (fntConfig.resizable)
                 this._label.fontSize = this._fontSize;
@@ -6182,25 +6180,25 @@ class GTextField extends GObject {
         }
     }
     updateOverflow() {
-        if (this._autoSize == exports.AutoSizeType.Both)
-            this._label.overflow = cc.Label.Overflow.NONE;
-        else if (this._autoSize == exports.AutoSizeType.Height) {
-            this._label.overflow = cc.Label.Overflow.RESIZE_HEIGHT;
+        if (this._autoSize == AutoSizeType.Both)
+            this._label.overflow = Label.Overflow.NONE;
+        else if (this._autoSize == AutoSizeType.Height) {
+            this._label.overflow = Label.Overflow.RESIZE_HEIGHT;
             this._node._uiProps.uiTransformComp.width = this._width;
         }
-        else if (this._autoSize == exports.AutoSizeType.Shrink) {
-            this._label.overflow = cc.Label.Overflow.SHRINK;
+        else if (this._autoSize == AutoSizeType.Shrink) {
+            this._label.overflow = Label.Overflow.SHRINK;
             this._node._uiProps.uiTransformComp.setContentSize(this._width, this._height);
         }
         else {
-            this._label.overflow = cc.Label.Overflow.CLAMP;
+            this._label.overflow = Label.Overflow.CLAMP;
             this._node._uiProps.uiTransformComp.setContentSize(this._width, this._height);
         }
     }
     markSizeChanged() {
         if (this._underConstruct)
             return;
-        if (this._autoSize == exports.AutoSizeType.Both || this._autoSize == exports.AutoSizeType.Height) {
+        if (this._autoSize == AutoSizeType.Both || this._autoSize == AutoSizeType.Height) {
             if (!this._sizeDirty) {
                 this._node.emit(Event.SIZE_DELAY_CHANGE);
                 this._sizeDirty = true;
@@ -6211,7 +6209,7 @@ class GTextField extends GObject {
         this._sizeDirty = false;
         if (this._underConstruct)
             return;
-        if (this._autoSize == exports.AutoSizeType.Both || this._autoSize == exports.AutoSizeType.Height) {
+        if (this._autoSize == AutoSizeType.Both || this._autoSize == AutoSizeType.Height) {
             this._updatingSize = true;
             this.setSize(this._node._uiProps.uiTransformComp.width, this._node._uiProps.uiTransformComp.height);
             this._updatingSize = false;
@@ -6220,10 +6218,10 @@ class GTextField extends GObject {
     handleSizeChanged() {
         if (this._updatingSize)
             return;
-        if (this._autoSize == exports.AutoSizeType.None || this._autoSize == exports.AutoSizeType.Shrink) {
+        if (this._autoSize == AutoSizeType.None || this._autoSize == AutoSizeType.Shrink) {
             this._node._uiProps.uiTransformComp.setContentSize(this._width, this._height);
         }
-        else if (this._autoSize == exports.AutoSizeType.Height)
+        else if (this._autoSize == AutoSizeType.Height)
             this._node._uiProps.uiTransformComp.width = this._width;
     }
     handleGrayedChanged() {
@@ -6232,11 +6230,11 @@ class GTextField extends GObject {
     }
     getProp(index) {
         switch (index) {
-            case exports.ObjectPropID.Color:
+            case ObjectPropID.Color:
                 return this.color;
-            case exports.ObjectPropID.OutlineColor:
+            case ObjectPropID.OutlineColor:
                 return this.strokeColor;
-            case exports.ObjectPropID.FontSize:
+            case ObjectPropID.FontSize:
                 return this.fontSize;
             default:
                 return super.getProp(index);
@@ -6244,13 +6242,13 @@ class GTextField extends GObject {
     }
     setProp(index, value) {
         switch (index) {
-            case exports.ObjectPropID.Color:
+            case ObjectPropID.Color:
                 this.color = value;
                 break;
-            case exports.ObjectPropID.OutlineColor:
+            case ObjectPropID.OutlineColor:
                 this.strokeColor = value;
                 break;
-            case exports.ObjectPropID.FontSize:
+            case ObjectPropID.FontSize:
                 this.fontSize = value;
                 break;
             default:
@@ -6282,7 +6280,7 @@ class GTextField extends GObject {
             this.shadowColor = buffer.readColor();
             let f1 = buffer.readFloat();
             let f2 = buffer.readFloat();
-            this.shadowOffset = new cc.Vec2(f1, f2);
+            this.shadowOffset = new Vec2(f1, f2);
         }
         if (buffer.readBool())
             this._templateVars = {};
@@ -6296,14 +6294,14 @@ class GTextField extends GObject {
     }
 }
 
-class RichTextImageAtlas extends cc.SpriteAtlas {
+class RichTextImageAtlas extends SpriteAtlas {
     getSpriteFrame(key) {
         let pi = UIPackage.getItemByURL(key);
         if (pi) {
             pi.load();
-            if (pi.type == exports.PackageItemType.Image)
+            if (pi.type == PackageItemType.Image)
                 return pi.asset;
-            else if (pi.type == exports.PackageItemType.MovieClip)
+            else if (pi.type == PackageItemType.MovieClip)
                 return pi.frames[0].texture;
         }
         return super.getSpriteFrame(key);
@@ -6318,9 +6316,9 @@ class GRichTextField extends GTextField {
         this.linkUnderline = UIConfig.linkUnderline;
     }
     createRenderer() {
-        this._richText = this._node.addComponent(cc.RichText);
+        this._richText = this._node.addComponent(RichText);
         this._richText.handleTouchEvent = false;
-        this.autoSize = exports.AutoSizeType.None;
+        this.autoSize = AutoSizeType.None;
         this._richText.imageAtlas = imageAtlas;
     }
     get align() {
@@ -6378,7 +6376,7 @@ class GRichTextField extends GTextField {
         if (this._grayed)
             c = toGrayedColor(c);
         text2 = "<color=" + c.toHEX("#rrggbb") + ">" + text2 + "</color>";
-        if (this._autoSize == exports.AutoSizeType.Both) {
+        if (this._autoSize == AutoSizeType.Both) {
             if (this._richText.maxWidth != 0)
                 this._richText["_maxWidth"] = 0;
             this._richText.string = text2;
@@ -6397,7 +6395,7 @@ class GRichTextField extends GTextField {
     updateFontSize() {
         let fontSize = this._fontSize;
         let font = this._richText.font;
-        if (font instanceof cc.BitmapFont) {
+        if (font instanceof BitmapFont) {
             if (!font.fntConfig.resizable)
                 fontSize = font.fntConfig.fontSize;
         }
@@ -6405,7 +6403,7 @@ class GRichTextField extends GTextField {
         this._richText.lineHeight = fontSize + this._leading * 2;
     }
     updateOverflow() {
-        if (this._autoSize == exports.AutoSizeType.Both)
+        if (this._autoSize == AutoSizeType.Both)
             this._richText.maxWidth = 0;
         else
             this._richText.maxWidth = this._width;
@@ -6413,44 +6411,44 @@ class GRichTextField extends GTextField {
     handleSizeChanged() {
         if (this._updatingSize)
             return;
-        if (this._autoSize != exports.AutoSizeType.Both)
+        if (this._autoSize != AutoSizeType.Both)
             this._richText.maxWidth = this._width;
     }
 }
 
-class InputProcessor extends cc.Component {
+class InputProcessor extends Component {
     constructor() {
         super();
         this._touches = new Array();
         this._rollOutChain = new Array();
         this._rollOverChain = new Array();
-        this._touchPos = new cc.Vec2();
+        this._touchPos = new Vec2();
     }
     onLoad() {
         this._owner = GObject.cast(this.node);
     }
     onEnable() {
         let node = this.node;
-        node.on(cc.Node.EventType.TOUCH_START, this.touchBeginHandler, this);
-        node.on(cc.Node.EventType.TOUCH_MOVE, this.touchMoveHandler, this);
-        node.on(cc.Node.EventType.TOUCH_END, this.touchEndHandler, this);
-        node.on(cc.Node.EventType.TOUCH_CANCEL, this.touchCancelHandler, this);
-        node.on(cc.Node.EventType.MOUSE_DOWN, this.mouseDownHandler, this);
-        node.on(cc.Node.EventType.MOUSE_MOVE, this.mouseMoveHandler, this);
-        node.on(cc.Node.EventType.MOUSE_UP, this.mouseUpHandler, this);
-        node.on(cc.Node.EventType.MOUSE_WHEEL, this.mouseWheelHandler, this);
+        node.on(Node.EventType.TOUCH_START, this.touchBeginHandler, this);
+        node.on(Node.EventType.TOUCH_MOVE, this.touchMoveHandler, this);
+        node.on(Node.EventType.TOUCH_END, this.touchEndHandler, this);
+        node.on(Node.EventType.TOUCH_CANCEL, this.touchCancelHandler, this);
+        node.on(Node.EventType.MOUSE_DOWN, this.mouseDownHandler, this);
+        node.on(Node.EventType.MOUSE_MOVE, this.mouseMoveHandler, this);
+        node.on(Node.EventType.MOUSE_UP, this.mouseUpHandler, this);
+        node.on(Node.EventType.MOUSE_WHEEL, this.mouseWheelHandler, this);
         this._touchListener = this.node.eventProcessor.touchListener;
     }
     onDisable() {
         let node = this.node;
-        node.off(cc.Node.EventType.TOUCH_START, this.touchBeginHandler, this);
-        node.off(cc.Node.EventType.TOUCH_MOVE, this.touchMoveHandler, this);
-        node.off(cc.Node.EventType.TOUCH_END, this.touchEndHandler, this);
-        node.off(cc.Node.EventType.TOUCH_CANCEL, this.touchCancelHandler, this);
-        node.off(cc.Node.EventType.MOUSE_DOWN, this.mouseDownHandler, this);
-        node.off(cc.Node.EventType.MOUSE_MOVE, this.mouseMoveHandler, this);
-        node.off(cc.Node.EventType.MOUSE_UP, this.mouseUpHandler, this);
-        node.off(cc.Node.EventType.MOUSE_WHEEL, this.mouseWheelHandler, this);
+        node.off(Node.EventType.TOUCH_START, this.touchBeginHandler, this);
+        node.off(Node.EventType.TOUCH_MOVE, this.touchMoveHandler, this);
+        node.off(Node.EventType.TOUCH_END, this.touchEndHandler, this);
+        node.off(Node.EventType.TOUCH_CANCEL, this.touchCancelHandler, this);
+        node.off(Node.EventType.MOUSE_DOWN, this.mouseDownHandler, this);
+        node.off(Node.EventType.MOUSE_MOVE, this.mouseMoveHandler, this);
+        node.off(Node.EventType.MOUSE_UP, this.mouseUpHandler, this);
+        node.off(Node.EventType.MOUSE_WHEEL, this.mouseWheelHandler, this);
         this._touchListener = null;
     }
     getAllTouches(touchIds) {
@@ -6472,7 +6470,7 @@ class InputProcessor extends cc.Component {
             if (ti.touchId != -1 && (touchId == -1 || ti.touchId == touchId))
                 return ti.pos;
         }
-        return cc.Vec2.ZERO;
+        return Vec2.ZERO;
     }
     getTouchTarget() {
         let cnt = this._touches.length;
@@ -6595,7 +6593,7 @@ class InputProcessor extends cc.Component {
         ti.touchMonitors.length = 0;
         if (ti.target && ti.target.node) {
             if (ti.target instanceof GRichTextField)
-                ti.target.node.getComponent(cc.RichText)["_onTouchEnded"](evt);
+                ti.target.node.getComponent(RichText)["_onTouchEnded"](evt);
             evt2.unuse();
             evt2.type = Event.TOUCH_END;
             evt2.bubbles = true;
@@ -6608,7 +6606,7 @@ class InputProcessor extends cc.Component {
             ti.target.node.dispatchEvent(evt2);
             returnEvent(evt2);
         }
-        if (cc.sys.isMobile) //on mobile platform, trigger RollOut on up event, but not on PC
+        if (sys.isMobile) //on mobile platform, trigger RollOut on up event, but not on PC
             this.handleRollOver(ti, null);
         else
             this.handleRollOver(ti, ti.target);
@@ -6688,7 +6686,7 @@ class InputProcessor extends cc.Component {
         returnEvent(evt2);
     }
     updateInfo(touchId, pos) {
-        const camera = cc.director.root.batcher2D.getFirstRenderCamera(this.node);
+        const camera = director.root.batcher2D.getFirstRenderCamera(this.node);
         if (camera) {
             s_vec3.set(pos.x, pos.y);
             camera.screenToWorld(s_vec3_2, s_vec3);
@@ -6703,7 +6701,7 @@ class InputProcessor extends cc.Component {
         let ti = this.getInfo(touchId);
         ti.target = target;
         ti.pos.set(this._touchPos);
-        ti.button = cc.EventMouse.BUTTON_LEFT;
+        ti.button = EventMouse.BUTTON_LEFT;
         ti.touchId = touchId;
         return ti;
     }
@@ -6741,7 +6739,7 @@ class InputProcessor extends cc.Component {
     }
     setEnd(ti) {
         ti.began = false;
-        let now = cc.director.getTotalTime() / 1000;
+        let now = director.getTotalTime() / 1000;
         let elapsed = now - ti.lastClickTime;
         if (elapsed < 0.45) {
             if (ti.clickCount == 2)
@@ -6824,12 +6822,12 @@ class InputProcessor extends cc.Component {
 }
 class TouchInfo {
     constructor() {
-        this.pos = new cc.Vec2();
+        this.pos = new Vec2();
         this.touchId = 0;
         this.clickCount = 0;
         this.mouseWheelDelta = 0;
         this.button = -1;
-        this.downPos = new cc.Vec2();
+        this.downPos = new Vec2();
         this.began = false;
         this.clickCancelled = false;
         this.lastClickTime = 0;
@@ -6837,8 +6835,8 @@ class TouchInfo {
         this.touchMonitors = new Array();
     }
 }
-var s_vec3 = new cc.Vec3();
-var s_vec3_2 = new cc.Vec3();
+var s_vec3 = new Vec3();
+var s_vec3_2 = new Vec3();
 
 class ControllerAction {
     constructor() {
@@ -6934,7 +6932,7 @@ class ChangePageAction extends ControllerAction {
 }
 
 var _nextPageId = 0;
-class Controller extends cc.EventTarget {
+class Controller extends EventTarget {
     constructor() {
         super();
         this._pageIds = [];
@@ -7189,16 +7187,16 @@ class Margin {
     }
 }
 
-class ScrollPane extends cc.Component {
+class ScrollPane extends Component {
     constructor() {
         super(...arguments);
         this._aniFlag = 0;
     }
     setup(buffer) {
         const o = this._owner = GObject.cast(this.node);
-        this._maskContainer = new cc.Node("ScrollPane");
+        this._maskContainer = new Node("ScrollPane");
         this._maskContainer.layer = UIConfig.defaultUILayer;
-        this._maskContainer.addComponent(cc.UITransform).setAnchorPoint(0, 1);
+        this._maskContainer.addComponent(UITransform).setAnchorPoint(0, 1);
         this._maskContainer.parent = o.node;
         this._container = o._container;
         this._container.parent = this._maskContainer;
@@ -7210,19 +7208,19 @@ class ScrollPane extends cc.Component {
         this._tweening = 0;
         this._footerLockedSize = 0;
         this._headerLockedSize = 0;
-        this._viewSize = new cc.Vec2();
-        this._contentSize = new cc.Vec2();
-        this._pageSize = new cc.Vec2(1, 1);
-        this._overlapSize = new cc.Vec2();
-        this._tweenTime = new cc.Vec2();
-        this._tweenStart = new cc.Vec2();
-        this._tweenDuration = new cc.Vec2();
-        this._tweenChange = new cc.Vec2();
-        this._velocity = new cc.Vec2();
-        this._containerPos = new cc.Vec2();
-        this._beginTouchPos = new cc.Vec2();
-        this._lastTouchPos = new cc.Vec2();
-        this._lastTouchGlobalPos = new cc.Vec2();
+        this._viewSize = new Vec2();
+        this._contentSize = new Vec2();
+        this._pageSize = new Vec2(1, 1);
+        this._overlapSize = new Vec2();
+        this._tweenTime = new Vec2();
+        this._tweenStart = new Vec2();
+        this._tweenDuration = new Vec2();
+        this._tweenChange = new Vec2();
+        this._velocity = new Vec2();
+        this._containerPos = new Vec2();
+        this._beginTouchPos = new Vec2();
+        this._lastTouchPos = new Vec2();
+        this._lastTouchGlobalPos = new Vec2();
         this._scrollStep = UIConfig.defaultScrollStep;
         this._mouseWheelStep = this._scrollStep * 2;
         this._decelerationRate = UIConfig.defaultScrollDecelerationRate;
@@ -7267,15 +7265,15 @@ class ScrollPane extends cc.Component {
         if ((flags & 256) != 0)
             this._inertiaDisabled = true;
         if ((flags & 512) == 0)
-            this._maskContainer.addComponent(cc.Mask);
+            this._maskContainer.addComponent(Mask);
         if ((flags & 1024) != 0)
             this._floating = true;
         if ((flags & 2048) != 0)
             this._dontClipMargin = true;
-        if (scrollBarDisplay == exports.ScrollBarDisplayType.Default)
+        if (scrollBarDisplay == ScrollBarDisplayType.Default)
             scrollBarDisplay = UIConfig.defaultScrollBarDisplay;
-        if (scrollBarDisplay != exports.ScrollBarDisplayType.Hidden) {
-            if (this._scrollType == exports.ScrollType.Both || this._scrollType == exports.ScrollType.Vertical) {
+        if (scrollBarDisplay != ScrollBarDisplayType.Hidden) {
+            if (this._scrollType == ScrollType.Both || this._scrollType == ScrollType.Vertical) {
                 var res = vtScrollBarRes ? vtScrollBarRes : UIConfig.verticalScrollBar;
                 if (res) {
                     this._vtScrollBar = (UIPackage.createObjectFromURL(res));
@@ -7285,7 +7283,7 @@ class ScrollPane extends cc.Component {
                     this._vtScrollBar.node.parent = o.node;
                 }
             }
-            if (this._scrollType == exports.ScrollType.Both || this._scrollType == exports.ScrollType.Horizontal) {
+            if (this._scrollType == ScrollType.Both || this._scrollType == ScrollType.Horizontal) {
                 var res = hzScrollBarRes ? hzScrollBarRes : UIConfig.horizontalScrollBar;
                 if (res) {
                     this._hzScrollBar = (UIPackage.createObjectFromURL(res));
@@ -7295,7 +7293,7 @@ class ScrollPane extends cc.Component {
                     this._hzScrollBar.node.parent = o.node;
                 }
             }
-            if (scrollBarDisplay == exports.ScrollBarDisplayType.Auto)
+            if (scrollBarDisplay == ScrollBarDisplayType.Auto)
                 this._scrollBarDisplayAuto = true;
             if (this._scrollBarDisplayAuto) {
                 if (this._vtScrollBar)
@@ -7320,7 +7318,7 @@ class ScrollPane extends cc.Component {
             else
                 this._maskContainer.insertChild(this._footer.node, 0);
         }
-        this._refreshBarAxis = (this._scrollType == exports.ScrollType.Both || this._scrollType == exports.ScrollType.Vertical) ? "y" : "x";
+        this._refreshBarAxis = (this._scrollType == ScrollType.Both || this._scrollType == ScrollType.Vertical) ? "y" : "x";
         this.setSize(o.width, o.height);
     }
     onDestroy() {
@@ -7433,7 +7431,7 @@ class ScrollPane extends cc.Component {
     }
     setPercX(value, ani) {
         this._owner.ensureBoundsCorrect();
-        this.setPosX(this._overlapSize.x * cc.math.clamp01(value), ani);
+        this.setPosX(this._overlapSize.x * math.clamp01(value), ani);
     }
     get percY() {
         return this._overlapSize.y == 0 ? 0 : this._yPos / this._overlapSize.y;
@@ -7443,7 +7441,7 @@ class ScrollPane extends cc.Component {
     }
     setPercY(value, ani) {
         this._owner.ensureBoundsCorrect();
-        this.setPosY(this._overlapSize.y * cc.math.clamp01(value), ani);
+        this.setPosY(this._overlapSize.y * math.clamp01(value), ani);
     }
     get posX() {
         return this._xPos;
@@ -7455,7 +7453,7 @@ class ScrollPane extends cc.Component {
         this._owner.ensureBoundsCorrect();
         if (this._loop == 1)
             value = this.loopCheckingNewPos(value, "x");
-        value = cc.math.clamp(value, 0, this._overlapSize.x);
+        value = math.clamp(value, 0, this._overlapSize.x);
         if (value != this._xPos) {
             this._xPos = value;
             this.posChanged(ani);
@@ -7471,7 +7469,7 @@ class ScrollPane extends cc.Component {
         this._owner.ensureBoundsCorrect();
         if (this._loop == 1)
             value = this.loopCheckingNewPos(value, "y");
-        value = cc.math.clamp(value, 0, this._overlapSize.y);
+        value = math.clamp(value, 0, this._overlapSize.y);
         if (value != this._yPos) {
             this._yPos = value;
             this.posChanged(ani);
@@ -7550,10 +7548,10 @@ class ScrollPane extends cc.Component {
         this._pageController = value;
     }
     get scrollingPosX() {
-        return cc.math.clamp(-this._container.position.x, 0, this._overlapSize.x);
+        return math.clamp(-this._container.position.x, 0, this._overlapSize.x);
     }
     get scrollingPosY() {
-        return cc.math.clamp(-(-this._container.position.y), 0, this._overlapSize.y);
+        return math.clamp(-(-this._container.position.y), 0, this._overlapSize.y);
     }
     scrollTop(ani) {
         this.setPercY(0, ani);
@@ -7679,7 +7677,7 @@ class ScrollPane extends cc.Component {
         if (!this._refreshEventDispatching && cr >= 0) {
             this._tweenStart.x = cx;
             this._tweenStart.y = cy;
-            this._tweenChange.set(cc.Vec2.ZERO);
+            this._tweenChange.set(Vec2.ZERO);
             this._tweenChange[this._refreshBarAxis] = this._headerLockedSize - this._tweenStart[this._refreshBarAxis];
             this._tweenDuration.x = this._tweenDuration.y = TWEEN_TIME_DEFAULT;
             this.startTween(2);
@@ -7695,7 +7693,7 @@ class ScrollPane extends cc.Component {
         if (!this._refreshEventDispatching && cr <= -this._overlapSize[this._refreshBarAxis]) {
             this._tweenStart.x = cx;
             this._tweenStart.y = cy;
-            this._tweenChange.set(cc.Vec2.ZERO);
+            this._tweenChange.set(Vec2.ZERO);
             var max = this._overlapSize[this._refreshBarAxis];
             if (max == 0)
                 max = Math.max(this._contentSize[this._refreshBarAxis] + this._footerLockedSize - this._viewSize[this._refreshBarAxis], 0);
@@ -7712,7 +7710,7 @@ class ScrollPane extends cc.Component {
     }
     handleControllerChanged(c) {
         if (this._pageController == c) {
-            if (this._scrollType == exports.ScrollType.Horizontal)
+            if (this._scrollType == ScrollType.Horizontal)
                 this.setCurrentPageX(c.selectedIndex, true);
             else
                 this.setCurrentPageY(c.selectedIndex, true);
@@ -7721,7 +7719,7 @@ class ScrollPane extends cc.Component {
     updatePageController() {
         if (this._pageController && !this._pageController.changing) {
             var index;
-            if (this._scrollType == exports.ScrollType.Horizontal)
+            if (this._scrollType == ScrollType.Horizontal)
                 index = this.currentPageX;
             else
                 index = this.currentPageY;
@@ -7888,26 +7886,26 @@ class ScrollPane extends cc.Component {
             this._header.handlePositionChanged();
         if (this._footer)
             this._footer.handlePositionChanged();
-        if (this._scrollType == exports.ScrollType.Horizontal || this._scrollType == exports.ScrollType.Both)
+        if (this._scrollType == ScrollType.Horizontal || this._scrollType == ScrollType.Both)
             this._overlapSize.x = Math.ceil(Math.max(0, this._contentSize.x - this._viewSize.x));
         else
             this._overlapSize.x = 0;
-        if (this._scrollType == exports.ScrollType.Vertical || this._scrollType == exports.ScrollType.Both)
+        if (this._scrollType == ScrollType.Vertical || this._scrollType == ScrollType.Both)
             this._overlapSize.y = Math.ceil(Math.max(0, this._contentSize.y - this._viewSize.y));
         else
             this._overlapSize.y = 0;
         //边界检查
-        this._xPos = cc.math.clamp(this._xPos, 0, this._overlapSize.x);
-        this._yPos = cc.math.clamp(this._yPos, 0, this._overlapSize.y);
+        this._xPos = math.clamp(this._xPos, 0, this._overlapSize.x);
+        this._yPos = math.clamp(this._yPos, 0, this._overlapSize.y);
         var max = this._overlapSize[this._refreshBarAxis];
         if (max == 0)
             max = Math.max(this._contentSize[this._refreshBarAxis] + this._footerLockedSize - this._viewSize[this._refreshBarAxis], 0);
         else
             max += this._footerLockedSize;
         if (this._refreshBarAxis == "x")
-            this._container.setPosition(cc.math.clamp(this._container.position.x, -max, this._headerLockedSize), -cc.math.clamp((-this._container.position.y), -this._overlapSize.y, 0));
+            this._container.setPosition(math.clamp(this._container.position.x, -max, this._headerLockedSize), -math.clamp((-this._container.position.y), -this._overlapSize.y, 0));
         else
-            this._container.setPosition(cc.math.clamp(this._container.position.x, -this._overlapSize.x, 0), -cc.math.clamp((-this._container.position.y), -max, this._headerLockedSize));
+            this._container.setPosition(math.clamp(this._container.position.x, -this._overlapSize.x, 0), -math.clamp((-this._container.position.y), -max, this._headerLockedSize));
         if (this._header) {
             if (this._refreshBarAxis == "x")
                 this._header.height = this._viewSize.y;
@@ -7930,7 +7928,7 @@ class ScrollPane extends cc.Component {
         else if (this._aniFlag == 1 && !ani)
             this._aniFlag = -1;
         this._needRefresh = true;
-        if (!cc.director.getScheduler().isScheduled(this.refresh, this))
+        if (!director.getScheduler().isScheduled(this.refresh, this))
             this.scheduleOnce(this.refresh);
     }
     refresh(dt) {
@@ -8010,12 +8008,12 @@ class ScrollPane extends cc.Component {
         this._lastTouchPos.set(pt);
         this._lastTouchGlobalPos.set(evt.pos);
         this._isHoldAreaDone = false;
-        this._velocity.set(cc.Vec2.ZERO);
+        this._velocity.set(Vec2.ZERO);
         this._velocityScale = 1;
-        this._lastMoveTime = cc.director.getTotalTime() / 1000;
+        this._lastMoveTime = director.getTotalTime() / 1000;
     }
     onTouchMove(evt) {
-        if (!cc.isValid(this._owner.node))
+        if (!isValid(this._owner.node))
             return;
         if (!this._touchEffect)
             return;
@@ -8027,7 +8025,7 @@ class ScrollPane extends cc.Component {
         var sensitivity = UIConfig.touchScrollSensitivity;
         var diff, diff2;
         var sv, sh;
-        if (this._scrollType == exports.ScrollType.Vertical) {
+        if (this._scrollType == ScrollType.Vertical) {
             if (!this._isHoldAreaDone) {
                 //表示正在监测垂直方向的手势
                 _gestureFlag |= 1;
@@ -8043,7 +8041,7 @@ class ScrollPane extends cc.Component {
             }
             sv = true;
         }
-        else if (this._scrollType == exports.ScrollType.Horizontal) {
+        else if (this._scrollType == ScrollType.Horizontal) {
             if (!this._isHoldAreaDone) {
                 _gestureFlag |= 2;
                 diff = Math.abs(this._beginTouchPos.x - pt.x);
@@ -8112,7 +8110,7 @@ class ScrollPane extends cc.Component {
                 this._container.setPosition(newPosX, this._container.position.y);
         }
         //更新速度
-        var now = cc.director.getTotalTime() / 1000;
+        var now = director.getTotalTime() / 1000;
         var deltaTime = Math.max(now - this._lastMoveTime, 1 / 60);
         var deltaPositionX = pt.x - this._lastTouchPos.x;
         var deltaPositionY = pt.y - this._lastTouchPos.y;
@@ -8129,8 +8127,8 @@ class ScrollPane extends cc.Component {
                 this._velocity.x = this._velocity.x * factor;
                 this._velocity.y = this._velocity.y * factor;
             }
-            this._velocity.x = cc.math.lerp(this._velocity.x, deltaPositionX * 60 / frameRate / deltaTime, deltaTime * 10);
-            this._velocity.y = cc.math.lerp(this._velocity.y, deltaPositionY * 60 / frameRate / deltaTime, deltaTime * 10);
+            this._velocity.x = math.lerp(this._velocity.x, deltaPositionX * 60 / frameRate / deltaTime, deltaTime * 10);
+            this._velocity.y = math.lerp(this._velocity.y, deltaPositionY * 60 / frameRate / deltaTime, deltaTime * 10);
         }
         /*速度计算使用的是本地位移，但在后续的惯性滚动判断中需要用到屏幕位移，所以这里要记录一个位移的比例。
         */
@@ -8145,9 +8143,9 @@ class ScrollPane extends cc.Component {
         this._lastMoveTime = now;
         //同步更新pos值
         if (this._overlapSize.x > 0)
-            this._xPos = cc.math.clamp(-this._container.position.x, 0, this._overlapSize.x);
+            this._xPos = math.clamp(-this._container.position.x, 0, this._overlapSize.x);
         if (this._overlapSize.y > 0)
-            this._yPos = cc.math.clamp(-(-this._container.position.y), 0, this._overlapSize.y);
+            this._yPos = math.clamp(-(-this._container.position.y), 0, this._overlapSize.y);
         //循环滚动特别检查
         if (this._loop != 0) {
             newPosX = this._container.position.x;
@@ -8229,7 +8227,7 @@ class ScrollPane extends cc.Component {
             //更新速度
             if (!this._inertiaDisabled) {
                 var frameRate = 60;
-                var elapsed = (cc.director.getTotalTime() / 1000 - this._lastMoveTime) * frameRate - 1;
+                var elapsed = (director.getTotalTime() / 1000 - this._lastMoveTime) * frameRate - 1;
                 if (elapsed > 1) {
                     var factor = Math.pow(0.833, elapsed);
                     this._velocity.x = this._velocity.x * factor;
@@ -8287,9 +8285,9 @@ class ScrollPane extends cc.Component {
     }
     updateScrollBarPos() {
         if (this._vtScrollBar)
-            this._vtScrollBar.setScrollPerc(this._overlapSize.y == 0 ? 0 : cc.math.clamp(this._container.position.y, 0, this._overlapSize.y) / this._overlapSize.y);
+            this._vtScrollBar.setScrollPerc(this._overlapSize.y == 0 ? 0 : math.clamp(this._container.position.y, 0, this._overlapSize.y) / this._overlapSize.y);
         if (this._hzScrollBar)
-            this._hzScrollBar.setScrollPerc(this._overlapSize.x == 0 ? 0 : cc.math.clamp(-this._container.position.x, 0, this._overlapSize.x) / this._overlapSize.x);
+            this._hzScrollBar.setScrollPerc(this._overlapSize.x == 0 ? 0 : math.clamp(-this._container.position.x, 0, this._overlapSize.x) / this._overlapSize.x);
         this.checkRefreshBar();
     }
     updateScrollBarVisible() {
@@ -8390,7 +8388,7 @@ class ScrollPane extends cc.Component {
             if (value > pos) {
                 v = this.getLoopPartSize(6, axis);
                 v = Math.ceil((value - pos) / v) * v;
-                pos = cc.math.clamp(pos + v, 0, this._overlapSize[axis]);
+                pos = math.clamp(pos + v, 0, this._overlapSize[axis]);
                 changed = true;
             }
         }
@@ -8399,7 +8397,7 @@ class ScrollPane extends cc.Component {
             if (value < pos) {
                 v = this.getLoopPartSize(6, axis);
                 v = Math.ceil((pos - value) / v) * v;
-                pos = cc.math.clamp(pos - v, 0, this._overlapSize[axis]);
+                pos = math.clamp(pos - v, 0, this._overlapSize[axis]);
                 changed = true;
             }
         }
@@ -8506,9 +8504,9 @@ class ScrollPane extends cc.Component {
             pos = -this._overlapSize[axis];
         else {
             //以屏幕像素为基准
-            var isMobile = cc.sys.isMobile;
+            var isMobile = sys.isMobile;
             var v2 = Math.abs(v) * this._velocityScale;
-            const winSize = cc.View.instance.getCanvasSize();
+            const winSize = View.instance.getCanvasSize();
             //在移动设备上，需要对不同分辨率做一个适配，我们的速度判断以1136分辨率为基准
             if (isMobile)
                 v2 *= 1136 / Math.max(winSize.width, winSize.height);
@@ -8551,7 +8549,7 @@ class ScrollPane extends cc.Component {
         this._tweenDuration[axis] = newDuration;
     }
     startTween(type) {
-        this._tweenTime.set(cc.Vec2.ZERO);
+        this._tweenTime.set(Vec2.ZERO);
         this._tweening = type;
         this.updateScrollBarVisible();
     }
@@ -8615,9 +8613,9 @@ class ScrollPane extends cc.Component {
         this._container.setPosition(nx, -ny);
         if (this._tweening == 2) {
             if (this._overlapSize.x > 0)
-                this._xPos = cc.math.clamp(-nx, 0, this._overlapSize.x);
+                this._xPos = math.clamp(-nx, 0, this._overlapSize.x);
             if (this._overlapSize.y > 0)
-                this._yPos = cc.math.clamp(-ny, 0, this._overlapSize.y);
+                this._yPos = math.clamp(-ny, 0, this._overlapSize.y);
             if (this._pageMode)
                 this.updatePageController();
         }
@@ -8697,10 +8695,10 @@ var _gestureFlag = 0;
 const TWEEN_TIME_GO = 0.5; //调用SetPos(ani)时使用的缓动时间
 const TWEEN_TIME_DEFAULT = 0.3; //惯性滚动的最小缓动时间
 const PULL_RATIO = 0.5; //下拉过顶或者上拉过底时允许超过的距离占显示区域的比例
-var s_vec2$3 = new cc.Vec2();
-var s_rect = new cc.Rect();
-var sEndPos = new cc.Vec2();
-var sOldChange = new cc.Vec2();
+var s_vec2$3 = new Vec2();
+var s_rect = new Rect();
+var sEndPos = new Vec2();
+var sOldChange = new Vec2();
 function easeFunc(t, d) {
     return (t = t / d - 1) * t * t + 1; //cubicOut
 }
@@ -8796,7 +8794,7 @@ class GPath {
         var splinePoints = [];
         var prev = points[0];
         if (prev.curveType == CurveType.CRSpline)
-            splinePoints.push(new cc.Vec2(prev.x, prev.y));
+            splinePoints.push(new Vec2(prev.x, prev.y));
         for (var i = 1; i < cnt; i++) {
             var current = points[i];
             if (prev.curveType != CurveType.CRSpline) {
@@ -8805,21 +8803,21 @@ class GPath {
                 seg.ptStart = this._points.length;
                 if (prev.curveType == CurveType.Straight) {
                     seg.ptCount = 2;
-                    this._points.push(new cc.Vec2(prev.x, prev.y));
-                    this._points.push(new cc.Vec2(current.x, current.y));
+                    this._points.push(new Vec2(prev.x, prev.y));
+                    this._points.push(new Vec2(current.x, current.y));
                 }
                 else if (prev.curveType == CurveType.Bezier) {
                     seg.ptCount = 3;
-                    this._points.push(new cc.Vec2(prev.x, prev.y));
-                    this._points.push(new cc.Vec2(current.x, current.y));
-                    this._points.push(new cc.Vec2(prev.control1_x, prev.control1_y));
+                    this._points.push(new Vec2(prev.x, prev.y));
+                    this._points.push(new Vec2(current.x, current.y));
+                    this._points.push(new Vec2(prev.control1_x, prev.control1_y));
                 }
                 else if (prev.curveType == CurveType.CubicBezier) {
                     seg.ptCount = 4;
-                    this._points.push(new cc.Vec2(prev.x, prev.y));
-                    this._points.push(new cc.Vec2(current.x, current.y));
-                    this._points.push(new cc.Vec2(prev.control1_x, prev.control1_y));
-                    this._points.push(new cc.Vec2(prev.control2_x, prev.control2_y));
+                    this._points.push(new Vec2(prev.x, prev.y));
+                    this._points.push(new Vec2(current.x, current.y));
+                    this._points.push(new Vec2(prev.control1_x, prev.control1_y));
+                    this._points.push(new Vec2(prev.control2_x, prev.control2_y));
                 }
                 seg.length = distance(prev.x, prev.y, current.x, current.y);
                 this._fullLength += seg.length;
@@ -8827,12 +8825,12 @@ class GPath {
             }
             if (current.curveType != CurveType.CRSpline) {
                 if (splinePoints.length > 0) {
-                    splinePoints.push(new cc.Vec2(current.x, current.y));
+                    splinePoints.push(new Vec2(current.x, current.y));
                     this.createSplineSegment(splinePoints);
                 }
             }
             else
-                splinePoints.push(new cc.Vec2(current.x, current.y));
+                splinePoints.push(new Vec2(current.x, current.y));
             prev = current;
         }
         if (splinePoints.length > 1)
@@ -8863,10 +8861,10 @@ class GPath {
     }
     getPointAt(t, result) {
         if (!result)
-            result = new cc.Vec2();
+            result = new Vec2();
         else
             result.set(0, 0);
-        t = cc.math.clamp01(t);
+        t = math.clamp01(t);
         var cnt = this._segments.length;
         if (cnt == 0) {
             return result;
@@ -8875,8 +8873,8 @@ class GPath {
         if (t == 1) {
             seg = this._segments[cnt - 1];
             if (seg.type == CurveType.Straight) {
-                result.x = cc.math.lerp(this._points[seg.ptStart].x, this._points[seg.ptStart + 1].x, t);
-                result.y = cc.math.lerp(this._points[seg.ptStart].y, this._points[seg.ptStart + 1].y, t);
+                result.x = math.lerp(this._points[seg.ptStart].x, this._points[seg.ptStart + 1].x, t);
+                result.y = math.lerp(this._points[seg.ptStart].y, this._points[seg.ptStart + 1].y, t);
                 return result;
             }
             else if (seg.type == CurveType.Bezier || seg.type == CurveType.CubicBezier)
@@ -8891,8 +8889,8 @@ class GPath {
             if (len < 0) {
                 t = 1 + len / seg.length;
                 if (seg.type == CurveType.Straight) {
-                    result.x = cc.math.lerp(this._points[seg.ptStart].x, this._points[seg.ptStart + 1].x, t);
-                    result.y = cc.math.lerp(this._points[seg.ptStart].y, this._points[seg.ptStart + 1].y, t);
+                    result.x = math.lerp(this._points[seg.ptStart].x, this._points[seg.ptStart + 1].x, t);
+                    result.y = math.lerp(this._points[seg.ptStart].y, this._points[seg.ptStart + 1].y, t);
                 }
                 else if (seg.type == CurveType.Bezier || seg.type == CurveType.CubicBezier)
                     result = this.onBezierCurve(seg.ptStart, seg.ptCount, t, result);
@@ -8911,7 +8909,7 @@ class GPath {
             points = new Array();
         var seg = this._segments[segmentIndex];
         for (var i = 0; i < seg.ptCount; i++)
-            points.push(new cc.Vec2(this._points[seg.ptStart + i].x, this._points[seg.ptStart + i].y));
+            points.push(new Vec2(this._points[seg.ptStart + i].x, this._points[seg.ptStart + i].y));
         return points;
     }
     getPointsInSegment(segmentIndex, t0, t1, points, ts, pointDensity) {
@@ -8923,8 +8921,8 @@ class GPath {
             ts.push(t0);
         var seg = this._segments[segmentIndex];
         if (seg.type == CurveType.Straight) {
-            points.push(new cc.Vec2(cc.math.lerp(this._points[seg.ptStart].x, this._points[seg.ptStart + 1].x, t0), cc.math.lerp(this._points[seg.ptStart].y, this._points[seg.ptStart + 1].y, t0)));
-            points.push(new cc.Vec2(cc.math.lerp(this._points[seg.ptStart].x, this._points[seg.ptStart + 1].x, t1), cc.math.lerp(this._points[seg.ptStart].y, this._points[seg.ptStart + 1].y, t1)));
+            points.push(new Vec2(math.lerp(this._points[seg.ptStart].x, this._points[seg.ptStart + 1].x, t0), math.lerp(this._points[seg.ptStart].y, this._points[seg.ptStart + 1].y, t0)));
+            points.push(new Vec2(math.lerp(this._points[seg.ptStart].x, this._points[seg.ptStart + 1].x, t1), math.lerp(this._points[seg.ptStart].y, this._points[seg.ptStart + 1].y, t1)));
         }
         else {
             var func;
@@ -8932,17 +8930,17 @@ class GPath {
                 func = this.onBezierCurve;
             else
                 func = this.onCRSplineCurve;
-            points.push(func.call(this, seg.ptStart, seg.ptCount, t0, new cc.Vec2()));
+            points.push(func.call(this, seg.ptStart, seg.ptCount, t0, new Vec2()));
             var SmoothAmount = Math.min(seg.length * pointDensity, 50);
             for (var j = 0; j <= SmoothAmount; j++) {
                 var t = j / SmoothAmount;
                 if (t > t0 && t < t1) {
-                    points.push(func.call(this, seg.ptStart, seg.ptCount, t, new cc.Vec2()));
+                    points.push(func.call(this, seg.ptStart, seg.ptCount, t, new Vec2()));
                     if (ts)
                         ts.push(t);
                 }
             }
-            points.push(func.call(this, seg.ptStart, seg.ptCount, t1, new cc.Vec2()));
+            points.push(func.call(this, seg.ptStart, seg.ptCount, t1, new Vec2()));
         }
         if (ts)
             ts.push(t1);
@@ -8968,7 +8966,7 @@ class GPath {
         var p2y = this._points[adjustedIndex + 2].y;
         var p3x = this._points[adjustedIndex + 3].x;
         var p3y = this._points[adjustedIndex + 3].y;
-        var adjustedT = (t == 1) ? 1 : cc.math.repeat(t * (ptCount - 4), 1); // Then we adjust t to be that value on that new piece of segment... for t == 1f don't use repeat (that would return 0f);
+        var adjustedT = (t == 1) ? 1 : math.repeat(t * (ptCount - 4), 1); // Then we adjust t to be that value on that new piece of segment... for t == 1f don't use repeat (that would return 0f);
         var t0 = ((-adjustedT + 2) * adjustedT - 1) * adjustedT * 0.5;
         var t1 = (((3 * adjustedT - 5) * adjustedT) * adjustedT + 2) * 0.5;
         var t2 = ((-3 * adjustedT + 4) * adjustedT + 1) * adjustedT * 0.5;
@@ -9178,11 +9176,11 @@ class Transition {
             }
             else if (item.type == ActionType.Animation) {
                 if (paused) {
-                    item.value.flag = item.target.getProp(exports.ObjectPropID.Playing);
-                    item.target.setProp(exports.ObjectPropID.Playing, false);
+                    item.value.flag = item.target.getProp(ObjectPropID.Playing);
+                    item.target.setProp(ObjectPropID.Playing, false);
                 }
                 else
-                    item.target.setProp(exports.ObjectPropID.Playing, item.value.flag);
+                    item.target.setProp(ObjectPropID.Playing, item.value.flag);
             }
             if (item.tweener)
                 item.tweener.setPaused(paused);
@@ -9352,7 +9350,7 @@ class Transition {
                     }
                     else if (item.type == ActionType.Animation) {
                         if (item.target)
-                            item.target.setProp(exports.ObjectPropID.TimeScale, value);
+                            item.target.setProp(ObjectPropID.TimeScale, value);
                     }
                 }
             }
@@ -9542,8 +9540,8 @@ class Transition {
             if (value.flag)
                 continue;
             target = item.target;
-            frame = target.getProp(exports.ObjectPropID.Frame);
-            playStartTime = target.getProp(exports.ObjectPropID.Playing) ? 0 : -1;
+            frame = target.getProp(ObjectPropID.Frame);
+            playStartTime = target.getProp(ObjectPropID.Playing) ? 0 : -1;
             playTotalTime = 0;
             for (var j = i; j < cnt; j++) {
                 item = this._items[j];
@@ -9574,10 +9572,10 @@ class Transition {
             }
             if (playStartTime >= 0)
                 playTotalTime += (this._startTime - playStartTime);
-            target.setProp(exports.ObjectPropID.Playing, playStartTime >= 0);
-            target.setProp(exports.ObjectPropID.Frame, frame);
+            target.setProp(ObjectPropID.Playing, playStartTime >= 0);
+            target.setProp(ObjectPropID.Frame, frame);
             if (playTotalTime > 0)
-                target.setProp(exports.ObjectPropID.DeltaTime, playTotalTime);
+                target.setProp(ObjectPropID.DeltaTime, playTotalTime);
         }
     }
     onDelayedPlayItem(tweener) {
@@ -9794,20 +9792,20 @@ class Transition {
                 //item.target.setSkew(value.f1, value.f2);
                 break;
             case ActionType.Color:
-                let color = item.target.getProp(exports.ObjectPropID.Color);
-                if (color instanceof cc.Color) {
+                let color = item.target.getProp(ObjectPropID.Color);
+                if (color instanceof Color) {
                     let i = Math.floor(value.f1);
                     color.r = ((i >> 16) & 0xFF);
                     color.g = (i >> 8) & 0xFF;
                     color.b = i & 0xFF;
-                    item.target.setProp(exports.ObjectPropID.Color, color);
+                    item.target.setProp(ObjectPropID.Color, color);
                 }
                 break;
             case ActionType.Animation:
                 if (value.frame >= 0)
-                    item.target.setProp(exports.ObjectPropID.Frame, value.frame);
-                item.target.setProp(exports.ObjectPropID.Playing, value.playing);
-                item.target.setProp(exports.ObjectPropID.TimeScale, this._timeScale);
+                    item.target.setProp(ObjectPropID.Frame, value.frame);
+                item.target.setProp(ObjectPropID.Playing, value.playing);
+                item.target.setProp(ObjectPropID.TimeScale, this._timeScale);
                 break;
             case ActionType.Visible:
                 item.target.visible = value.visible;
@@ -10012,7 +10010,7 @@ class Item {
 }
 class TweenConfig {
     constructor() {
-        this.easeType = exports.EaseType.QuadOut;
+        this.easeType = EaseType.QuadOut;
         this.startValue = { b1: true, b2: true };
         this.endValue = { b1: true, b2: true };
     }
@@ -10022,17 +10020,17 @@ class GComponent extends GObject {
     constructor() {
         super();
         this._sortingChildCount = 0;
-        this._childrenRenderOrder = exports.ChildrenRenderOrder.Ascent;
+        this._childrenRenderOrder = ChildrenRenderOrder.Ascent;
         this._apexIndex = 0;
         this._node.name = "GComponent";
         this._children = new Array();
         this._controllers = new Array();
         this._transitions = new Array();
         this._margin = new Margin();
-        this._alignOffset = new cc.Vec2();
-        this._container = new cc.Node("Container");
+        this._alignOffset = new Vec2();
+        this._container = new Node("Container");
         this._container.layer = UIConfig.defaultUILayer;
-        this._container.addComponent(cc.UITransform).setAnchorPoint(0, 1);
+        this._container.addComponent(UITransform).setAnchorPoint(0, 1);
         this._node.addChild(this._container);
     }
     dispose() {
@@ -10127,7 +10125,7 @@ class GComponent extends GObject {
             this._children.splice(index, 1);
             child.group = null;
             this._container.removeChild(child.node);
-            if (this._childrenRenderOrder == exports.ChildrenRenderOrder.Arch)
+            if (this._childrenRenderOrder == ChildrenRenderOrder.Arch)
                 this._partner.callLater(this.buildNativeDisplayList);
             if (dispose)
                 child.dispose();
@@ -10250,9 +10248,9 @@ class GComponent extends GObject {
             return oldIndex;
         this._children.splice(oldIndex, 1);
         this._children.splice(index, 0, child);
-        if (this._childrenRenderOrder == exports.ChildrenRenderOrder.Ascent)
+        if (this._childrenRenderOrder == ChildrenRenderOrder.Ascent)
             child.node.setSiblingIndex(index);
-        else if (this._childrenRenderOrder == exports.ChildrenRenderOrder.Descent)
+        else if (this._childrenRenderOrder == ChildrenRenderOrder.Descent)
             child.node.setSiblingIndex(cnt - index);
         else
             this._partner.callLater(this.buildNativeDisplayList);
@@ -10324,9 +10322,9 @@ class GComponent extends GObject {
         if (this._buildingDisplayList)
             return;
         let cnt = this._children.length;
-        if (this._childrenRenderOrder == exports.ChildrenRenderOrder.Ascent)
+        if (this._childrenRenderOrder == ChildrenRenderOrder.Ascent)
             child.node.setSiblingIndex(index);
-        else if (this._childrenRenderOrder == exports.ChildrenRenderOrder.Descent)
+        else if (this._childrenRenderOrder == ChildrenRenderOrder.Descent)
             child.node.setSiblingIndex(cnt - index);
         else
             this._partner.callLater(this.buildNativeDisplayList);
@@ -10342,7 +10340,7 @@ class GComponent extends GObject {
             return;
         let child;
         switch (this._childrenRenderOrder) {
-            case exports.ChildrenRenderOrder.Ascent:
+            case ChildrenRenderOrder.Ascent:
                 {
                     let j = 0;
                     for (let i = 0; i < cnt; i++) {
@@ -10351,7 +10349,7 @@ class GComponent extends GObject {
                     }
                 }
                 break;
-            case exports.ChildrenRenderOrder.Descent:
+            case ChildrenRenderOrder.Descent:
                 {
                     let j = 0;
                     for (let i = cnt - 1; i >= 0; i--) {
@@ -10360,7 +10358,7 @@ class GComponent extends GObject {
                     }
                 }
                 break;
-            case exports.ChildrenRenderOrder.Arch:
+            case ChildrenRenderOrder.Arch:
                 {
                     let j = 0;
                     for (let i = 0; i < this._apexIndex; i++) {
@@ -10476,7 +10474,7 @@ class GComponent extends GObject {
     set apexIndex(value) {
         if (this._apexIndex != value) {
             this._apexIndex = value;
-            if (this._childrenRenderOrder == exports.ChildrenRenderOrder.Arch)
+            if (this._childrenRenderOrder == ChildrenRenderOrder.Arch)
                 this.buildNativeDisplayList();
         }
     }
@@ -10488,9 +10486,9 @@ class GComponent extends GObject {
     }
     setMask(value, inverted) {
         if (this._maskContent) {
-            this._maskContent.node.off(cc.Node.EventType.TRANSFORM_CHANGED, this.onMaskContentChanged, this);
-            this._maskContent.node.off(cc.Node.EventType.SIZE_CHANGED, this.onMaskContentChanged, this);
-            this._maskContent.node.off(cc.Node.EventType.ANCHOR_CHANGED, this.onMaskContentChanged, this);
+            this._maskContent.node.off(Node.EventType.TRANSFORM_CHANGED, this.onMaskContentChanged, this);
+            this._maskContent.node.off(Node.EventType.SIZE_CHANGED, this.onMaskContentChanged, this);
+            this._maskContent.node.off(Node.EventType.ANCHOR_CHANGED, this.onMaskContentChanged, this);
             this._maskContent.visible = true;
         }
         this._maskContent = value;
@@ -10498,20 +10496,20 @@ class GComponent extends GObject {
             if (!(value instanceof GImage) && !(value instanceof GGraph))
                 return;
             if (!this._customMask) {
-                let maskNode = new cc.Node("Mask");
+                let maskNode = new Node("Mask");
                 maskNode.layer = UIConfig.defaultUILayer;
-                maskNode.addComponent(cc.UITransform);
+                maskNode.addComponent(UITransform);
                 maskNode.parent = this._node;
                 if (this._scrollPane)
                     this._container.parent.parent = maskNode;
                 else
                     this._container.parent = maskNode;
-                this._customMask = maskNode.addComponent(cc.Mask);
+                this._customMask = maskNode.addComponent(Mask);
             }
             value.visible = false;
-            value.node.on(cc.Node.EventType.TRANSFORM_CHANGED, this.onMaskContentChanged, this);
-            value.node.on(cc.Node.EventType.SIZE_CHANGED, this.onMaskContentChanged, this);
-            value.node.on(cc.Node.EventType.ANCHOR_CHANGED, this.onMaskContentChanged, this);
+            value.node.on(Node.EventType.TRANSFORM_CHANGED, this.onMaskContentChanged, this);
+            value.node.on(Node.EventType.SIZE_CHANGED, this.onMaskContentChanged, this);
+            value.node.on(Node.EventType.ANCHOR_CHANGED, this.onMaskContentChanged, this);
             this._customMask.inverted = inverted;
             if (this._node.activeInHierarchy)
                 this.onMaskReady();
@@ -10539,20 +10537,20 @@ class GComponent extends GObject {
     onMaskReady() {
         this.off(Event.DISPLAY, this.onMaskReady, this);
         if (this._maskContent instanceof GImage) {
-            this._customMask.type = cc.Mask.Type.IMAGE_STENCIL;
+            this._customMask.type = Mask.Type.IMAGE_STENCIL;
             this._customMask.alphaThreshold = 0.0001;
             this._customMask.spriteFrame = this._maskContent._content.spriteFrame;
         }
         else if (this._maskContent instanceof GGraph) {
             if (this._maskContent.type == 2)
-                this._customMask.type = cc.Mask.Type.ELLIPSE;
+                this._customMask.type = Mask.Type.ELLIPSE;
             else
-                this._customMask.type = cc.Mask.Type.RECT;
+                this._customMask.type = Mask.Type.RECT;
         }
     }
     onMaskContentChanged() {
         let maskNode = this._customMask.node;
-        let maskUITrans = maskNode.getComponent(cc.UITransform);
+        let maskUITrans = maskNode.getComponent(UITransform);
         let contentNode = this._maskContent.node;
         let contentUITrans = this._maskContent._uiTrans;
         let w = this._maskContent.width * this._maskContent.scaleX;
@@ -10579,8 +10577,8 @@ class GComponent extends GObject {
         this._scrollPane.setup(buffer);
     }
     setupOverflow(overflow) {
-        if (overflow == exports.OverflowType.Hidden)
-            this._rectMask = this._container.addComponent(cc.Mask);
+        if (overflow == OverflowType.Hidden)
+            this._rectMask = this._container.addComponent(Mask);
         if (!this._margin.isNone)
             this.handleSizeChanged();
     }
@@ -10757,7 +10755,7 @@ class GComponent extends GObject {
     }
     getSnappingPosition(xValue, yValue, resultPoint) {
         if (!resultPoint)
-            resultPoint = new cc.Vec2();
+            resultPoint = new Vec2();
         var cnt = this._children.length;
         if (cnt == 0) {
             resultPoint.x = 0;
@@ -10875,7 +10873,7 @@ class GComponent extends GObject {
             this._margin.right = buffer.readInt();
         }
         var overflow = buffer.readByte();
-        if (overflow == exports.OverflowType.Scroll) {
+        if (overflow == OverflowType.Scroll) {
             var savedPos = buffer.position;
             buffer.seek(0, 7);
             this.setupScroll(buffer);
@@ -10987,7 +10985,7 @@ class GComponent extends GObject {
         this._underConstruct = false;
         this.buildNativeDisplayList();
         this.setBoundsChangedFlag();
-        if (contentItem.objectType != exports.ObjectType.Component)
+        if (contentItem.objectType != ObjectType.Component)
             this.constructExtension(buffer);
         this.onConstruct();
     }
@@ -11031,7 +11029,7 @@ class GComponent extends GObject {
             this._transitions[i].onDisable();
     }
 }
-var s_vec2$2 = new cc.Vec2();
+var s_vec2$2 = new Vec2();
 
 class Window extends GComponent {
     constructor() {
@@ -11052,7 +11050,7 @@ class Window extends GComponent {
             if (this._contentPane) {
                 this.addChild(this._contentPane);
                 this.setSize(this._contentPane.width, this._contentPane.height);
-                this._contentPane.addRelation(this, exports.RelationType.Size);
+                this._contentPane.addRelation(this, RelationType.Size);
                 this._frame = (this._contentPane.getChild("frame"));
                 if (this._frame) {
                     this.closeButton = this._frame.getChild("closeButton");
@@ -11119,8 +11117,8 @@ class Window extends GComponent {
     centerOn(r, restraint) {
         this.setPosition(Math.round((r.width - this.width) / 2), Math.round((r.height - this.height) / 2));
         if (restraint) {
-            this.addRelation(r, exports.RelationType.Center_Center);
-            this.addRelation(r, exports.RelationType.Middle_Middle);
+            this.addRelation(r, RelationType.Center_Center);
+            this.addRelation(r, RelationType.Middle_Middle);
         }
     }
     toggleStatus() {
@@ -11263,7 +11261,7 @@ class GRoot extends GComponent {
     }
     static create() {
         GRoot._inst = new GRoot();
-        cc.director.getScene().getChildByName('Canvas').addChild(GRoot._inst.node);
+        director.getScene().getChildByName('Canvas').addChild(GRoot._inst.node);
         GRoot._inst.onWinResize();
         return GRoot._inst;
     }
@@ -11276,21 +11274,21 @@ class GRoot extends GComponent {
         this._justClosedPopups = new Array();
         this._modalLayer = new GGraph();
         this._modalLayer.setSize(this.width, this.height);
-        this._modalLayer.drawRect(0, cc.Color.TRANSPARENT, UIConfig.modalLayerColor);
-        this._modalLayer.addRelation(this, exports.RelationType.Size);
+        this._modalLayer.drawRect(0, Color.TRANSPARENT, UIConfig.modalLayerColor);
+        this._modalLayer.addRelation(this, RelationType.Size);
         this._thisOnResized = this.onWinResize.bind(this);
         this._inputProcessor = this.node.addComponent(InputProcessor);
         this._inputProcessor._captureCallback = this.onTouchBegin_1;
-        cc.View.instance.on('design-resolution-changed', this.onWinResize, this);
-        if (!env.EDITOR) {
-            cc.View.instance.on('canvas-resize', this._thisOnResized);
+        View.instance.on('design-resolution-changed', this.onWinResize, this);
+        if (!EDITOR) {
+            View.instance.on('canvas-resize', this._thisOnResized);
             window.addEventListener('orientationchange', this._thisOnResized);
         }
     }
     onDestroy() {
-        cc.View.instance.off('design-resolution-changed', this.onWinResize, this);
-        if (!env.EDITOR) {
-            cc.View.instance.off('canvas-resize', this._thisOnResized);
+        View.instance.off('design-resolution-changed', this.onWinResize, this);
+        if (!EDITOR) {
+            View.instance.off('canvas-resize', this._thisOnResized);
             window.removeEventListener('orientationchange', this._thisOnResized);
         }
         if (this == GRoot._inst)
@@ -11348,7 +11346,7 @@ class GRoot extends GComponent {
             if (this._modalWaitPane == null)
                 this._modalWaitPane = UIPackage.createObjectFromURL(UIConfig.globalModalWaiting);
             this._modalWaitPane.setSize(this.width, this.height);
-            this._modalWaitPane.addRelation(this, exports.RelationType.Size);
+            this._modalWaitPane.addRelation(this, RelationType.Size);
             this.addChild(this._modalWaitPane);
             this._modalWaitPane.text = msg;
         }
@@ -11395,7 +11393,7 @@ class GRoot extends GComponent {
         return this._modalWaitPane && this._modalWaitPane.node.activeInHierarchy;
     }
     getPopupPosition(popup, target, dir, result) {
-        let pos = result || new cc.Vec2();
+        let pos = result || new Vec2();
         var sizeW = 0, sizeH = 0;
         if (target) {
             pos = target.localToGlobal();
@@ -11410,8 +11408,8 @@ class GRoot extends GComponent {
         if (pos.x + popup.width > this.width)
             pos.x = pos.x + sizeW - popup.width;
         pos.y += sizeH;
-        if (((dir === undefined || dir === exports.PopupDirection.Auto) && pos.y + popup.height > this.height)
-            || dir === false || dir === exports.PopupDirection.Up) {
+        if (((dir === undefined || dir === PopupDirection.Auto) && pos.y + popup.height > this.height)
+            || dir === false || dir === PopupDirection.Up) {
             pos.y = pos.y - sizeH - popup.height - 1;
             if (pos.y < 0) {
                 pos.y = 0;
@@ -11524,7 +11522,7 @@ class GRoot extends GComponent {
     }
     playOneShotSound(clip, volumeScale) {
         if (!this.audioEngine) {
-            this.audioEngine = this.node.addComponent(cc.AudioSourceComponent);
+            this.audioEngine = this.node.addComponent(AudioSourceComponent);
         }
         if (volumeScale === undefined)
             volumeScale = 1;
@@ -11603,7 +11601,7 @@ class GTextInput extends GTextField {
         this._editBox["_updateTextLabel"]();
         this._node.on('text-changed', this.onTextChanged, this);
         this.on(Event.TOUCH_END, this.onTouchEnd1, this);
-        this.autoSize = exports.AutoSizeType.None;
+        this.autoSize = AutoSizeType.None;
     }
     set editable(val) {
         this._editBox.enabled = val;
@@ -11629,7 +11627,7 @@ class GTextInput extends GTextField {
         if (defaultParser.lastColor) {
             let c = this._editBox.placeholderLabel.color;
             if (!c)
-                c = new cc.Color();
+                c = new Color();
             c.fromHEX(defaultParser.lastColor);
             this.assignFontColor(this._editBox.placeholderLabel, c);
         }
@@ -11650,10 +11648,10 @@ class GTextInput extends GTextField {
         return "";
     }
     get password() {
-        return this._editBox.inputFlag == cc.EditBox.InputFlag.PASSWORD;
+        return this._editBox.inputFlag == EditBox.InputFlag.PASSWORD;
     }
     set password(val) {
-        this._editBox.inputFlag = val ? cc.EditBox.InputFlag.PASSWORD : cc.EditBox.InputFlag.DEFAULT;
+        this._editBox.inputFlag = val ? EditBox.InputFlag.PASSWORD : EditBox.InputFlag.DEFAULT;
     }
     get align() {
         return this._editBox.textLabel.horizontalAlign;
@@ -11674,10 +11672,10 @@ class GTextInput extends GTextField {
         }
     }
     get singleLine() {
-        return this._editBox.inputMode != cc.EditBox.InputMode.ANY;
+        return this._editBox.inputMode != EditBox.InputMode.ANY;
     }
     set singleLine(value) {
-        this._editBox.inputMode = value ? cc.EditBox.InputMode.SINGLE_LINE : cc.EditBox.InputMode.ANY;
+        this._editBox.inputMode = value ? EditBox.InputMode.SINGLE_LINE : EditBox.InputMode.ANY;
     }
     requestFocus() {
         this._editBox.focus();
@@ -11742,7 +11740,7 @@ class GTextInput extends GTextField {
         }
     }
 }
-class MyEditBox extends cc.EditBox {
+class MyEditBox extends EditBox {
     _registerEvent() {
         //取消掉原来的事件处理
     }
@@ -11814,17 +11812,17 @@ class GLoader extends GObject {
         this._node.name = "GLoader";
         this._playing = true;
         this._url = "";
-        this._fill = exports.LoaderFillType.None;
-        this._align = exports.AlignType.Left;
-        this._verticalAlign = exports.VertAlignType.Top;
+        this._fill = LoaderFillType.None;
+        this._align = AlignType.Left;
+        this._verticalAlign = VertAlignType.Top;
         this._showErrorSign = true;
-        this._color = new cc.Color(255, 255, 255, 255);
-        this._container = new cc.Node("Image");
+        this._color = new Color(255, 255, 255, 255);
+        this._container = new Node("Image");
         this._container.layer = UIConfig.defaultUILayer;
-        this._container.addComponent(cc.UITransform).setAnchorPoint(0, 1);
+        this._container.addComponent(UITransform).setAnchorPoint(0, 1);
         this._node.addChild(this._container);
         this._content = this._container.addComponent(MovieClip);
-        this._content.sizeMode = cc.Sprite.SizeMode.CUSTOM;
+        this._content.sizeMode = Sprite.SizeMode.CUSTOM;
         this._content.trim = false;
         this._content.setPlaySettings();
     }
@@ -11967,7 +11965,7 @@ class GLoader extends GObject {
     set texture(value) {
         this.url = null;
         this._content.spriteFrame = value;
-        this._content.type = cc.Sprite.Type.SIMPLE;
+        this._content.type = Sprite.Type.SIMPLE;
         if (value != null) {
             this.sourceWidth = value.getRect().width;
             this.sourceHeight = value.getRect().height;
@@ -11996,7 +11994,7 @@ class GLoader extends GObject {
             this._contentItem.load();
             if (this._autoSize)
                 this.setSize(this.sourceWidth, this.sourceHeight);
-            if (this._contentItem.type == exports.PackageItemType.Image) {
+            if (this._contentItem.type == PackageItemType.Image) {
                 if (!this._contentItem.asset) {
                     this.setErrorState();
                 }
@@ -12004,23 +12002,23 @@ class GLoader extends GObject {
                     this._content.spriteFrame = this._contentItem.asset;
                     if (this._content.fillMethod == 0) {
                         if (this._contentItem.scale9Grid)
-                            this._content.type = cc.Sprite.Type.SLICED;
+                            this._content.type = Sprite.Type.SLICED;
                         else if (this._contentItem.scaleByTile)
-                            this._content.type = cc.Sprite.Type.TILED;
+                            this._content.type = Sprite.Type.TILED;
                         else
-                            this._content.type = cc.Sprite.Type.SIMPLE;
+                            this._content.type = Sprite.Type.SIMPLE;
                     }
                     this.updateLayout();
                 }
             }
-            else if (this._contentItem.type == exports.PackageItemType.MovieClip) {
+            else if (this._contentItem.type == PackageItemType.MovieClip) {
                 this._content.interval = this._contentItem.interval;
                 this._content.swing = this._contentItem.swing;
                 this._content.repeatDelay = this._contentItem.repeatDelay;
                 this._content.frames = this._contentItem.frames;
                 this.updateLayout();
             }
-            else if (this._contentItem.type == exports.PackageItemType.Component) {
+            else if (this._contentItem.type == PackageItemType.Component) {
                 var obj = UIPackage.createObjectFromURL(itemURL);
                 if (!obj)
                     this.setErrorState();
@@ -12044,20 +12042,20 @@ class GLoader extends GObject {
         let url = this.url;
         let callback = (err, asset) => {
             //因为是异步返回的，而这时可能url已经被改变，所以不能直接用返回的结果
-            if (this._url != url || !cc.isValid(this._node))
+            if (this._url != url || !isValid(this._node))
                 return;
             if (err)
                 console.warn(err);
-            if (asset instanceof cc.SpriteFrame)
+            if (asset instanceof SpriteFrame)
                 this.onExternalLoadSuccess(asset);
-            else if (asset instanceof cc.Texture2D) {
-                let sf = new cc.SpriteFrame();
+            else if (asset instanceof Texture2D) {
+                let sf = new SpriteFrame();
                 sf.texture = asset;
                 this.onExternalLoadSuccess(sf);
             }
-            else if (asset instanceof cc.ImageAsset) {
-                let sf = new cc.SpriteFrame();
-                let texture = new cc.Texture2D();
+            else if (asset instanceof ImageAsset) {
+                let sf = new SpriteFrame();
+                let texture = new Texture2D();
                 texture.image = asset;
                 sf.texture = texture;
                 this.onExternalLoadSuccess(sf);
@@ -12066,15 +12064,15 @@ class GLoader extends GObject {
         if (this._url.startsWith("http://")
             || this._url.startsWith("https://")
             || this._url.startsWith('/'))
-            cc.assetManager.loadRemote(this._url, callback);
+            assetManager.loadRemote(this._url, callback);
         else
-            cc.resources.load(this._url + "/spriteFrame", cc.Asset, callback);
+            resources.load(this._url + "/spriteFrame", Asset, callback);
     }
     freeExternal(texture) {
     }
     onExternalLoadSuccess(texture) {
         this._content.spriteFrame = texture;
-        this._content.type = cc.Sprite.Type.SIMPLE;
+        this._content.type = Sprite.Type.SIMPLE;
         this.sourceWidth = texture.getRect().width;
         this.sourceHeight = texture.getRect().height;
         if (this._autoSize)
@@ -12135,21 +12133,21 @@ class GLoader extends GObject {
                 return;
         }
         var sx = 1, sy = 1;
-        if (this._fill != exports.LoaderFillType.None) {
+        if (this._fill != LoaderFillType.None) {
             sx = this.width / this.sourceWidth;
             sy = this.height / this.sourceHeight;
             if (sx != 1 || sy != 1) {
-                if (this._fill == exports.LoaderFillType.ScaleMatchHeight)
+                if (this._fill == LoaderFillType.ScaleMatchHeight)
                     sx = sy;
-                else if (this._fill == exports.LoaderFillType.ScaleMatchWidth)
+                else if (this._fill == LoaderFillType.ScaleMatchWidth)
                     sy = sx;
-                else if (this._fill == exports.LoaderFillType.Scale) {
+                else if (this._fill == LoaderFillType.Scale) {
                     if (sx > sy)
                         sx = sy;
                     else
                         sy = sx;
                 }
-                else if (this._fill == exports.LoaderFillType.ScaleNoBorder) {
+                else if (this._fill == LoaderFillType.ScaleNoBorder) {
                     if (sx > sy)
                         sy = sx;
                     else
@@ -12171,15 +12169,15 @@ class GLoader extends GObject {
             this._content2.setScale(sx, sy);
         }
         var nx, ny;
-        if (this._align == exports.AlignType.Left)
+        if (this._align == AlignType.Left)
             nx = 0;
-        else if (this._align == exports.AlignType.Center)
+        else if (this._align == AlignType.Center)
             nx = Math.floor((this._width - cw) / 2);
         else
             nx = this._width - cw;
-        if (this._verticalAlign == exports.VertAlignType.Top)
+        if (this._verticalAlign == VertAlignType.Top)
             ny = 0;
-        else if (this._verticalAlign == exports.VertAlignType.Middle)
+        else if (this._verticalAlign == VertAlignType.Middle)
             ny = Math.floor((this._height - ch) / 2);
         else
             ny = this._height - ch;
@@ -12228,13 +12226,13 @@ class GLoader extends GObject {
     }
     getProp(index) {
         switch (index) {
-            case exports.ObjectPropID.Color:
+            case ObjectPropID.Color:
                 return this.color;
-            case exports.ObjectPropID.Playing:
+            case ObjectPropID.Playing:
                 return this.playing;
-            case exports.ObjectPropID.Frame:
+            case ObjectPropID.Frame:
                 return this.frame;
-            case exports.ObjectPropID.TimeScale:
+            case ObjectPropID.TimeScale:
                 return this._content.timeScale;
             default:
                 return super.getProp(index);
@@ -12242,19 +12240,19 @@ class GLoader extends GObject {
     }
     setProp(index, value) {
         switch (index) {
-            case exports.ObjectPropID.Color:
+            case ObjectPropID.Color:
                 this.color = value;
                 break;
-            case exports.ObjectPropID.Playing:
+            case ObjectPropID.Playing:
                 this.playing = value;
                 break;
-            case exports.ObjectPropID.Frame:
+            case ObjectPropID.Frame:
                 this.frame = value;
                 break;
-            case exports.ObjectPropID.TimeScale:
+            case ObjectPropID.TimeScale:
                 this._content.timeScale = value;
                 break;
-            case exports.ObjectPropID.DeltaTime:
+            case ObjectPropID.DeltaTime:
                 this._content.advance(value);
                 break;
             default:
@@ -12295,13 +12293,13 @@ class GLoader3D extends GObject {
         this._node.name = "GLoader3D";
         this._playing = true;
         this._url = "";
-        this._fill = exports.LoaderFillType.None;
-        this._align = exports.AlignType.Left;
-        this._verticalAlign = exports.VertAlignType.Top;
-        this._color = new cc.Color(255, 255, 255, 255);
-        this._container = new cc.Node("Wrapper");
+        this._fill = LoaderFillType.None;
+        this._align = AlignType.Left;
+        this._verticalAlign = VertAlignType.Top;
+        this._color = new Color(255, 255, 255, 255);
+        this._container = new Node("Wrapper");
         this._container.layer = UIConfig.defaultUILayer;
-        this._container.addComponent(cc.UITransform).setAnchorPoint(0, 1);
+        this._container.addComponent(UITransform).setAnchorPoint(0, 1);
         this._node.addChild(this._container);
     }
     dispose() {
@@ -12445,7 +12443,7 @@ class GLoader3D extends GObject {
             this._contentItem = this._contentItem.getHighResolution();
             if (this._autoSize)
                 this.setSize(this.sourceWidth, this.sourceHeight);
-            if (this._contentItem.type == exports.PackageItemType.Spine || this._contentItem.type == exports.PackageItemType.DragonBones)
+            if (this._contentItem.type == PackageItemType.Spine || this._contentItem.type == PackageItemType.DragonBones)
                 this._contentItem.owner.getItemAssetAsync(this._contentItem, this.onLoaded.bind(this));
         }
     }
@@ -12456,18 +12454,18 @@ class GLoader3D extends GObject {
             console.warn(err);
         if (!this._contentItem.asset)
             return;
-        if (this._contentItem.type == exports.PackageItemType.Spine)
+        if (this._contentItem.type == PackageItemType.Spine)
             this.setSpine(this._contentItem.asset, this._contentItem.skeletonAnchor);
-        else if (this._contentItem.type == exports.PackageItemType.DragonBones)
+        else if (this._contentItem.type == PackageItemType.DragonBones)
             this.setDragonBones(this._contentItem.asset, this._contentItem.atlasAsset, this._contentItem.skeletonAnchor);
     }
     setSpine(asset, anchor, pma) {
         this.freeSpine();
-        let node = new cc.Node();
+        let node = new Node();
         this._container.addChild(node);
         node.layer = UIConfig.defaultUILayer;
         node.setPosition(anchor.x, -anchor.y);
-        this._content = node.addComponent(cc.sp.Skeleton);
+        this._content = node.addComponent(sp.Skeleton);
         this._content.premultipliedAlpha = pma;
         this._content.skeletonData = asset;
         this._content.color = this._color;
@@ -12481,16 +12479,16 @@ class GLoader3D extends GObject {
     }
     setDragonBones(asset, atlasAsset, anchor, pma) {
         this.freeDragonBones();
-        let node = new cc.Node();
+        let node = new Node();
         node.layer = UIConfig.defaultUILayer;
         this._container.addChild(node);
         node.setPosition(anchor.x, -anchor.y);
-        this._content = node.addComponent(cc.dragonBones.ArmatureDisplay);
+        this._content = node.addComponent(dragonBones.ArmatureDisplay);
         this._content.premultipliedAlpha = pma;
         this._content.dragonAsset = asset;
         this._content.dragonAtlasAsset = atlasAsset;
         this._content.color = this._color;
-        let armatureKey = asset["init"](cc.dragonBones.CCFactory.getInstance(), atlasAsset["_uuid"]);
+        let armatureKey = asset["init"](dragonBones.CCFactory.getInstance(), atlasAsset["_uuid"]);
         let dragonBonesData = this._content["_factory"].getDragonBonesData(armatureKey);
         this._content.armatureName = dragonBonesData.armatureNames[0];
         this.onChangeDragonBones();
@@ -12504,15 +12502,15 @@ class GLoader3D extends GObject {
     onChange() {
         if (this._contentItem == null)
             return;
-        if (this._contentItem.type == exports.PackageItemType.Spine) {
+        if (this._contentItem.type == PackageItemType.Spine) {
             this.onChangeSpine();
         }
-        if (this._contentItem.type == exports.PackageItemType.DragonBones) {
+        if (this._contentItem.type == PackageItemType.DragonBones) {
             this.onChangeDragonBones();
         }
     }
     onChangeSpine() {
-        if (!(this._content instanceof cc.sp.Skeleton))
+        if (!(this._content instanceof sp.Skeleton))
             return;
         if (this._animationName) {
             let trackEntry = this._content.getCurrent(0);
@@ -12524,7 +12522,7 @@ class GLoader3D extends GObject {
                 this._content.paused = false;
             else {
                 this._content.paused = true;
-                trackEntry.trackTime = cc.math.lerp(0, trackEntry.animationEnd - trackEntry.animationStart, this._frame / 100);
+                trackEntry.trackTime = math.lerp(0, trackEntry.animationEnd - trackEntry.animationStart, this._frame / 100);
             }
         }
         else
@@ -12534,7 +12532,7 @@ class GLoader3D extends GObject {
             this._content.setSkin(skin);
     }
     onChangeDragonBones() {
-        if (!(this._content instanceof cc.dragonBones.ArmatureDisplay))
+        if (!(this._content instanceof dragonBones.ArmatureDisplay))
             return;
         if (this._animationName) {
             if (this._playing)
@@ -12549,13 +12547,13 @@ class GLoader3D extends GObject {
         if (this._url.startsWith("http://")
             || this._url.startsWith("https://")
             || this._url.startsWith('/'))
-            cc.assetManager.loadRemote(this._url, cc.sp.SkeletonData, this.onLoaded2.bind(this));
+            assetManager.loadRemote(this._url, sp.SkeletonData, this.onLoaded2.bind(this));
         else
-            cc.resources.load(this._url, cc.sp.SkeletonData, this.onLoaded2.bind(this));
+            resources.load(this._url, sp.SkeletonData, this.onLoaded2.bind(this));
     }
     onLoaded2(err, asset) {
         //因为是异步返回的，而这时可能url已经被改变，所以不能直接用返回的结果
-        if (!this._url || !cc.isValid(this._node))
+        if (!this._url || !isValid(this._node))
             return;
         if (err)
             console.warn(err);
@@ -12580,21 +12578,21 @@ class GLoader3D extends GObject {
             }
         }
         var sx = 1, sy = 1;
-        if (this._fill != exports.LoaderFillType.None) {
+        if (this._fill != LoaderFillType.None) {
             sx = this.width / this.sourceWidth;
             sy = this.height / this.sourceHeight;
             if (sx != 1 || sy != 1) {
-                if (this._fill == exports.LoaderFillType.ScaleMatchHeight)
+                if (this._fill == LoaderFillType.ScaleMatchHeight)
                     sx = sy;
-                else if (this._fill == exports.LoaderFillType.ScaleMatchWidth)
+                else if (this._fill == LoaderFillType.ScaleMatchWidth)
                     sy = sx;
-                else if (this._fill == exports.LoaderFillType.Scale) {
+                else if (this._fill == LoaderFillType.Scale) {
                     if (sx > sy)
                         sx = sy;
                     else
                         sy = sx;
                 }
-                else if (this._fill == exports.LoaderFillType.ScaleNoBorder) {
+                else if (this._fill == LoaderFillType.ScaleNoBorder) {
                     if (sx > sy)
                         sy = sx;
                     else
@@ -12612,15 +12610,15 @@ class GLoader3D extends GObject {
         }
         this._container.setScale(sx, sy);
         var nx, ny;
-        if (this._align == exports.AlignType.Left)
+        if (this._align == AlignType.Left)
             nx = 0;
-        else if (this._align == exports.AlignType.Center)
+        else if (this._align == AlignType.Center)
             nx = Math.floor((this._width - cw) / 2);
         else
             nx = this._width - cw;
-        if (this._verticalAlign == exports.VertAlignType.Top)
+        if (this._verticalAlign == VertAlignType.Top)
             ny = 0;
-        else if (this._verticalAlign == exports.VertAlignType.Middle)
+        else if (this._verticalAlign == VertAlignType.Middle)
             ny = Math.floor((this._height - ch) / 2);
         else
             ny = this._height - ch;
@@ -12648,13 +12646,13 @@ class GLoader3D extends GObject {
     }
     getProp(index) {
         switch (index) {
-            case exports.ObjectPropID.Color:
+            case ObjectPropID.Color:
                 return this.color;
-            case exports.ObjectPropID.Playing:
+            case ObjectPropID.Playing:
                 return this.playing;
-            case exports.ObjectPropID.Frame:
+            case ObjectPropID.Frame:
                 return this.frame;
-            case exports.ObjectPropID.TimeScale:
+            case ObjectPropID.TimeScale:
                 return 1;
             default:
                 return super.getProp(index);
@@ -12662,18 +12660,18 @@ class GLoader3D extends GObject {
     }
     setProp(index, value) {
         switch (index) {
-            case exports.ObjectPropID.Color:
+            case ObjectPropID.Color:
                 this.color = value;
                 break;
-            case exports.ObjectPropID.Playing:
+            case ObjectPropID.Playing:
                 this.playing = value;
                 break;
-            case exports.ObjectPropID.Frame:
+            case ObjectPropID.Frame:
                 this.frame = value;
                 break;
-            case exports.ObjectPropID.TimeScale:
+            case ObjectPropID.TimeScale:
                 break;
-            case exports.ObjectPropID.DeltaTime:
+            case ObjectPropID.DeltaTime:
                 break;
             default:
                 super.setProp(index, value);
@@ -12737,7 +12735,7 @@ class GLabel extends GComponent {
         if (tf)
             return tf.color;
         else
-            return cc.Color.WHITE;
+            return Color.WHITE;
     }
     set titleColor(value) {
         var tf = this.getTextField();
@@ -12777,9 +12775,9 @@ class GLabel extends GComponent {
     }
     getProp(index) {
         switch (index) {
-            case exports.ObjectPropID.Color:
+            case ObjectPropID.Color:
                 return this.titleColor;
-            case exports.ObjectPropID.OutlineColor:
+            case ObjectPropID.OutlineColor:
                 {
                     var tf = this.getTextField();
                     if (tf)
@@ -12787,7 +12785,7 @@ class GLabel extends GComponent {
                     else
                         return 0;
                 }
-            case exports.ObjectPropID.FontSize:
+            case ObjectPropID.FontSize:
                 return this.titleFontSize;
             default:
                 return super.getProp(index);
@@ -12795,17 +12793,17 @@ class GLabel extends GComponent {
     }
     setProp(index, value) {
         switch (index) {
-            case exports.ObjectPropID.Color:
+            case ObjectPropID.Color:
                 this.titleColor = value;
                 break;
-            case exports.ObjectPropID.OutlineColor:
+            case ObjectPropID.OutlineColor:
                 {
                     var tf = this.getTextField();
                     if (tf)
                         tf.strokeColor = value;
                 }
                 break;
-            case exports.ObjectPropID.FontSize:
+            case ObjectPropID.FontSize:
                 this.titleFontSize = value;
                 break;
             default:
@@ -12879,7 +12877,7 @@ class GButton extends GComponent {
     constructor() {
         super();
         this._node.name = "GButton";
-        this._mode = exports.ButtonMode.Common;
+        this._mode = ButtonMode.Common;
         this._title = "";
         this._icon = "";
         this._sound = UIConfig.buttonSound;
@@ -12935,7 +12933,7 @@ class GButton extends GComponent {
         if (tf)
             return tf.color;
         else
-            return cc.Color.BLACK;
+            return Color.BLACK;
     }
     set titleColor(value) {
         var tf = this.getTextField();
@@ -12967,7 +12965,7 @@ class GButton extends GComponent {
         this._soundVolumeScale = value;
     }
     set selected(val) {
-        if (this._mode == exports.ButtonMode.Common)
+        if (this._mode == ButtonMode.Common)
             return;
         if (this._selected != val) {
             this._selected = val;
@@ -12987,7 +12985,7 @@ class GButton extends GComponent {
                     if (this._relatedController.autoRadioGroupDepth)
                         this._parent.adjustRadioGroupDepth(this, this._relatedController);
                 }
-                else if (this._mode == exports.ButtonMode.Check && this._relatedController.selectedPageId == this._relatedPageId)
+                else if (this._mode == ButtonMode.Check && this._relatedController.selectedPageId == this._relatedPageId)
                     this._relatedController.oppositePageId = this._relatedPageId;
             }
         }
@@ -13000,7 +12998,7 @@ class GButton extends GComponent {
     }
     set mode(value) {
         if (this._mode != value) {
-            if (value == exports.ButtonMode.Common)
+            if (value == ButtonMode.Common)
                 this.selected = false;
             this._mode = value;
         }
@@ -13047,20 +13045,20 @@ class GButton extends GComponent {
             var cnt = this.numChildren;
             if (val == GButton.DOWN || val == GButton.SELECTED_OVER || val == GButton.SELECTED_DISABLED) {
                 if (!this._downColor)
-                    this._downColor = new cc.Color();
+                    this._downColor = new Color();
                 var r = this._downEffectValue * 255;
                 this._downColor.r = this._downColor.g = this._downColor.b = r;
                 for (var i = 0; i < cnt; i++) {
                     var obj = this.getChildAt(i);
                     if (!(obj instanceof GTextField))
-                        obj.setProp(exports.ObjectPropID.Color, this._downColor);
+                        obj.setProp(ObjectPropID.Color, this._downColor);
                 }
             }
             else {
                 for (var i = 0; i < cnt; i++) {
                     var obj = this.getChildAt(i);
                     if (!(obj instanceof GTextField))
-                        obj.setProp(exports.ObjectPropID.Color, cc.Color.WHITE);
+                        obj.setProp(ObjectPropID.Color, Color.WHITE);
                 }
             }
         }
@@ -13116,9 +13114,9 @@ class GButton extends GComponent {
     }
     getProp(index) {
         switch (index) {
-            case exports.ObjectPropID.Color:
+            case ObjectPropID.Color:
                 return this.titleColor;
-            case exports.ObjectPropID.OutlineColor:
+            case ObjectPropID.OutlineColor:
                 {
                     var tf = this.getTextField();
                     if (tf)
@@ -13126,9 +13124,9 @@ class GButton extends GComponent {
                     else
                         return 0;
                 }
-            case exports.ObjectPropID.FontSize:
+            case ObjectPropID.FontSize:
                 return this.titleFontSize;
-            case exports.ObjectPropID.Selected:
+            case ObjectPropID.Selected:
                 return this.selected;
             default:
                 return super.getProp(index);
@@ -13136,20 +13134,20 @@ class GButton extends GComponent {
     }
     setProp(index, value) {
         switch (index) {
-            case exports.ObjectPropID.Color:
+            case ObjectPropID.Color:
                 this.titleColor = value;
                 break;
-            case exports.ObjectPropID.OutlineColor:
+            case ObjectPropID.OutlineColor:
                 {
                     var tf = this.getTextField();
                     if (tf)
                         tf.strokeColor = value;
                 }
                 break;
-            case exports.ObjectPropID.FontSize:
+            case ObjectPropID.FontSize:
                 this.titleFontSize = value;
                 break;
-            case exports.ObjectPropID.Selected:
+            case ObjectPropID.Selected:
                 this.selected = value;
                 break;
             default:
@@ -13175,7 +13173,7 @@ class GButton extends GComponent {
             this._title = this._titleObject.text;
         if (this._iconObject)
             this._icon = this._iconObject.icon;
-        if (this._mode == exports.ButtonMode.Common)
+        if (this._mode == ButtonMode.Common)
             this.setState(GButton.UP);
         this._node.on(Event.TOUCH_BEGIN, this.onTouchBegin_1, this);
         this._node.on(Event.TOUCH_END, this.onTouchEnd_1, this);
@@ -13240,11 +13238,11 @@ class GButton extends GComponent {
         this.setState(this._selected ? GButton.DOWN : GButton.UP);
     }
     onTouchBegin_1(evt) {
-        if (evt.button != cc.EventMouse.BUTTON_LEFT)
+        if (evt.button != EventMouse.BUTTON_LEFT)
             return;
         this._down = true;
         evt.captureTouch();
-        if (this._mode == exports.ButtonMode.Common) {
+        if (this._mode == ButtonMode.Common) {
             if (this.grayed && this._buttonController && this._buttonController.hasPage(GButton.DISABLED))
                 this.setState(GButton.SELECTED_DISABLED);
             else
@@ -13258,13 +13256,13 @@ class GButton extends GComponent {
         }
     }
     onTouchEnd_1(evt) {
-        if (evt.button != cc.EventMouse.BUTTON_LEFT)
+        if (evt.button != EventMouse.BUTTON_LEFT)
             return;
         if (this._down) {
             this._down = false;
             if (this._node == null)
                 return;
-            if (this._mode == exports.ButtonMode.Common) {
+            if (this._mode == ButtonMode.Common) {
                 if (this.grayed && this._buttonController && this._buttonController.hasPage(GButton.DISABLED))
                     this.setState(GButton.DISABLED);
                 else if (this._over)
@@ -13291,13 +13289,13 @@ class GButton extends GComponent {
                     GRoot.inst.playOneShotSound(sound, this._soundVolumeScale);
             }
         }
-        if (this._mode == exports.ButtonMode.Check) {
+        if (this._mode == ButtonMode.Check) {
             if (this._changeStateOnClick) {
                 this.selected = !this._selected;
                 this._node.emit(Event.STATUS_CHANGED, this);
             }
         }
-        else if (this._mode == exports.ButtonMode.Radio) {
+        else if (this._mode == ButtonMode.Radio) {
             if (this._changeStateOnClick && !this._selected) {
                 this.selected = true;
                 this._node.emit(Event.STATUS_CHANGED, this);
@@ -13336,13 +13334,13 @@ class GList extends GComponent {
         this._node.name = "GList";
         this._trackBounds = true;
         this._pool = new GObjectPool();
-        this._layout = exports.ListLayoutType.SingleColumn;
+        this._layout = ListLayoutType.SingleColumn;
         this._autoResizeItem = true;
         this._lastSelectedIndex = -1;
-        this._selectionMode = exports.ListSelectionMode.Single;
+        this._selectionMode = ListSelectionMode.Single;
         this.opaque = true;
-        this._align = exports.AlignType.Left;
-        this._verticalAlign = exports.VertAlignType.Top;
+        this._align = AlignType.Left;
+        this._verticalAlign = VertAlignType.Top;
     }
     dispose() {
         this._partner.unschedule(this._refreshVirtualList);
@@ -13432,7 +13430,7 @@ class GList extends GComponent {
     set virtualItemSize(value) {
         if (this._virtual) {
             if (this._itemSize == null)
-                this._itemSize = new cc.Size(0, 0);
+                this._itemSize = new Size(0, 0);
             this._itemSize.width = value.width;
             this._itemSize.height = value.height;
             this.setVirtualListChangedFlag(true);
@@ -13547,7 +13545,7 @@ class GList extends GComponent {
     }
     set selectedIndex(value) {
         if (value >= 0 && value < this.numItems) {
-            if (this._selectionMode != exports.ListSelectionMode.Single)
+            if (this._selectionMode != ListSelectionMode.Single)
                 this.clearSelection();
             this.addSelection(value);
         }
@@ -13583,10 +13581,10 @@ class GList extends GComponent {
         return result;
     }
     addSelection(index, scrollItToView) {
-        if (this._selectionMode == exports.ListSelectionMode.None)
+        if (this._selectionMode == ListSelectionMode.None)
             return;
         this.checkVirtualList();
-        if (this._selectionMode == exports.ListSelectionMode.Single)
+        if (this._selectionMode == ListSelectionMode.Single)
             this.clearSelection();
         if (scrollItToView)
             this.scrollToView(index);
@@ -13606,7 +13604,7 @@ class GList extends GComponent {
         }
     }
     removeSelection(index) {
-        if (this._selectionMode == exports.ListSelectionMode.None)
+        if (this._selectionMode == ListSelectionMode.None)
             return;
         var obj;
         if (this._virtual) {
@@ -13725,14 +13723,14 @@ class GList extends GComponent {
             return;
         switch (dir) {
             case 1: //up
-                if (this._layout == exports.ListLayoutType.SingleColumn || this._layout == exports.ListLayoutType.FlowVertical) {
+                if (this._layout == ListLayoutType.SingleColumn || this._layout == ListLayoutType.FlowVertical) {
                     index--;
                     if (index >= 0) {
                         this.clearSelection();
                         this.addSelection(index, true);
                     }
                 }
-                else if (this._layout == exports.ListLayoutType.FlowHorizontal || this._layout == exports.ListLayoutType.Pagination) {
+                else if (this._layout == ListLayoutType.FlowHorizontal || this._layout == ListLayoutType.Pagination) {
                     var current = this._children[index];
                     var k = 0;
                     for (var i = index - 1; i >= 0; i--) {
@@ -13754,14 +13752,14 @@ class GList extends GComponent {
                 }
                 break;
             case 3: //right
-                if (this._layout == exports.ListLayoutType.SingleRow || this._layout == exports.ListLayoutType.FlowHorizontal || this._layout == exports.ListLayoutType.Pagination) {
+                if (this._layout == ListLayoutType.SingleRow || this._layout == ListLayoutType.FlowHorizontal || this._layout == ListLayoutType.Pagination) {
                     index++;
                     if (index < this._children.length) {
                         this.clearSelection();
                         this.addSelection(index, true);
                     }
                 }
-                else if (this._layout == exports.ListLayoutType.FlowVertical) {
+                else if (this._layout == ListLayoutType.FlowVertical) {
                     current = this._children[index];
                     k = 0;
                     var cnt = this._children.length;
@@ -13784,14 +13782,14 @@ class GList extends GComponent {
                 }
                 break;
             case 5: //down
-                if (this._layout == exports.ListLayoutType.SingleColumn || this._layout == exports.ListLayoutType.FlowVertical) {
+                if (this._layout == ListLayoutType.SingleColumn || this._layout == ListLayoutType.FlowVertical) {
                     index++;
                     if (index < this._children.length) {
                         this.clearSelection();
                         this.addSelection(index, true);
                     }
                 }
-                else if (this._layout == exports.ListLayoutType.FlowHorizontal || this._layout == exports.ListLayoutType.Pagination) {
+                else if (this._layout == ListLayoutType.FlowHorizontal || this._layout == ListLayoutType.Pagination) {
                     current = this._children[index];
                     k = 0;
                     cnt = this._children.length;
@@ -13814,14 +13812,14 @@ class GList extends GComponent {
                 }
                 break;
             case 7: //left
-                if (this._layout == exports.ListLayoutType.SingleRow || this._layout == exports.ListLayoutType.FlowHorizontal || this._layout == exports.ListLayoutType.Pagination) {
+                if (this._layout == ListLayoutType.SingleRow || this._layout == ListLayoutType.FlowHorizontal || this._layout == ListLayoutType.Pagination) {
                     index--;
                     if (index >= 0) {
                         this.clearSelection();
                         this.addSelection(index, true);
                     }
                 }
-                else if (this._layout == exports.ListLayoutType.FlowVertical) {
+                else if (this._layout == ListLayoutType.FlowVertical) {
                     current = this._children[index];
                     k = 0;
                     for (i = index - 1; i >= 0; i--) {
@@ -13857,11 +13855,11 @@ class GList extends GComponent {
         this._node.emit(Event.CLICK_ITEM, item, evt);
     }
     setSelectionOnEvent(item, evt) {
-        if (!(item instanceof GButton) || this._selectionMode == exports.ListSelectionMode.None)
+        if (!(item instanceof GButton) || this._selectionMode == ListSelectionMode.None)
             return;
         var dontChangeLastIndex = false;
         var index = this.childIndexToItemIndex(this.getChildIndex(item));
-        if (this._selectionMode == exports.ListSelectionMode.Single) {
+        if (this._selectionMode == ListSelectionMode.Single) {
             if (!item.selected) {
                 this.clearSelectionExcept(item);
                 item.selected = true;
@@ -13897,7 +13895,7 @@ class GList extends GComponent {
                     }
                 }
             }
-            else if (evt.isCtrlDown || this._selectionMode == exports.ListSelectionMode.Multiple_SingleClick) {
+            else if (evt.isCtrlDown || this._selectionMode == ListSelectionMode.Multiple_SingleClick) {
                 item.selected = !item.selected;
             }
             else {
@@ -13921,13 +13919,13 @@ class GList extends GComponent {
             itemCount = curCount;
         if (this._virtual) {
             var lineCount = Math.ceil(itemCount / this._curLineItemCount);
-            if (this._layout == exports.ListLayoutType.SingleColumn || this._layout == exports.ListLayoutType.FlowHorizontal)
+            if (this._layout == ListLayoutType.SingleColumn || this._layout == ListLayoutType.FlowHorizontal)
                 this.viewHeight = lineCount * this._itemSize.height + Math.max(0, lineCount - 1) * this._lineGap;
             else
                 this.viewWidth = lineCount * this._itemSize.width + Math.max(0, lineCount - 1) * this._columnGap;
         }
         else if (itemCount == 0) {
-            if (this._layout == exports.ListLayoutType.SingleColumn || this._layout == exports.ListLayoutType.FlowHorizontal)
+            if (this._layout == ListLayoutType.SingleColumn || this._layout == ListLayoutType.FlowHorizontal)
                 this.viewHeight = minSize;
             else
                 this.viewWidth = minSize;
@@ -13942,14 +13940,14 @@ class GList extends GComponent {
                 i--;
             }
             if (i < 0) {
-                if (this._layout == exports.ListLayoutType.SingleColumn || this._layout == exports.ListLayoutType.FlowHorizontal)
+                if (this._layout == ListLayoutType.SingleColumn || this._layout == ListLayoutType.FlowHorizontal)
                     this.viewHeight = minSize;
                 else
                     this.viewWidth = minSize;
             }
             else {
                 var size = 0;
-                if (this._layout == exports.ListLayoutType.SingleColumn || this._layout == exports.ListLayoutType.FlowHorizontal) {
+                if (this._layout == ListLayoutType.SingleColumn || this._layout == ListLayoutType.FlowHorizontal) {
                     size = obj.y + obj.height;
                     if (size < minSize)
                         size = minSize;
@@ -13996,10 +13994,10 @@ class GList extends GComponent {
     }
     getSnappingPosition(xValue, yValue, resultPoint) {
         if (this._virtual) {
-            resultPoint = resultPoint || new cc.Vec2();
+            resultPoint = resultPoint || new Vec2();
             var saved;
             var index;
-            if (this._layout == exports.ListLayoutType.SingleColumn || this._layout == exports.ListLayoutType.FlowHorizontal) {
+            if (this._layout == ListLayoutType.SingleColumn || this._layout == ListLayoutType.FlowHorizontal) {
                 saved = yValue;
                 s_n = yValue;
                 index = this.getIndexOnPos1(false);
@@ -14007,7 +14005,7 @@ class GList extends GComponent {
                 if (index < this._virtualItems.length && saved - yValue > this._virtualItems[index].height / 2 && index < this._realNumItems)
                     yValue += this._virtualItems[index].height + this._lineGap;
             }
-            else if (this._layout == exports.ListLayoutType.SingleRow || this._layout == exports.ListLayoutType.FlowVertical) {
+            else if (this._layout == ListLayoutType.SingleRow || this._layout == ListLayoutType.FlowVertical) {
                 saved = xValue;
                 s_n = xValue;
                 index = this.getIndexOnPos2(false);
@@ -14044,19 +14042,19 @@ class GList extends GComponent {
             var ii = this._virtualItems[index];
             var pos = 0;
             var i;
-            if (this._layout == exports.ListLayoutType.SingleColumn || this._layout == exports.ListLayoutType.FlowHorizontal) {
+            if (this._layout == ListLayoutType.SingleColumn || this._layout == ListLayoutType.FlowHorizontal) {
                 for (i = this._curLineItemCount - 1; i < index; i += this._curLineItemCount)
                     pos += this._virtualItems[i].height + this._lineGap;
-                rect = new cc.Rect(0, pos, this._itemSize.width, ii.height);
+                rect = new Rect(0, pos, this._itemSize.width, ii.height);
             }
-            else if (this._layout == exports.ListLayoutType.SingleRow || this._layout == exports.ListLayoutType.FlowVertical) {
+            else if (this._layout == ListLayoutType.SingleRow || this._layout == ListLayoutType.FlowVertical) {
                 for (i = this._curLineItemCount - 1; i < index; i += this._curLineItemCount)
                     pos += this._virtualItems[i].width + this._columnGap;
-                rect = new cc.Rect(pos, 0, ii.width, this._itemSize.height);
+                rect = new Rect(pos, 0, ii.width, this._itemSize.height);
             }
             else {
                 var page = index / (this._curLineItemCount * this._curLineItemCount2);
-                rect = new cc.Rect(page * this.viewWidth + (index % this._curLineItemCount) * (ii.width + this._columnGap), (index / this._curLineItemCount) % this._curLineItemCount2 * (ii.height + this._lineGap), ii.width, ii.height);
+                rect = new Rect(page * this.viewWidth + (index % this._curLineItemCount) * (ii.width + this._columnGap), (index / this._curLineItemCount) % this._curLineItemCount2 * (ii.height + this._lineGap), ii.width, ii.height);
             }
             if (this._scrollPane)
                 this._scrollPane.scrollToView(rect, ani, setFirst);
@@ -14077,7 +14075,7 @@ class GList extends GComponent {
     childIndexToItemIndex(index) {
         if (!this._virtual)
             return index;
-        if (this._layout == exports.ListLayoutType.Pagination) {
+        if (this._layout == ListLayoutType.Pagination) {
             for (var i = this._firstIndex; i < this._realNumItems; i++) {
                 if (this._virtualItems[i].obj) {
                     index--;
@@ -14097,7 +14095,7 @@ class GList extends GComponent {
     itemIndexToChildIndex(index) {
         if (!this._virtual)
             return index;
-        if (this._layout == exports.ListLayoutType.Pagination) {
+        if (this._layout == ListLayoutType.Pagination) {
             return this.getChildIndex(this._virtualItems[index].obj);
         }
         else {
@@ -14130,7 +14128,7 @@ class GList extends GComponent {
             if (!this._scrollPane)
                 throw "Virtual list must be scrollable!";
             if (loop) {
-                if (this._layout == exports.ListLayoutType.FlowHorizontal || this._layout == exports.ListLayoutType.FlowVertical)
+                if (this._layout == ListLayoutType.FlowHorizontal || this._layout == ListLayoutType.FlowVertical)
                     throw "Loop list is not supported for FlowHorizontal or FlowVertical layout!";
                 this._scrollPane.bouncebackEffect = false;
             }
@@ -14139,7 +14137,7 @@ class GList extends GComponent {
             this._virtualItems = new Array();
             this.removeChildrenToPool();
             if (this._itemSize == null) {
-                this._itemSize = new cc.Size(0, 0);
+                this._itemSize = new Size(0, 0);
                 var obj = this.getFromPool(null);
                 if (!obj) {
                     throw "Virtual List must have a default list item resource.";
@@ -14150,7 +14148,7 @@ class GList extends GComponent {
                 }
                 this.returnToPool(obj);
             }
-            if (this._layout == exports.ListLayoutType.SingleColumn || this._layout == exports.ListLayoutType.FlowHorizontal) {
+            if (this._layout == ListLayoutType.SingleColumn || this._layout == ListLayoutType.FlowHorizontal) {
                 this._scrollPane.scrollStep = this._itemSize.height;
                 if (this._loop)
                     this._scrollPane._loop = 2;
@@ -14250,9 +14248,9 @@ class GList extends GComponent {
         this._virtualListChanged = 0;
         this._eventLocked = true;
         if (layoutChanged) {
-            if (this._layout == exports.ListLayoutType.SingleColumn || this._layout == exports.ListLayoutType.SingleRow)
+            if (this._layout == ListLayoutType.SingleColumn || this._layout == ListLayoutType.SingleRow)
                 this._curLineItemCount = 1;
-            else if (this._layout == exports.ListLayoutType.FlowHorizontal) {
+            else if (this._layout == ListLayoutType.FlowHorizontal) {
                 if (this._columnCount > 0)
                     this._curLineItemCount = this._columnCount;
                 else {
@@ -14261,7 +14259,7 @@ class GList extends GComponent {
                         this._curLineItemCount = 1;
                 }
             }
-            else if (this._layout == exports.ListLayoutType.FlowVertical) {
+            else if (this._layout == ListLayoutType.FlowVertical) {
                 if (this._lineCount > 0)
                     this._curLineItemCount = this._lineCount;
                 else {
@@ -14293,7 +14291,7 @@ class GList extends GComponent {
             var i;
             var len = Math.ceil(this._realNumItems / this._curLineItemCount) * this._curLineItemCount;
             var len2 = Math.min(this._curLineItemCount, this._realNumItems);
-            if (this._layout == exports.ListLayoutType.SingleColumn || this._layout == exports.ListLayoutType.FlowHorizontal) {
+            if (this._layout == ListLayoutType.SingleColumn || this._layout == ListLayoutType.FlowHorizontal) {
                 for (i = 0; i < len; i += this._curLineItemCount)
                     ch += this._virtualItems[i].height + this._lineGap;
                 if (ch > 0)
@@ -14307,7 +14305,7 @@ class GList extends GComponent {
                         cw -= this._columnGap;
                 }
             }
-            else if (this._layout == exports.ListLayoutType.SingleRow || this._layout == exports.ListLayoutType.FlowVertical) {
+            else if (this._layout == ListLayoutType.SingleRow || this._layout == ListLayoutType.FlowVertical) {
                 for (i = 0; i < len; i += this._curLineItemCount)
                     cw += this._virtualItems[i].width + this._columnGap;
                 if (cw > 0)
@@ -14456,7 +14454,7 @@ class GList extends GComponent {
     handleScroll(forceUpdate) {
         if (this._eventLocked)
             return;
-        if (this._layout == exports.ListLayoutType.SingleColumn || this._layout == exports.ListLayoutType.FlowHorizontal) {
+        if (this._layout == ListLayoutType.SingleColumn || this._layout == ListLayoutType.FlowHorizontal) {
             var enterCounter = 0;
             while (this.handleScroll1(forceUpdate)) {
                 enterCounter++;
@@ -14468,7 +14466,7 @@ class GList extends GComponent {
             }
             this.handleArchOrder1();
         }
-        else if (this._layout == exports.ListLayoutType.SingleRow || this._layout == exports.ListLayoutType.FlowVertical) {
+        else if (this._layout == ListLayoutType.SingleRow || this._layout == ListLayoutType.FlowVertical) {
             enterCounter = 0;
             while (this.handleScroll2(forceUpdate)) {
                 enterCounter++;
@@ -14575,7 +14573,7 @@ class GList extends GComponent {
             else
                 needRender = forceUpdate;
             if (needRender) {
-                if (this._autoResizeItem && (this._layout == exports.ListLayoutType.SingleColumn || this._columnCount > 0))
+                if (this._autoResizeItem && (this._layout == ListLayoutType.SingleColumn || this._columnCount > 0))
                     ii.obj.setSize(partSize, ii.obj.height, true);
                 this.itemRenderer(curIndex % this._numItems, ii.obj);
                 if (curIndex % this._curLineItemCount == 0) {
@@ -14710,7 +14708,7 @@ class GList extends GComponent {
             else
                 needRender = forceUpdate;
             if (needRender) {
-                if (this._autoResizeItem && (this._layout == exports.ListLayoutType.SingleRow || this._lineCount > 0))
+                if (this._autoResizeItem && (this._layout == ListLayoutType.SingleRow || this._lineCount > 0))
                     ii.obj.setSize(ii.obj.width, partSize, true);
                 this.itemRenderer(curIndex % this._numItems, ii.obj);
                 if (curIndex % this._curLineItemCount == 0) {
@@ -14897,7 +14895,7 @@ class GList extends GComponent {
         }
     }
     handleArchOrder1() {
-        if (this._childrenRenderOrder == exports.ChildrenRenderOrder.Arch) {
+        if (this._childrenRenderOrder == ChildrenRenderOrder.Arch) {
             var mid = this._scrollPane.posY + this.viewHeight / 2;
             var minDist = Number.POSITIVE_INFINITY;
             var dist = 0;
@@ -14917,7 +14915,7 @@ class GList extends GComponent {
         }
     }
     handleArchOrder2() {
-        if (this._childrenRenderOrder == exports.ChildrenRenderOrder.Arch) {
+        if (this._childrenRenderOrder == ChildrenRenderOrder.Arch) {
             var mid = this._scrollPane.posX + this.viewWidth / 2;
             var minDist = Number.POSITIVE_INFINITY;
             var dist = 0;
@@ -14940,15 +14938,15 @@ class GList extends GComponent {
         var newOffsetX = 0;
         var newOffsetY = 0;
         if (contentHeight < this.viewHeight) {
-            if (this._verticalAlign == exports.VertAlignType.Middle)
+            if (this._verticalAlign == VertAlignType.Middle)
                 newOffsetY = Math.floor((this.viewHeight - contentHeight) / 2);
-            else if (this._verticalAlign == exports.VertAlignType.Bottom)
+            else if (this._verticalAlign == VertAlignType.Bottom)
                 newOffsetY = this.viewHeight - contentHeight;
         }
         if (contentWidth < this.viewWidth) {
-            if (this._align == exports.AlignType.Center)
+            if (this._align == AlignType.Center)
                 newOffsetX = Math.floor((this.viewWidth - contentWidth) / 2);
-            else if (this._align == exports.AlignType.Right)
+            else if (this._align == AlignType.Right)
                 newOffsetX = this.viewWidth - contentWidth;
         }
         if (newOffsetX != this._alignOffset.x || newOffsetY != this._alignOffset.y) {
@@ -14979,7 +14977,7 @@ class GList extends GComponent {
         var lineSize = 0;
         var lineStart = 0;
         var ratio = 0;
-        if (this._layout == exports.ListLayoutType.SingleColumn) {
+        if (this._layout == ListLayoutType.SingleColumn) {
             for (i = 0; i < cnt; i++) {
                 child = this.getChildAt(i);
                 if (this.foldInvisibleItems && !child.visible)
@@ -15007,7 +15005,7 @@ class GList extends GComponent {
             }
             cw = Math.ceil(maxWidth);
         }
-        else if (this._layout == exports.ListLayoutType.SingleRow) {
+        else if (this._layout == ListLayoutType.SingleRow) {
             for (i = 0; i < cnt; i++) {
                 child = this.getChildAt(i);
                 if (this.foldInvisibleItems && !child.visible)
@@ -15035,7 +15033,7 @@ class GList extends GComponent {
             }
             ch = Math.ceil(maxHeight);
         }
-        else if (this._layout == exports.ListLayoutType.FlowHorizontal) {
+        else if (this._layout == ListLayoutType.FlowHorizontal) {
             if (this._autoResizeItem && this._columnCount > 0) {
                 for (i = 0; i < cnt; i++) {
                     child = this.getChildAt(i);
@@ -15099,7 +15097,7 @@ class GList extends GComponent {
                 cw = Math.ceil(maxWidth);
             }
         }
-        else if (this._layout == exports.ListLayoutType.FlowVertical) {
+        else if (this._layout == ListLayoutType.FlowVertical) {
             if (this._autoResizeItem && this._lineCount > 0) {
                 for (i = 0; i < cnt; i++) {
                     child = this.getChildAt(i);
@@ -15270,7 +15268,7 @@ class GList extends GComponent {
             this._margin.right = buffer.readInt();
         }
         var overflow = buffer.readByte();
-        if (overflow == exports.OverflowType.Scroll) {
+        if (overflow == OverflowType.Scroll) {
             var savedPos = buffer.position;
             buffer.seek(beginPos, 7);
             this.setupScroll(buffer);
@@ -15368,7 +15366,7 @@ class GComboBox extends GComponent {
         super();
         this._visibleItemCount = 0;
         this._selectedIndex = 0;
-        this._popupDirection = exports.PopupDirection.Auto;
+        this._popupDirection = PopupDirection.Auto;
         this._node.name = "GComboBox";
         this._visibleItemCount = UIConfig.defaultComboBoxVisibleItemCount;
         this._itemsUpdated = true;
@@ -15403,7 +15401,7 @@ class GComboBox extends GComponent {
         if (tf)
             return tf.color;
         else
-            return cc.Color.BLACK;
+            return Color.BLACK;
     }
     set titleColor(value) {
         var tf = this.getTextField();
@@ -15524,9 +15522,9 @@ class GComboBox extends GComponent {
     }
     getProp(index) {
         switch (index) {
-            case exports.ObjectPropID.Color:
+            case ObjectPropID.Color:
                 return this.titleColor;
-            case exports.ObjectPropID.OutlineColor:
+            case ObjectPropID.OutlineColor:
                 {
                     var tf = this.getTextField();
                     if (tf)
@@ -15534,7 +15532,7 @@ class GComboBox extends GComponent {
                     else
                         return 0;
                 }
-            case exports.ObjectPropID.FontSize:
+            case ObjectPropID.FontSize:
                 {
                     tf = this.getTextField();
                     if (tf)
@@ -15548,17 +15546,17 @@ class GComboBox extends GComponent {
     }
     setProp(index, value) {
         switch (index) {
-            case exports.ObjectPropID.Color:
+            case ObjectPropID.Color:
                 this.titleColor = value;
                 break;
-            case exports.ObjectPropID.OutlineColor:
+            case ObjectPropID.OutlineColor:
                 {
                     var tf = this.getTextField();
                     if (tf)
                         tf.strokeColor = value;
                 }
                 break;
-            case exports.ObjectPropID.FontSize:
+            case ObjectPropID.FontSize:
                 {
                     tf = this.getTextField();
                     if (tf)
@@ -15590,10 +15588,10 @@ class GComboBox extends GComponent {
                 return;
             }
             this._list.on(Event.CLICK_ITEM, this.onClickItem, this);
-            this._list.addRelation(this.dropdown, exports.RelationType.Width);
-            this._list.removeRelation(this.dropdown, exports.RelationType.Height);
-            this.dropdown.addRelation(this._list, exports.RelationType.Height);
-            this.dropdown.removeRelation(this._list, exports.RelationType.Width);
+            this._list.addRelation(this.dropdown, RelationType.Width);
+            this._list.removeRelation(this.dropdown, RelationType.Height);
+            this.dropdown.addRelation(this._list, RelationType.Height);
+            this.dropdown.removeRelation(this._list, RelationType.Width);
             this.dropdown.on(Event.UNDISPLAY, this.onPopupClosed, this);
         }
         this._node.on(Event.TOUCH_BEGIN, this.onTouchBegin_1, this);
@@ -15723,7 +15721,7 @@ class GComboBox extends GComponent {
         this.setState(GButton.UP);
     }
     onTouchBegin_1(evt) {
-        if (evt.button != cc.EventMouse.BUTTON_LEFT)
+        if (evt.button != EventMouse.BUTTON_LEFT)
             return;
         if ((evt.initiator instanceof GTextInput) && evt.initiator.editable)
             return;
@@ -15733,7 +15731,7 @@ class GComboBox extends GComponent {
             this.showDropdown();
     }
     onTouchEnd_1(evt) {
-        if (evt.button != cc.EventMouse.BUTTON_LEFT)
+        if (evt.button != EventMouse.BUTTON_LEFT)
             return;
         if (this._down) {
             this._down = false;
@@ -15763,10 +15761,10 @@ class GSlider extends GComponent {
         this.changeOnClick = true;
         this.canDrag = true;
         this._node.name = "GSlider";
-        this._titleType = exports.ProgressTitleType.Percent;
+        this._titleType = ProgressTitleType.Percent;
         this._value = 50;
         this._max = 100;
-        this._clickPos = new cc.Vec2();
+        this._clickPos = new Vec2();
     }
     get titleType() {
         return this._titleType;
@@ -15814,12 +15812,12 @@ class GSlider extends GComponent {
         this.updateWithPercent((this._value - this._min) / (this._max - this._min));
     }
     updateWithPercent(percent, manual) {
-        percent = cc.math.clamp01(percent);
+        percent = math.clamp01(percent);
         if (manual) {
-            var newValue = cc.math.clamp(this._min + (this._max - this._min) * percent, this._min, this._max);
+            var newValue = math.clamp(this._min + (this._max - this._min) * percent, this._min, this._max);
             if (this._wholeNumbers) {
                 newValue = Math.round(newValue);
-                percent = cc.math.clamp01((newValue - this._min) / (this._max - this._min));
+                percent = math.clamp01((newValue - this._min) / (this._max - this._min));
             }
             if (newValue != this._value) {
                 this._value = newValue;
@@ -15828,16 +15826,16 @@ class GSlider extends GComponent {
         }
         if (this._titleObject) {
             switch (this._titleType) {
-                case exports.ProgressTitleType.Percent:
+                case ProgressTitleType.Percent:
                     this._titleObject.text = Math.floor(percent * 100) + "%";
                     break;
-                case exports.ProgressTitleType.ValueAndMax:
+                case ProgressTitleType.ValueAndMax:
                     this._titleObject.text = this._value + "/" + this._max;
                     break;
-                case exports.ProgressTitleType.Value:
+                case ProgressTitleType.Value:
                     this._titleObject.text = "" + this._value;
                     break;
-                case exports.ProgressTitleType.Max:
+                case ProgressTitleType.Max:
                     this._titleObject.text = "" + this._max;
                     break;
             }
@@ -15919,7 +15917,7 @@ class GSlider extends GComponent {
         evt.propagationStopped = true;
         evt.captureTouch();
         this._clickPos = this.globalToLocal(evt.pos.x, evt.pos.y);
-        this._clickPercent = cc.math.clamp01((this._value - this._min) / (this._max - this._min));
+        this._clickPercent = math.clamp01((this._value - this._min) / (this._max - this._min));
     }
     onGripTouchMove(evt) {
         if (!this.canDrag) {
@@ -15943,7 +15941,7 @@ class GSlider extends GComponent {
         if (!this.changeOnClick)
             return;
         var pt = this._gripObject.globalToLocal(evt.pos.x, evt.pos.y, s_vec2$1);
-        var percent = cc.math.clamp01((this._value - this._min) / (this._max - this._min));
+        var percent = math.clamp01((this._value - this._min) / (this._max - this._min));
         var delta = 0;
         if (this._barObjectH != null)
             delta = (pt.x - this._gripObject.width / 2) / this._barMaxWidth;
@@ -15956,7 +15954,7 @@ class GSlider extends GComponent {
         this.updateWithPercent(percent, true);
     }
 }
-var s_vec2$1 = new cc.Vec2();
+var s_vec2$1 = new Vec2();
 
 class GProgressBar extends GComponent {
     constructor() {
@@ -15971,7 +15969,7 @@ class GProgressBar extends GComponent {
         this._barStartX = 0;
         this._barStartY = 0;
         this._node.name = "GProgressBar";
-        this._titleType = exports.ProgressTitleType.Percent;
+        this._titleType = ProgressTitleType.Percent;
         this._value = 50;
         this._max = 100;
     }
@@ -16022,22 +16020,22 @@ class GProgressBar extends GComponent {
         else
             oldValule = this._value;
         this._value = value;
-        return GTween.to(oldValule, this._value, duration).setTarget(this, this.update).setEase(exports.EaseType.Linear);
+        return GTween.to(oldValule, this._value, duration).setTarget(this, this.update).setEase(EaseType.Linear);
     }
     update(newValue) {
-        var percent = cc.math.clamp01((newValue - this._min) / (this._max - this._min));
+        var percent = math.clamp01((newValue - this._min) / (this._max - this._min));
         if (this._titleObject) {
             switch (this._titleType) {
-                case exports.ProgressTitleType.Percent:
+                case ProgressTitleType.Percent:
                     this._titleObject.text = Math.floor(percent * 100) + "%";
                     break;
-                case exports.ProgressTitleType.ValueAndMax:
+                case ProgressTitleType.ValueAndMax:
                     this._titleObject.text = Math.floor(newValue) + "/" + Math.floor(this._max);
                     break;
-                case exports.ProgressTitleType.Value:
+                case ProgressTitleType.Value:
                     this._titleObject.text = "" + Math.floor(newValue);
                     break;
-                case exports.ProgressTitleType.Max:
+                case ProgressTitleType.Max:
                     this._titleObject.text = "" + Math.floor(this._max);
                     break;
             }
@@ -16069,10 +16067,10 @@ class GProgressBar extends GComponent {
             }
         }
         if (this._aniObject)
-            this._aniObject.setProp(exports.ObjectPropID.Frame, Math.floor(percent * 100));
+            this._aniObject.setProp(ObjectPropID.Frame, Math.floor(percent * 100));
     }
     setFillAmount(bar, percent) {
-        if (((bar instanceof GImage) || (bar instanceof GLoader)) && bar.fillMethod != exports.FillMethod.None) {
+        if (((bar instanceof GImage) || (bar instanceof GLoader)) && bar.fillMethod != FillMethod.None) {
             bar.fillAmount = percent;
             return true;
         }
@@ -16129,7 +16127,7 @@ class GScrollBar extends GComponent {
     constructor() {
         super();
         this._node.name = "GScrollBar";
-        this._dragOffset = new cc.Vec2();
+        this._dragOffset = new Vec2();
         this._scrollPerc = 0;
     }
     setScrollPane(target, vertical) {
@@ -16247,7 +16245,7 @@ class GScrollBar extends GComponent {
         }
     }
 }
-var s_vec2 = new cc.Vec2();
+var s_vec2 = new Vec2();
 
 class GTreeNode {
     constructor(hasChild, resURL) {
@@ -16773,9 +16771,9 @@ class PopupMenu {
         this._contentPane.on(Event.DISPLAY, this.onDisplay, this);
         this._list = (this._contentPane.getChild("list"));
         this._list.removeChildrenToPool();
-        this._list.addRelation(this._contentPane, exports.RelationType.Width);
-        this._list.removeRelation(this._contentPane, exports.RelationType.Height);
-        this._contentPane.addRelation(this._list, exports.RelationType.Height);
+        this._list.addRelation(this._contentPane, RelationType.Width);
+        this._list.removeRelation(this._contentPane, RelationType.Height);
+        this._contentPane.addRelation(this._list, RelationType.Height);
         this._list.on(Event.CLICK_ITEM, this.onClickItem, this);
     }
     dispose() {
@@ -16933,51 +16931,51 @@ class UIObjectFactory {
         UIObjectFactory.counter++;
         if (typeof type === 'number') {
             switch (type) {
-                case exports.ObjectType.Image:
+                case ObjectType.Image:
                     return new GImage();
-                case exports.ObjectType.MovieClip:
+                case ObjectType.MovieClip:
                     return new GMovieClip();
-                case exports.ObjectType.Component:
+                case ObjectType.Component:
                     return new GComponent();
-                case exports.ObjectType.Text:
+                case ObjectType.Text:
                     return new GTextField();
-                case exports.ObjectType.RichText:
+                case ObjectType.RichText:
                     return new GRichTextField();
-                case exports.ObjectType.InputText:
+                case ObjectType.InputText:
                     return new GTextInput();
-                case exports.ObjectType.Group:
+                case ObjectType.Group:
                     return new GGroup();
-                case exports.ObjectType.List:
+                case ObjectType.List:
                     return new GList();
-                case exports.ObjectType.Graph:
+                case ObjectType.Graph:
                     return new GGraph();
-                case exports.ObjectType.Loader:
+                case ObjectType.Loader:
                     if (UIObjectFactory.loaderType)
                         return new UIObjectFactory.loaderType();
                     else
                         return new GLoader();
-                case exports.ObjectType.Button:
+                case ObjectType.Button:
                     return new GButton();
-                case exports.ObjectType.Label:
+                case ObjectType.Label:
                     return new GLabel();
-                case exports.ObjectType.ProgressBar:
+                case ObjectType.ProgressBar:
                     return new GProgressBar();
-                case exports.ObjectType.Slider:
+                case ObjectType.Slider:
                     return new GSlider();
-                case exports.ObjectType.ScrollBar:
+                case ObjectType.ScrollBar:
                     return new GScrollBar();
-                case exports.ObjectType.ComboBox:
+                case ObjectType.ComboBox:
                     return new GComboBox();
-                case exports.ObjectType.Tree:
+                case ObjectType.Tree:
                     return new GTree();
-                case exports.ObjectType.Loader3D:
+                case ObjectType.Loader3D:
                     return new GLoader3D();
                 default:
                     return null;
             }
         }
         else {
-            if (type.type == exports.PackageItemType.Component) {
+            if (type.type == PackageItemType.Component) {
                 if (userClass)
                     obj = new userClass();
                 else if (type.extensionType)
@@ -17009,8 +17007,8 @@ class DragDropManager {
         this._agent.touchable = false; //important
         this._agent.setSize(100, 100);
         this._agent.setPivot(0.5, 0.5, true);
-        this._agent.align = exports.AlignType.Center;
-        this._agent.verticalAlign = exports.VertAlignType.Middle;
+        this._agent.align = AlignType.Center;
+        this._agent.verticalAlign = VertAlignType.Middle;
         this._agent.sortingOrder = 1000000;
         this._agent.on(Event.DRAG_END, this.onDragEnd, this);
     }
@@ -17086,8 +17084,8 @@ class AsyncOperation {
         }
     }
     internalCreateObject(item) {
-        this._node = new cc.Node("[AsyncCreating:" + item.name + "]");
-        cc.game.addPersistRootNode(this._node);
+        this._node = new Node("[AsyncCreating:" + item.name + "]");
+        game.addPersistRootNode(this._node);
         this._node.on("#", this.completed, this);
         this._node.addComponent(AsyncOperationRunner).init(item);
     }
@@ -17097,7 +17095,7 @@ class AsyncOperation {
             this.callback(result);
     }
 }
-class AsyncOperationRunner extends cc.Component {
+class AsyncOperationRunner extends Component {
     constructor() {
         super();
         this._itemList = new Array();
@@ -17145,12 +17143,12 @@ class AsyncOperationRunner extends cc.Component {
                     pkg = item.owner;
                 pi = pkg != null ? pkg.getItemById(src) : null;
                 di = { pi: pi, type: type };
-                if (pi && pi.type == exports.PackageItemType.Component)
+                if (pi && pi.type == PackageItemType.Component)
                     di.childCount = this.collectComponentChildren(pi);
             }
             else {
                 di = { type: type };
-                if (type == exports.ObjectType.List) //list
+                if (type == ObjectType.List) //list
                     di.listItemCount = this.collectListChildren(buffer);
             }
             this._itemList.push(di);
@@ -17178,7 +17176,7 @@ class AsyncOperationRunner extends cc.Component {
                 pi = UIPackage.getItemByURL(url);
                 if (pi) {
                     di = { pi: pi, type: pi.objectType };
-                    if (pi.type == exports.PackageItemType.Component)
+                    if (pi.type == PackageItemType.Component)
                         di.childCount = this.collectComponentChildren(pi);
                     this._itemList.push(di);
                     listItemCount++;
@@ -17193,7 +17191,7 @@ class AsyncOperationRunner extends cc.Component {
         var di;
         var poolStart;
         var k;
-        var t = cc.director.getTotalTime() / 1000;
+        var t = director.getTotalTime() / 1000;
         var frameTime = UIConfig.frameTimeForAsyncUIConstruction;
         var totalItems = this._itemList.length;
         while (this._index < totalItems) {
@@ -17202,7 +17200,7 @@ class AsyncOperationRunner extends cc.Component {
                 obj = UIObjectFactory.newObject(di.pi);
                 this._objectPool.push(obj);
                 constructingDepth.n++;
-                if (di.pi.type == exports.PackageItemType.Component) {
+                if (di.pi.type == PackageItemType.Component) {
                     poolStart = this._objectPool.length - di.childCount - 1;
                     obj.constructFromResource2(this._objectPool, poolStart);
                     this._objectPool.splice(poolStart, di.childCount);
@@ -17215,7 +17213,7 @@ class AsyncOperationRunner extends cc.Component {
             else {
                 obj = UIObjectFactory.newObject(di.type);
                 this._objectPool.push(obj);
-                if (di.type == exports.ObjectType.List && di.listItemCount > 0) {
+                if (di.type == ObjectType.List && di.listItemCount > 0) {
                     poolStart = this._objectPool.length - di.listItemCount - 1;
                     for (k = 0; k < di.listItemCount; k++) //把他们都放到pool里，这样GList在创建时就不需要创建对象了
                         obj.itemPool.returnObject(this._objectPool[k + poolStart]);
@@ -17223,7 +17221,7 @@ class AsyncOperationRunner extends cc.Component {
                 }
             }
             this._index++;
-            if ((this._index % 5 == 0) && cc.director.getTotalTime() / 1000 - t >= frameTime)
+            if ((this._index % 5 == 0) && director.getTotalTime() / 1000 - t >= frameTime)
                 return;
         }
         var result = this._objectPool[0];
@@ -17233,56 +17231,4 @@ class AsyncOperationRunner extends cc.Component {
     }
 }
 
-exports.AsyncOperation = AsyncOperation;
-exports.ByteBuffer = ByteBuffer;
-exports.Controller = Controller;
-exports.DragDropManager = DragDropManager;
-exports.Event = Event;
-exports.GButton = GButton;
-exports.GComboBox = GComboBox;
-exports.GComponent = GComponent;
-exports.GGraph = GGraph;
-exports.GGroup = GGroup;
-exports.GImage = GImage;
-exports.GLabel = GLabel;
-exports.GList = GList;
-exports.GLoader = GLoader;
-exports.GLoader3D = GLoader3D;
-exports.GMovieClip = GMovieClip;
-exports.GObject = GObject;
-exports.GObjectPool = GObjectPool;
-exports.GProgressBar = GProgressBar;
-exports.GRichTextField = GRichTextField;
-exports.GRoot = GRoot;
-exports.GScrollBar = GScrollBar;
-exports.GSlider = GSlider;
-exports.GTextField = GTextField;
-exports.GTextInput = GTextInput;
-exports.GTree = GTree;
-exports.GTreeNode = GTreeNode;
-exports.GTween = GTween;
-exports.GTweener = GTweener;
-exports.GearAnimation = GearAnimation;
-exports.GearBase = GearBase;
-exports.GearColor = GearColor;
-exports.GearDisplay = GearDisplay;
-exports.GearDisplay2 = GearDisplay2;
-exports.GearFontSize = GearFontSize;
-exports.GearIcon = GearIcon;
-exports.GearLook = GearLook;
-exports.GearSize = GearSize;
-exports.GearText = GearText;
-exports.GearXY = GearXY;
-exports.Image = Image;
-exports.MovieClip = MovieClip;
-exports.PackageItem = PackageItem;
-exports.PopupMenu = PopupMenu;
-exports.ScrollPane = ScrollPane;
-exports.Transition = Transition;
-exports.TranslationHelper = TranslationHelper;
-exports.UBBParser = UBBParser;
-exports.UIConfig = UIConfig;
-exports.UIObjectFactory = UIObjectFactory;
-exports.UIPackage = UIPackage;
-exports.Window = Window;
-exports.registerFont = registerFont;
+export { AlignType, AsyncOperation, AutoSizeType, BlendMode, ButtonMode, ByteBuffer, ChildrenRenderOrder, Controller, DragDropManager, EaseType, Event, FillMethod, FillOrigin, FlipType, GButton, GComboBox, GComponent, GGraph, GGroup, GImage, GLabel, GList, GLoader, GLoader3D, GMovieClip, GObject, GObjectPool, GProgressBar, GRichTextField, GRoot, GScrollBar, GSlider, GTextField, GTextInput, GTree, GTreeNode, GTween, GTweener, GearAnimation, GearBase, GearColor, GearDisplay, GearDisplay2, GearFontSize, GearIcon, GearLook, GearSize, GearText, GearXY, GroupLayoutType, Image, ListLayoutType, ListSelectionMode, LoaderFillType, MovieClip, ObjectPropID, ObjectType, OverflowType, PackageItem, PackageItemType, PopupDirection, PopupMenu, ProgressTitleType, RelationType, ScrollBarDisplayType, ScrollPane, ScrollType, Transition, TranslationHelper, UBBParser, UIConfig, UIObjectFactory, UIPackage, VertAlignType, Window, registerFont };

@@ -15,16 +15,16 @@ export class Res {
     private static __loaders = new Map<string, ResLoader>();
 
     static setResLoader(key: string, loader: ResLoader): void {
-        this.__loaders.set(key,loader);
+        this.__loaders.set(key, loader);
     }
 
     static getResLoader(key: string): ResLoader {
-        if(!this.__loaders.has(key)){
-            throw new Error("未注册的加载器："+key);
+        if (!this.__loaders.has(key)) {
+            throw new Error("未注册的加载器：" + key);
         }
         return this.__loaders.get(key);
     }
-    
+
     /**
      * 获取资源引用
      * @param urls      
@@ -98,11 +98,15 @@ export class Res {
                                 reject(err);
                                 return;
                             }
-                            let res: IResource = this.resourcePool.allocate();
-                            res.key = urlKey;
-                            res.content = asset;
-                            ResManager.addRes(res);
-                            resolve(ResManager.addResRef(urlKey, refKey));
+                            if (ResManager.hasRes(urlKey)) {
+                                resolve(ResManager.addResRef(urlKey, refKey));
+                            } else {
+                                let res: IResource = this.resourcePool.allocate();
+                                res.key = urlKey;
+                                res.content = asset;
+                                ResManager.addRes(res);
+                                resolve(ResManager.addResRef(urlKey, refKey));
+                            }
                         });
                     });
                 } else {
@@ -116,11 +120,15 @@ export class Res {
                             reject(err);
                             return;
                         }
-                        let res: IResource = this.resourcePool.allocate();
-                        res.key = urlKey;
-                        res.content = asset;
-                        ResManager.addRes(res);
-                        resolve(ResManager.addResRef(urlKey, refKey));
+                        if (ResManager.hasRes(urlKey)) {
+                            resolve(ResManager.addResRef(urlKey, refKey));
+                        } else {
+                            let res: IResource = this.resourcePool.allocate();
+                            res.key = urlKey;
+                            res.content = asset;
+                            ResManager.addRes(res);
+                            resolve(ResManager.addResRef(urlKey, refKey));
+                        }
                     });
                 }
             });

@@ -1,9 +1,10 @@
 {
   "name": "drongo-cc",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "基础库",
   "main": "dist/drongo-cc.mjs",
   "types": "dist/drongo-cc.d.ts",
+  "module": "dist/drongo-cc.mjs",
   "files": [
     "dist/drongo-cc.mjs",
     "dist/drongo-cc.min.mjs",

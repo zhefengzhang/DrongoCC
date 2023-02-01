@@ -6,7 +6,7 @@ import { ResRef } from "./ResRef";
 /**
  * 资源管理器接口
  */
-export interface IResourceManager extends ITicker {
+export interface IResManager extends ITicker {
 
     /**
      * 添加一个资源

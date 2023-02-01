@@ -3,7 +3,7 @@ import { List } from "../containers/List";
 import { Dictionary } from "../drongo-cc";
 import { TickManager } from "../tick/TickerManager";
 import { Timer } from "../utils/Timer";
-import { IResourceManager } from "./IResManager";
+import { IResManager } from "./IResManager";
 import { IResource } from "./IResource";
 import { ResManager } from "./ResManager";
 import { ResRef } from "./ResRef";
@@ -14,7 +14,7 @@ import { ResRef } from "./ResRef";
  * 默认资源管理器
  * @internal
  */
-export class ResourceManagerImpl implements IResourceManager {
+export class ResourceManagerImpl implements IResManager {
 
     /**
      * 资源

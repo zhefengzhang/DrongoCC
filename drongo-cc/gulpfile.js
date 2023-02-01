@@ -24,7 +24,7 @@ gulp.task("rollup", async function () {
         external: ['cc', 'cc/env'],
         output: {
             file: 'dist/drongo-cc.mjs',
-            format: 'cjs',
+            format: 'es',
             extend: true,
             name: 'fgui',
         }

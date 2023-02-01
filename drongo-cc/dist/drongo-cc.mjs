@@ -1,6 +1,4 @@
-'use strict';
-
-var cc = require('cc');
+import { assetManager } from 'cc';
 
 /**
  * 音频管理器
@@ -984,10 +982,10 @@ class Res {
                 if (typeof url == "string") {
                     throw new Error("未实现！");
                 }
-                let bundle = cc.assetManager.getBundle(url.bundle);
+                let bundle = assetManager.getBundle(url.bundle);
                 let loader;
                 if (!bundle) {
-                    cc.assetManager.loadBundle(url.bundle, (err, bundle) => {
+                    assetManager.loadBundle(url.bundle, (err, bundle) => {
                         if (err) {
                             reject(err);
                             return;
@@ -1003,11 +1001,16 @@ class Res {
                                 reject(err);
                                 return;
                             }
-                            let res = this.resourcePool.allocate();
-                            res.key = urlKey;
-                            res.content = asset;
-                            ResManager.addRes(res);
-                            resolve(ResManager.addResRef(urlKey, refKey));
+                            if (ResManager.hasRes(urlKey)) {
+                                resolve(ResManager.addResRef(urlKey, refKey));
+                            }
+                            else {
+                                let res = this.resourcePool.allocate();
+                                res.key = urlKey;
+                                res.content = asset;
+                                ResManager.addRes(res);
+                                resolve(ResManager.addResRef(urlKey, refKey));
+                            }
                         });
                     });
                 }
@@ -1023,11 +1026,16 @@ class Res {
                             reject(err);
                             return;
                         }
-                        let res = this.resourcePool.allocate();
-                        res.key = urlKey;
-                        res.content = asset;
-                        ResManager.addRes(res);
-                        resolve(ResManager.addResRef(urlKey, refKey));
+                        if (ResManager.hasRes(urlKey)) {
+                            resolve(ResManager.addResRef(urlKey, refKey));
+                        }
+                        else {
+                            let res = this.resourcePool.allocate();
+                            res.key = urlKey;
+                            res.content = asset;
+                            ResManager.addRes(res);
+                            resolve(ResManager.addResRef(urlKey, refKey));
+                        }
                     });
                 }
             });
@@ -1296,14 +1304,4 @@ Debuger.MaxCount = Number.MAX_SAFE_INTEGER;
 Debuger.__logs = new Dictionary();
 Debuger.__debuger = new Map();
 
-exports.AudioManager = AudioManager;
-exports.Debuger = Debuger;
-exports.Dictionary = Dictionary;
-exports.Injector = Injector;
-exports.List = List;
-exports.Res = Res;
-exports.ResRef = ResRef;
-exports.TaskQueue = TaskQueue;
-exports.TaskSequence = TaskSequence;
-exports.TickManager = TickManager;
-exports.Timer = Timer;
+export { AudioManager, Debuger, Dictionary, Injector, List, Res, ResRef, TaskQueue, TaskSequence, TickManager, Timer };

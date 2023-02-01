@@ -1,3 +1,4 @@
+import { ResManager } from "./ResManager";
 
 
 export class ResRef {
@@ -21,7 +22,7 @@ export class ResRef {
             throw new Error("重复释放资源引用");
         }
         this.__isDispose = true;
-        // ResourceManager.removeResRef(this);
+        ResManager.removeResRef(this);
     }
 
     get isDispose(): boolean {
