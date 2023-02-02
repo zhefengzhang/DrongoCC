@@ -1,5 +1,6 @@
 import { Component, JsonAsset, _decorator } from 'cc';
 import { Res, ResRef, Timer } from 'drongo-cc';
+import { GRoot } from 'fairygui-cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('Main')
@@ -16,7 +17,6 @@ export class Main extends Component {
             console.log(resRef.content.json);
             resRef.dispose();
         }
-
         console.log(Timer.absTime);
     }
 

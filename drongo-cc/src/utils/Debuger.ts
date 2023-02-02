@@ -9,7 +9,7 @@ export class Debuger {
     /**
      * 最大保存条数
      */
-    static MaxCount: number = Number.MAX_SAFE_INTEGER;
+    static MaxCount: number = 1000;
 
     private static __logs: Dictionary<string, Array<string>> = new Dictionary<string, Array<string>>();
 
