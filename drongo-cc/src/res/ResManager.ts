@@ -1,6 +1,7 @@
 import { Injector } from "../utils/Injector";
 import { IResManager } from "./IResManager";
 import { IResource } from "./IResource";
+import { ResManagerImpl } from "./ResManagerImpl";
 import { ResRef } from "./ResRef";
 
 
@@ -33,6 +34,15 @@ export class ResManager {
      */
     static hasRes(key: string): boolean {
         return this.impl.hasRes(key);
+    }
+
+    /**
+     * 获取资源（内部接口）
+     * @param key 
+     * @returns 
+     */
+    static _getRes(key:string):IResource{
+        return this.impl._getRes(key);
     }
 
     /**
@@ -73,7 +83,7 @@ export class ResManager {
             this.__impl = Injector.getInject(this.KEY);
         }
         if (this.__impl == null) {
-            throw new Error("未注入：" + this.KEY);
+            this.__impl=new ResManagerImpl();
         }
         return this.__impl;
     }

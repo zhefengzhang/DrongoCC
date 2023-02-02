@@ -1,6 +1,9 @@
 
 
 
+/**
+ * 心跳器接口
+ */
 export interface ITicker {
     /**
      * 心跳

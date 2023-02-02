@@ -1,13 +1,14 @@
 import { Injector } from "../utils/Injector";
 import { ITicker } from "./ITicker";
-import { ITickManager } from "./ITickManager";
+import { ITickerManager } from "./ITickerManager";
+import { TickerManagerImpl } from "./TickerManagerImpl";
 
 /**
  * 心跳管理器
  */
-export class TickManager {
+export class TickerManager {
 
-    static KEY: string = "TickManager";
+    static KEY: string = "TickerManager";
     
     /**
      * 添加
@@ -37,13 +38,13 @@ export class TickManager {
         this.impl.clearNextFrame(value, caller);
     }
 
-    private static __impl: ITickManager;
-    static get impl(): ITickManager {
+    private static __impl: ITickerManager;
+    static get impl(): ITickerManager {
         if (this.__impl == null) {
             this.__impl = Injector.getInject(this.KEY);
         }
         if (this.__impl == null) {
-            throw new Error(this.KEY + " 未注入!");
+            this.__impl=new TickerManagerImpl();
         }
         return this.__impl;
     }

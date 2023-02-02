@@ -1,5 +1,6 @@
 import { Injector } from "../drongo-cc";
 import { ResURL } from "../res/ResURL";
+import { AudioManagerImpl } from "./AudioManagerImpl";
 import { IAudioChannel } from "./IAudioChannel";
 import { IAudioManager } from "./IAudioManager";
 
@@ -14,7 +15,7 @@ export class AudioManager {
     /**
      * 全局唯一注入KEY
      */
-    static KEY: string = "AudioManager";
+    static KEY: string = "drongo.AudioManager";
 
     /**
      * 最大音频轨道数量
@@ -138,7 +139,7 @@ export class AudioManager {
             this.__impl = Injector.getInject(this.KEY);
         }
         if (this.__impl == null) {
-            throw new Error(this.KEY + "未注入！");
+            this.__impl=new AudioManagerImpl();
         }
         return this.__impl;
     }

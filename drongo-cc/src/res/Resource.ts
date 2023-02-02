@@ -1,11 +1,12 @@
 import { Asset, assetManager, instantiate, isValid, Node, Prefab } from "cc";
 import { Debuger } from "../drongo-cc";
+import { IRecyclable } from "../utils/Pool";
 import { IResource } from "./IResource";
 import { ResRef } from "./ResRef";
 
 
 
-export class Resource implements IResource {
+export class Resource implements IResource,IRecyclable {
 
     /**
      * 状态 0 正常 1待删除
@@ -23,6 +24,10 @@ export class Resource implements IResource {
 
     constructor() {
 
+    }
+    
+    reset(): void {
+        
     }
 
     set content(value: any) {
@@ -77,7 +82,7 @@ export class Resource implements IResource {
         value.destroy();
     }
 
-    destory(): void {
+    destroy(): void {
         if (this.refCount > 0 || this.refLength > 0) {
             throw new Error("发现销毁资源时引用数量不为0");
         }

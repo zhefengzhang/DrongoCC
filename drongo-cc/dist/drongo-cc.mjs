@@ -1,120 +1,4 @@
-import { assetManager } from 'cc';
-
-/**
- * 音频管理器
- */
-class AudioManager {
-    /**
-     * 总音量
-     */
-    static get volume() {
-        return this.impl.volume;
-    }
-    static set volume(value) {
-        this.impl.volume = value;
-    }
-    /**
-     * 音乐音量
-     */
-    static get musicVolume() {
-        return this.impl.musicVolume;
-    }
-    static set musicVolume(value) {
-        this.impl.musicVolume = value;
-    }
-    /**
-     * 声音音量
-     */
-    static get soundVolume() {
-        return this.impl.soundVolume;
-    }
-    static set soundVolume(value) {
-        this.impl.soundVolume = value;
-    }
-    /**
-     * 静音总开关
-     */
-    static get mute() {
-        return this.impl.mute;
-    }
-    static set mute(value) {
-        this.impl.mute = value;
-    }
-    /**
-     * 音乐静音开关
-     */
-    static get muteMusic() {
-        return this.impl.muteMusic;
-    }
-    static set muteMusic(value) {
-        this.impl.muteMusic = value;
-    }
-    /**
-     * 声音静音开关
-     */
-    static get muteSound() {
-        return this.impl.muteSound;
-    }
-    static set muteSound(value) {
-        this.impl.muteSound = value;
-    }
-    /**
-     * 播放音乐
-     * @param value
-     */
-    static playMusic(url, volume = 1, speed = 1, loop = false) {
-        this.impl.playMusic(url, volume, speed, loop);
-    }
-    /**
-     * 停止音乐
-     */
-    static stopMusic() {
-        this.impl.stopMusic();
-    }
-    /**
-     * 暂停
-     */
-    static pauseMusic() {
-        this.impl.pauseMusic();
-    }
-    /**
-     * 继续播放
-     */
-    static resumeMusic() {
-        this.impl.resumeMusic();
-    }
-    /**
-     * 播放声音
-     * @param value
-     */
-    static playSound(url, playedCallBack, volume, speed, loop) {
-        this.impl.playSound(url, playedCallBack, volume, speed, loop);
-    }
-    /**
-     * 获取正在播放指定音频的轨道
-     * @param url
-     */
-    static getPlaying(url) {
-        return this.impl.getPlaying(url);
-    }
-    static get impl() {
-        if (this.__impl == null) {
-            this.__impl = Injector.getInject(this.KEY);
-        }
-        if (this.__impl == null) {
-            throw new Error(this.KEY + "未注入！");
-        }
-        return this.__impl;
-    }
-}
-/**
- * 全局唯一注入KEY
- */
-AudioManager.KEY = "AudioManager";
-/**
- * 最大音频轨道数量
- */
-AudioManager.MAX_SOUND_CHANNEL_COUNT = 30;
+import { find, Node, director, Component, AudioSource, Asset, Prefab, instantiate, isValid, assetManager } from 'cc';
 
 /**
  * 注入器
@@ -154,80 +38,6 @@ class Injector {
 Injector.__injectedMap = new Map();
 /**实例字典*/
 Injector.__instanceMap = new Map();
-
-/**
- * 时间工具类
- */
-class Timer {
-    /**
-     * 当前时间(推荐使用)
-     */
-    static get currentTime() {
-        return this.impl.currentTime;
-    }
-    /**
-     * 绝对时间(注意效率较差，不推荐使用！)
-     */
-    static get absTime() {
-        return this.impl.absTime;
-    }
-    /**
-     * 重新校准
-     */
-    static reset() {
-        this.impl.reset();
-    }
-    static get impl() {
-        if (this.__impl == null) {
-            this.__impl = Injector.getInject(this.KEY);
-        }
-        if (this.__impl == null) {
-            throw new Error("未注入：" + this.KEY);
-        }
-        return this.__impl;
-    }
-}
-Timer.KEY = "Timer";
-
-/**
- * 心跳管理器
- */
-class TickManager {
-    /**
-     * 添加
-     * @param value
-     */
-    static addTicker(value) {
-        this.impl.addTicker(value);
-    }
-    /**
-     * 删除
-     * @param value
-     */
-    static removeTicker(value) {
-        this.impl.removeTicker(value);
-    }
-    /**
-     * 下一帧回调
-     * @param value
-     */
-    static callNextFrame(value, caller) {
-        this.impl.callNextFrame(value, caller);
-    }
-    static clearNextFrame(value, caller) {
-        this.impl.clearNextFrame(value, caller);
-    }
-    static get impl() {
-        if (this.__impl == null) {
-            this.__impl = Injector.getInject(this.KEY);
-        }
-        if (this.__impl == null) {
-            throw new Error(this.KEY + " 未注入!");
-        }
-        return this.__impl;
-    }
-}
-TickManager.KEY = "TickManager";
 
 /**
  * 事件分发器(只有一对多的情况下去使用)
@@ -518,6 +328,287 @@ Event.State_Changed = "stateChanged";
 Event.channels = new Map();
 
 /**
+ * 字典
+ */
+class Dictionary extends EventDispatcher {
+    constructor() {
+        super();
+        this.__map = new Map();
+        this.__list = [];
+    }
+    set(key, value) {
+        let old;
+        //删除老的
+        if (this.__map.has(key)) {
+            old = this.__map.get(key);
+            const index = this.__list.indexOf(old);
+            if (index < 0) {
+                throw new Error("Dictionary内部逻辑错误！");
+            }
+            this.__map.delete(key);
+            this.__list.splice(index, 1);
+            this.emit(Event.REMOVE, old);
+        }
+        this.__map.set(key, value);
+        this.__list.push(value);
+        this.emit(Event.ADD, value);
+    }
+    /**
+     * 是否拥有指定KEY的元素
+     * @param key
+     * @returns
+     */
+    has(key) {
+        return this.__map.has(key);
+    }
+    /**
+     * 获取指定元素
+     * @param key
+     * @returns
+     */
+    get(key) {
+        return this.__map.get(key);
+    }
+    /**
+     * 通过索引获取元素
+     * @param index
+     * @returns
+     */
+    getValue(index) {
+        if (index >= this.__list.length) {
+            throw new Error(index + "索引超出0-" + this.__list.length + "范围");
+        }
+        return this.__list[index];
+    }
+    /**
+     * 删除指定元素
+     * @param key
+     * @returns
+     */
+    delete(key) {
+        if (!this.__map.has(key)) {
+            return undefined;
+        }
+        const result = this.__map.get(key);
+        const index = this.__list.indexOf(result);
+        if (index < 0) {
+            throw new Error("Dictionary内部逻辑错误！");
+        }
+        this.__list.splice(index, 1);
+        this.__map.delete(key);
+        //派发删除事件
+        if (this.hasEvent(Event.REMOVE)) {
+            this.emit(Event.REMOVE, result);
+        }
+        return result;
+    }
+    /**
+     * 清除所有元素
+     */
+    clear() {
+        this.__map.clear();
+        this.__list.length = 0;
+    }
+    /**
+    * 元素列表
+    */
+    get elements() {
+        return this.__list;
+    }
+    get size() {
+        return this.__map.size;
+    }
+    destroy() {
+        super.destroy();
+        this.__map.clear();
+        this.__map = null;
+        this.__list = null;
+    }
+}
+
+class Debuger {
+    /**
+     * 设置过滤
+     * @param key
+     * @param isOpen
+     */
+    static debug(key, isOpen) {
+        this.__debuger.set(key, isOpen);
+    }
+    /**
+     * 获取已保存的日志
+     * @param type
+     * @returns
+     */
+    static getLogs(type) {
+        if (type == undefined || type == null) {
+            type = "all";
+        }
+        if (this.__logs.has(type)) {
+            return this.__logs.get(type);
+        }
+        return null;
+    }
+    static __save(type, logType, msg) {
+        let list;
+        if (!this.__logs.has(type)) {
+            list = [];
+            this.__logs.set(type, list);
+        }
+        else {
+            list = this.__logs.get(type);
+        }
+        let data = "[" + type + "]" + logType + ":" + msg;
+        if (list.length >= this.MaxCount) {
+            list.unshift(); //删除最顶上的那条
+        }
+        list.push(data);
+        //保存到all
+        if (!this.__logs.has("all")) {
+            list = [];
+            this.__logs.set("all", list);
+        }
+        else {
+            list = this.__logs.get("all");
+        }
+        if (list.length >= this.MaxCount) {
+            list.unshift(); //删除最顶上的那条
+        }
+        list.push(data);
+        return data;
+    }
+    static log(type, msg) {
+        let data = this.__save(type, "Log", msg);
+        let isAll = this.__debuger.has("all") ? this.__debuger.get("all") : false;
+        let isOpen = this.__debuger.has(type) ? this.__debuger.get(type) : false;
+        if (isAll || isOpen) {
+            console.log(data);
+        }
+    }
+    static err(type, msg) {
+        let data = this.__save(type, "Error", msg);
+        let isAll = this.__debuger.has("all") ? this.__debuger.get("all") : false;
+        let isOpen = this.__debuger.has(type) ? this.__debuger.get(type) : false;
+        if (isAll || isOpen) {
+            console.error(data);
+        }
+    }
+    static warn(type, msg) {
+        let data = this.__save(type, "Warn", msg);
+        let isAll = this.__debuger.has("all") ? this.__debuger.get("all") : false;
+        let isOpen = this.__debuger.has(type) ? this.__debuger.get(type) : false;
+        if (isAll || isOpen) {
+            console.warn(data);
+        }
+    }
+    static info(type, msg) {
+        let data = this.__save(type, "Info", msg);
+        let isAll = this.__debuger.has("all") ? this.__debuger.get("all") : false;
+        let isOpen = this.__debuger.has(type) ? this.__debuger.get(type) : false;
+        if (isAll || isOpen) {
+            console.info(data);
+        }
+    }
+}
+/**
+ * 最大保存条数
+ */
+Debuger.MaxCount = Number.MAX_SAFE_INTEGER;
+Debuger.__logs = new Dictionary();
+Debuger.__debuger = new Map();
+
+/**
+ * 对象池
+ */
+class Pool {
+    constructor(clazz, maxCount) {
+        /**池中闲置对象 */
+        this.__cacheStack = new Array();
+        /**正在使用的对象 */
+        this.__usingArray = new Array();
+        /**池中对象最大数 */
+        this.__maxCount = 0;
+        this.__class = clazz;
+        if (!this.__class) {
+            throw new Error("构造函数不能为空！");
+        }
+        this.__maxCount = maxCount == undefined ? Number.MAX_SAFE_INTEGER : maxCount;
+    }
+    /**
+    * 在池中的对象
+    */
+    get count() {
+        return this.__cacheStack.length;
+    }
+    /**
+     * 使用中的数量
+     */
+    get usingCount() {
+        return this.__usingArray.length;
+    }
+    /**
+     * 分配
+     * @returns
+     */
+    allocate() {
+        if (this.count + this.usingCount < this.__maxCount) {
+            let element = this.__cacheStack.length > 0 ? this.__cacheStack.pop() : new this.__class();
+            this.__usingArray.push(element);
+            return element;
+        }
+        throw new Error("对象池最大数量超出：" + this.__maxCount);
+    }
+    /**
+     * 回收到池中
+     * @param value
+     * @returns
+     */
+    recycle(value) {
+        if (this.__cacheStack.indexOf(value) > -1) {
+            throw new Error("重复回收！");
+        }
+        let index = this.__usingArray.indexOf(value);
+        if (index < 0) {
+            throw new Error("对象不属于改对象池！");
+        }
+        //重置
+        value.reset();
+        this.__usingArray.splice(index, 1);
+        this.__cacheStack.push(value);
+    }
+    /**
+     * 批量回收
+     * @param list
+     */
+    recycleList(list) {
+        for (let index = 0; index < list.length; index++) {
+            const element = list[index];
+            this.recycle(element);
+        }
+    }
+    /**
+     * 将所有使用中的对象都回收到池中
+     */
+    recycleAll() {
+        for (let index = 0; index < this.__usingArray.length; index++) {
+            const element = this.__usingArray[index];
+            this.recycle(element);
+        }
+    }
+    destroy() {
+        this.recycleAll();
+        for (let index = 0; index < this.__cacheStack.length; index++) {
+            const element = this.__cacheStack[index];
+            element.destroy();
+        }
+        this.__cacheStack.length = 0;
+        this.__cacheStack = null;
+        this.__usingArray.length = 0;
+        this.__usingArray = null;
+    }
+}
+
+/**
  * 列表
  */
 class List extends EventDispatcher {
@@ -688,101 +779,285 @@ class List extends EventDispatcher {
 }
 
 /**
- * 字典
+ * 默认的ticker管理器实现
  */
-class Dictionary extends EventDispatcher {
+class TickerManagerImpl {
     constructor() {
-        super();
-        this.__map = new Map();
-        this.__list = [];
-    }
-    set(key, value) {
-        let old;
-        //删除老的
-        if (this.__map.has(key)) {
-            old = this.__map.get(key);
-            const index = this.__list.indexOf(old);
-            if (index < 0) {
-                throw new Error("Dictionary内部逻辑错误！");
-            }
-            this.__map.delete(key);
-            this.__list.splice(index, 1);
-            this.emit(Event.REMOVE, old);
+        this.__tickerRoot = find("TickerManager");
+        if (!this.__tickerRoot) {
+            this.__tickerRoot = new Node("TickerManager");
+            director.getScene().addChild(this.__tickerRoot);
         }
-        this.__map.set(key, value);
-        this.__list.push(value);
-        this.emit(Event.ADD, value);
+        this.__tickerManager = this.__tickerRoot.addComponent(TickManagerComponent);
     }
-    /**
-     * 是否拥有指定KEY的元素
-     * @param key
-     * @returns
-     */
-    has(key) {
-        return this.__map.has(key);
+    addTicker(value) {
+        this.__tickerManager.addTicker(value);
     }
-    /**
-     * 获取指定元素
-     * @param key
-     * @returns
-     */
-    get(key) {
-        return this.__map.get(key);
+    removeTicker(value) {
+        this.__tickerManager.removeTicker(value);
     }
-    /**
-     * 通过索引获取元素
-     * @param index
-     * @returns
-     */
-    getValue(index) {
-        if (index >= this.__list.length) {
-            throw new Error(index + "索引超出0-" + this.__list.length + "范围");
+    callNextFrame(value, caller) {
+        this.__tickerManager.callNextFrame(value, caller);
+    }
+    clearNextFrame(value, caller) {
+        this.__tickerManager.clearNextFrame(value, caller);
+    }
+}
+class TickManagerComponent extends Component {
+    constructor() {
+        super(...arguments);
+        this.__tickerList = [];
+        this.__nextFrameCallBacks = [];
+    }
+    update(dt) {
+        let handler;
+        while (this.__nextFrameCallBacks.length) {
+            handler = this.__nextFrameCallBacks.shift();
+            handler.callBack.apply(handler.caller);
         }
-        return this.__list[index];
-    }
-    /**
-     * 删除指定元素
-     * @param key
-     * @returns
-     */
-    delete(key) {
-        if (!this.__map.has(key)) {
-            return undefined;
+        for (let index = 0; index < this.__tickerList.length; index++) {
+            const element = this.__tickerList[index];
+            element.tick(dt);
         }
-        const result = this.__map.get(key);
-        const index = this.__list.indexOf(result);
+    }
+    addTicker(value) {
+        let index = this.__tickerList.indexOf(value);
+        if (index >= 0) {
+            throw new Error("Ticker 重复添加！");
+        }
+        this.__tickerList.push(value);
+    }
+    removeTicker(value) {
+        let index = this.__tickerList.indexOf(value);
         if (index < 0) {
-            throw new Error("Dictionary内部逻辑错误！");
+            throw new Error("找不到要删除的Tick！");
         }
-        this.__list.splice(index, 1);
-        this.__map.delete(key);
-        //派发删除事件
-        if (this.hasEvent(Event.REMOVE)) {
-            this.emit(Event.REMOVE, result);
-        }
-        return result;
+        this.__tickerList.splice(index, 1);
     }
+    callNextFrame(value, caller) {
+        for (let index = 0; index < this.__nextFrameCallBacks.length; index++) {
+            const element = this.__nextFrameCallBacks[index];
+            //重复
+            if (element.equal(value, caller)) {
+                return;
+            }
+        }
+        this.__nextFrameCallBacks.push(new NextFrameHandler(value, caller));
+    }
+    clearNextFrame(value, caller) {
+        for (let index = 0; index < this.__nextFrameCallBacks.length; index++) {
+            const element = this.__nextFrameCallBacks[index];
+            //删除
+            if (element.equal(value, caller)) {
+                this.__nextFrameCallBacks.splice(index, 1);
+            }
+        }
+    }
+}
+class NextFrameHandler {
+    constructor(callBack, caller) {
+        this.callBack = callBack;
+        this.caller = caller;
+    }
+    equal(callBack, caller) {
+        if (this.caller !== caller) {
+            return false;
+        }
+        if (this.callBack !== callBack) {
+            return false;
+        }
+        return true;
+    }
+}
+
+/**
+ * 心跳管理器
+ */
+class TickerManager {
     /**
-     * 清除所有元素
+     * 添加
+     * @param value
      */
-    clear() {
-        this.__map.clear();
-        this.__list.length = 0;
+    static addTicker(value) {
+        this.impl.addTicker(value);
     }
     /**
-    * 元素列表
-    */
-    get elements() {
-        return this.__list;
+     * 删除
+     * @param value
+     */
+    static removeTicker(value) {
+        this.impl.removeTicker(value);
     }
-    get size() {
-        return this.__map.size;
+    /**
+     * 下一帧回调
+     * @param value
+     */
+    static callNextFrame(value, caller) {
+        this.impl.callNextFrame(value, caller);
     }
-    destroy() {
-        super.destroy();
-        this.__map.clear();
-        this.__map = null;
-        this.__list = null;
+    static clearNextFrame(value, caller) {
+        this.impl.clearNextFrame(value, caller);
+    }
+    static get impl() {
+        if (this.__impl == null) {
+            this.__impl = Injector.getInject(this.KEY);
+        }
+        if (this.__impl == null) {
+            this.__impl = new TickerManagerImpl();
+        }
+        return this.__impl;
+    }
+}
+TickerManager.KEY = "TickerManager";
+
+class TimerImpl {
+    constructor() {
+        this.__lastTime = 0;
+        this.reset();
+        TickerManager.addTicker(this);
+    }
+    reset() {
+        //当前时间转秒
+        this.__lastTime = Date.now() / 1000;
+    }
+    tick(dt) {
+        this.__lastTime += dt;
+    }
+    get currentTime() {
+        return this.__lastTime;
+    }
+    get absTime() {
+        this.reset();
+        return this.currentTime;
+    }
+}
+
+/**
+ * 时间工具类
+ */
+class Timer {
+    /**
+     * 当前时间(推荐使用)
+     */
+    static get currentTime() {
+        return this.impl.currentTime;
+    }
+    /**
+     * 绝对时间(注意效率较差，不推荐使用！)
+     */
+    static get absTime() {
+        return this.impl.absTime;
+    }
+    /**
+     * 重新校准
+     * @param time  时间起点，如果不设置则获取系统当前时间点
+     */
+    static reset(time) {
+        this.impl.reset(time);
+    }
+    static get impl() {
+        if (this.__impl == null) {
+            this.__impl = Injector.getInject(this.KEY);
+        }
+        if (this.__impl == null) {
+            this.__impl = new TimerImpl();
+        }
+        return this.__impl;
+    }
+}
+Timer.KEY = "Timer";
+
+/**
+ * 默认资源管理器
+ * @internal
+ */
+class ResManagerImpl {
+    constructor() {
+        /**
+         * 资源
+         */
+        this.__resDic = new Dictionary();
+        /**
+         * 等待销毁的资源
+         */
+        this._waitDestory = new List();
+        TickerManager.addTicker(this);
+    }
+    tick(dt) {
+        if (ResManager.AUTO_GC) {
+            this.gc();
+        }
+    }
+    addRes(value) {
+        if (this.__resDic.has(value.key)) {
+            throw new Error("重复添加资源！");
+        }
+        this.__resDic.set(value.key, value);
+        //标记为待删除
+        this._waitDestory.push(value);
+        value.lastOpTime = Timer.currentTime;
+    }
+    hasRes(key) {
+        return this.__resDic.has(key);
+    }
+    _getRes(key) {
+        return this.__resDic.get(key);
+    }
+    addResRef(key, refKey) {
+        if (!this.__resDic.has(key)) {
+            throw new Error("未找到资源：" + key);
+        }
+        let res = this.__resDic.get(key);
+        //如果在待删除列表中
+        if (this._waitDestory.has(res)) {
+            this._waitDestory.remove(res);
+        }
+        //更新操作时间
+        res.lastOpTime = Timer.currentTime;
+        return res.addRef(refKey);
+    }
+    removeResRef(value) {
+        if (!this.__resDic.has(value.key)) {
+            throw new Error("未找到资源：" + value.key);
+        }
+        let res = this.__resDic.get(value.key);
+        res.removeRef(value);
+        if (res.refLength == 0) {
+            //放入待删除列表
+            this._waitDestory.push(res);
+        }
+        res.lastOpTime = Timer.currentTime;
+    }
+    gc(ignoreTime) {
+        let res;
+        let currentTime = Timer.currentTime;
+        let list = this._waitDestory.elements;
+        for (let index = 0; index < list.length; index++) {
+            res = list[index];
+            if (res.refCount > 0) {
+                continue;
+            }
+            //如果忽略时间机制
+            if (ignoreTime == true) {
+                this.destoryRes(res);
+                index--;
+            }
+            else if (currentTime - res.lastOpTime > ResManager.GC_TIME) { //超过允许的时间就回收
+                this.destoryRes(res);
+                index--;
+            }
+        }
+    }
+    /**
+     * 销毁
+     * @param value
+     */
+    destoryRes(value) {
+        this.__resDic.delete(value.key);
+        value.destroy();
+    }
+    get resList() {
+        return this.__resDic.elements;
     }
 }
 
@@ -800,6 +1075,14 @@ class ResManager {
      */
     static hasRes(key) {
         return this.impl.hasRes(key);
+    }
+    /**
+     * 获取资源（内部接口）
+     * @param key
+     * @returns
+     */
+    static _getRes(key) {
+        return this.impl._getRes(key);
     }
     /**
      * 添加并返回一个资源引用
@@ -834,7 +1117,7 @@ class ResManager {
             this.__impl = Injector.getInject(this.KEY);
         }
         if (this.__impl == null) {
-            throw new Error("未注入：" + this.KEY);
+            this.__impl = new ResManagerImpl();
         }
         return this.__impl;
     }
@@ -849,13 +1132,55 @@ ResManager.GC_TIME = 15;
  */
 ResManager.AUTO_GC = true;
 
+class ResRef {
+    constructor() {
+        /**唯一KEY */
+        this.key = "";
+        /**是否已释放 */
+        this.__isDispose = false;
+    }
+    /**释放 */
+    dispose() {
+        if (this.__isDispose) {
+            throw new Error("重复释放资源引用");
+        }
+        this.__isDispose = true;
+        ResManager.removeResRef(this);
+    }
+    get isDispose() {
+        return this.__isDispose;
+    }
+    reset() {
+        this.key = "";
+        this.refKey = undefined;
+        this.content = null;
+        this.__isDispose = false;
+    }
+    /**
+     * 彻底销毁(注意内部接口，请勿调用)
+     */
+    destroy() {
+        this.key = "";
+        this.refKey = undefined;
+        this.content = null;
+    }
+}
+
 /**
  * 资源地址转唯一KEY
  * @param url
  * @returns
  */
-function resURL2Key(url) {
-    return ResURLUtils.resURL2Key(url);
+function url2Key(url) {
+    return ResURLUtils.url2Key(url);
+}
+/**
+ * 唯一key转URL
+ * @param key
+ * @returns
+ */
+function key2URL(key) {
+    return ResURLUtils.key2Url(key);
 }
 class ResURLUtils {
     static getAssetType(key) {
@@ -869,7 +1194,7 @@ class ResURLUtils {
      * @param key
      * @returns
      */
-    static key2ResURL(key) {
+    static key2Url(key) {
         if (key.indexOf("|")) {
             let arr = key.split("|");
             return { url: arr[0], bundle: arr[1], type: this.getAssetType(arr[2]) };
@@ -881,7 +1206,7 @@ class ResURLUtils {
      * @param url
      * @returns
      */
-    static resURL2Key(url) {
+    static url2Key(url) {
         if (url == null || url == undefined) {
             return "";
         }
@@ -912,6 +1237,735 @@ class ResURLUtils {
 }
 ResURLUtils.__assetTypes = new Map();
 
+class AudioChannel {
+    constructor(node, source) {
+        if (source == null) {
+            source = node.addComponent(AudioSource);
+        }
+        this.__node = node;
+        this.__source = source;
+    }
+    get url() {
+        return this.__url;
+    }
+    get mute() {
+        return this.__mute;
+    }
+    set mute(value) {
+        if (this.__mute == value) {
+            return;
+        }
+        this.__mute = value;
+        if (this.__mute) {
+            //记录下来
+            this.__volume = this.__source.volume;
+            this.__source.volume = 0;
+        }
+        else {
+            //根据记录设置
+            this.__source.volume = this.__volume;
+        }
+    }
+    play(url, playedComplete, volume, fade, loop = false, speed = 1) {
+        this.__reset();
+        this.__url = url;
+        this.__playedComplete = playedComplete;
+        this.__isPlaying = true;
+        this.__speed = speed;
+        this.__loop = loop;
+        if (fade) {
+            if (fade.time <= 0) {
+                if (this.mute) {
+                    this.__volume = volume;
+                }
+                else {
+                    this.__source.volume = volume;
+                }
+            }
+            if (this.__fadeData == null) {
+                this.__fadeData = new FadeData();
+            }
+            this.__fadeData.startTime = director.getTotalTime();
+            this.__fadeData.startValue = fade.startVolume == undefined ? this.__source.volume : fade.startVolume;
+            this.__fadeData.time = fade.time;
+            this.__fadeData.endValue = volume;
+            this.__fadeData.complete = fade.complete;
+            this.__fadeData.completeStop = fade.completeStop;
+        }
+        else {
+            this.__volume = volume;
+        }
+        //未加载完成前，音频的结束时间为无穷大
+        this.__startTime = director.getTotalTime();
+        this.__time = Number.MAX_VALUE;
+        Res.getResRef(this.url, "AudioChannel").then((value) => {
+            if (value instanceof ResRef) {
+                if (this.__isPlaying == false) {
+                    value.dispose();
+                    return;
+                }
+                let resKey = url2Key(this.url);
+                if (resKey != value.key) {
+                    value.dispose();
+                    return;
+                }
+                this.__ref = value;
+                this.__play();
+            }
+        }, (reason) => {
+            console.error(reason);
+            this.__isPlaying = false;
+            this.__source.stop();
+            return;
+        });
+    }
+    stop() {
+        if (this.__source.playing) {
+            this.__source.stop();
+        }
+        this.__isPlaying = false;
+        this.__reset();
+    }
+    get isPlaying() {
+        return this.__isPlaying || this.__source.playing;
+    }
+    /**
+     *
+     * @param time
+     * @param endVolume
+     * @param startVolume
+     * @param complete
+     * @param completeStop
+     * @returns
+     */
+    fade(time, endVolume, startVolume, complete, completeStop) {
+        if (!this.isPlaying) {
+            return;
+        }
+        this.__paused = false;
+        //立刻
+        if (time <= 0) {
+            if (this.mute) {
+                this.__volume = endVolume;
+            }
+            else {
+                this.__source.volume = endVolume;
+            }
+            if (completeStop) {
+                this.stop();
+                if (complete) {
+                    complete();
+                }
+            }
+        }
+        else {
+            if (this.__fadeData == null) {
+                this.__fadeData = new FadeData();
+            }
+            this.__fadeData.startTime = director.getTotalTime();
+            this.__fadeData.startValue = startVolume == undefined ? this.__source.volume : startVolume;
+            this.__fadeData.time = time;
+            this.__fadeData.endValue = endVolume;
+            this.__fadeData.complete = complete;
+            this.__fadeData.completeStop = completeStop;
+        }
+    }
+    __reset() {
+        this.__url = null;
+        if (this.__ref) {
+            this.__ref.dispose();
+            this.__ref = null;
+        }
+        this.__isPlaying = false;
+        this.__paused = false;
+        this.__fadeData = null;
+    }
+    __clipLoaded(err, result) {
+        if (err) {
+            console.error(err.message);
+            this.__isPlaying = false;
+            this.__source.stop();
+            return;
+        }
+        if (this.__isPlaying == false) {
+            result.dispose();
+            return;
+        }
+        let resKey = url2Key(this.url);
+        if (resKey != result.key) {
+            result.dispose();
+            return;
+        }
+        this.__ref = result;
+        this.__play();
+    }
+    __play() {
+        this.__source.clip = this.__ref.content;
+        this.__source.loop = this.__loop;
+        this.__source.play();
+        let currentTime = director.getTotalTime();
+        if (this.__fadeData) {
+            this.__fadeData.startTime = currentTime;
+            if (this.mute) {
+                this.__volume = this.__fadeData.startValue;
+            }
+            else {
+                this.__source.volume = this.__fadeData.startValue;
+            }
+        }
+        else {
+            if (!this.mute) {
+                this.__source.volume = this.__volume;
+            }
+            else {
+                this.__source.volume = 0;
+            }
+        }
+        this.__startTime = director.getTotalTime();
+        this.__time = this.__source.duration * 1000;
+        // let audio = this.__source["audio"];
+        // if (audio) {
+        //     if ("_element" in audio) {
+        //         let element = audio["_element"];
+        //         if ("_currentSource" in element) {
+        //             let currentSource = element["_currentSource"];
+        //             if ("playbackRate" in currentSource) {
+        //                 let playbackRate = currentSource["playbackRate"];
+        //                 if ("value" in playbackRate) {
+        //                     playbackRate["value"] = this.__speed;
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+    }
+    tick(dt) {
+        if (this.__paused || this.__isPlaying == false || this.__url == null) {
+            return;
+        }
+        let currentTime = director.getTotalTime();
+        let passTime;
+        if (this.__fadeData) {
+            passTime = currentTime - this.__fadeData.startTime;
+            let value = passTime / this.__fadeData.time;
+            value = value > 1 ? 1 : value;
+            //音量设置
+            if (!this.mute) {
+                this.__source.volume = this.__fadeData.startValue + (this.__fadeData.endValue - this.__fadeData.startValue) * value;
+            }
+            else {
+                this.__volume = this.__fadeData.startValue + (this.__fadeData.endValue - this.__fadeData.startValue) * value;
+            }
+            if (value == 1) {
+                let complete = this.__fadeData.complete;
+                if (this.__fadeData.completeStop) {
+                    this.__source.stop();
+                    this.__isPlaying = false;
+                    this.__reset();
+                }
+                if (complete) {
+                    complete();
+                }
+                this.__fadeData = null;
+            }
+        }
+        //循环播放
+        if (this.__loop) {
+            return;
+        }
+        //检测是否结束
+        passTime = currentTime - this.__startTime;
+        let value = passTime / this.__time;
+        if (value >= 1) {
+            //播放完成
+            // console.log("播放完成！"+this.__url);
+            this.__source.stop();
+            this.__isPlaying = false;
+            if (this.__playedComplete) {
+                this.__playedComplete();
+            }
+            this.__reset();
+        }
+    }
+    resume() {
+        if (this.__paused == false) {
+            return;
+        }
+        let pTime = director.getTotalTime() - this.__pauseTime;
+        if (this.__fadeData) {
+            this.__fadeData.startTime += pTime;
+        }
+        this.__startTime += pTime;
+        this.__source.play();
+        this.__paused = false;
+    }
+    pause() {
+        if (this.__paused) {
+            return;
+        }
+        this.__paused = true;
+        this.__pauseTime = director.getTotalTime();
+        this.__source.pause();
+    }
+    get curVolume() {
+        return this.__source.volume;
+    }
+}
+class FadeData {
+}
+
+/**
+ * cocos 音频播放管理器
+ */
+class AudioManagerImpl {
+    constructor() {
+        this.__musicChannelIndex = 0;
+        this.__volume = 1;
+        this.__musicVolume = 1;
+        this.__musicChannels = [];
+        this.__soundChannels = [];
+        TickerManager.addTicker(this);
+        this.__audioRoot = find("AudioManager");
+        if (this.__audioRoot == null) {
+            this.__audioRoot = new Node("AudioManager");
+            director.getScene().addChild(this.__audioRoot);
+        }
+        //音乐用两个轨道来做淡入和淡出
+        let channel;
+        for (let index = 0; index < 2; index++) {
+            channel = new AudioChannel(this.__audioRoot);
+            this.__musicChannels.push(channel);
+        }
+    }
+    /**
+     * 总音量
+     */
+    get volume() {
+        return this.__volume;
+    }
+    set volume(value) {
+        if (this.__volume == value) {
+            return;
+        }
+        this.__volume = value;
+        let channelVolume;
+        let channel;
+        for (let index = 0; index < this.__musicChannels.length; index++) {
+            channel = this.__musicChannels[index];
+            if (channel.isPlaying) {
+                channelVolume = channel.volume * this.__musicVolume * this.__volume;
+                channel.fade(100, channelVolume, channel.curVolume);
+            }
+        }
+        for (let index = 0; index < this.__soundChannels.length; index++) {
+            channel = this.__soundChannels[index];
+            if (channel.isPlaying) {
+                channelVolume = channel.volume * this.__soundVolume * this.__volume;
+                channel.fade(100, channelVolume, channel.curVolume);
+            }
+        }
+    }
+    /**
+     * 音乐总音量控制
+     */
+    set musicVolume(value) {
+        if (this.__musicVolume == value) {
+            return;
+        }
+        this.__musicVolume = value;
+        if (this.muteMusic) {
+            return;
+        }
+        let current = this.__musicChannels[this.__musicChannelIndex];
+        if (current && current.isPlaying) {
+            let channelVolume = current.volume * this.__musicVolume * this.__volume;
+            current.fade(100, channelVolume, current.curVolume);
+        }
+    }
+    get musicVolume() {
+        return this.__musicVolume;
+    }
+    /**
+     * 声音总音量
+     */
+    get soundVolume() {
+        return this.__soundVolume;
+    }
+    set soundVolume(value) {
+        if (this.__soundVolume == value) {
+            return;
+        }
+        this.__soundVolume = value;
+        let channel;
+        for (let index = 0; index < this.__soundChannels.length; index++) {
+            channel = this.__soundChannels[index];
+            if (channel.isPlaying) {
+                let channelVolume = channel.volume * this.__soundVolume * this.__volume;
+                channel.fade(100, channelVolume, channel.curVolume);
+            }
+        }
+    }
+    set mute(value) {
+        if (this.__mute == value) {
+            return;
+        }
+        this.__mute = value;
+        this.__changedMutes();
+    }
+    get mute() {
+        return this.__mute;
+    }
+    get muteMusic() {
+        return this.__muteMusic;
+    }
+    set muteMusic(value) {
+        if (this.__muteMusic == value) {
+            return;
+        }
+        this.__muteMusic = value;
+        this.__changedMutes();
+    }
+    get muteSound() {
+        return this.__muteSound;
+    }
+    set muteSound(value) {
+        if (this.__muteSound == value) {
+            return;
+        }
+        this.__muteSound = value;
+        this.__changedMutes();
+    }
+    __changedMutes() {
+        for (let index = 0; index < this.__musicChannels.length; index++) {
+            const element = this.__musicChannels[index];
+            element.mute = this.muteMusic || this.mute;
+        }
+        for (let index = 0; index < this.__soundChannels.length; index++) {
+            const element = this.__soundChannels[index];
+            element.mute = this.muteSound || this.mute;
+        }
+    }
+    playMusic(url, volume, speed, loop) {
+        let playVolume;
+        if (this.muteMusic || this.mute) {
+            playVolume = 0;
+        }
+        else {
+            //音量=轨道音量*音乐音量*总音量
+            playVolume = volume * this.__musicVolume * this.__volume;
+        }
+        //正在播放的轨道
+        let current = this.__musicChannels[this.__musicChannelIndex];
+        if (current && current.isPlaying) {
+            if (url2Key(current.url) == url2Key(url)) {
+                //播放相同的音乐
+                return;
+            }
+        }
+        this.__musicChannelIndex++;
+        this.__musicChannelIndex = this.__musicChannelIndex % 2;
+        let last;
+        if (this.__musicChannelIndex == 0) {
+            current = this.__musicChannels[0];
+            last = this.__musicChannels[1];
+        }
+        else {
+            current = this.__musicChannels[1];
+            last = this.__musicChannels[0];
+        }
+        if (last.isPlaying) {
+            last.fade(500, 0, undefined, null, true);
+        }
+        current.volume = volume;
+        current.play(url, null, playVolume, { time: 500, startVolume: 0 }, true, speed);
+    }
+    stopMusic() {
+        let current = this.__musicChannels[this.__musicChannelIndex];
+        if (current && current.isPlaying) {
+            current.stop();
+        }
+    }
+    pauseMusic() {
+        let current = this.__musicChannels[this.__musicChannelIndex];
+        if (current) {
+            current.pause();
+        }
+    }
+    resumeMusic() {
+        let current = this.__musicChannels[this.__musicChannelIndex];
+        if (current) {
+            current.resume();
+        }
+    }
+    playSound(url, playedCallBack, volume, speed, loop) {
+        let playVolume;
+        if (this.muteSound || this.mute) {
+            playVolume = 0;
+        }
+        else {
+            playVolume = this.soundVolume * volume * this.__volume;
+        }
+        let channel = this.getIdleChannel();
+        if (channel) {
+            channel.volume = volume;
+            channel.play(url, playedCallBack, playVolume, null, loop, speed);
+        }
+    }
+    getPlaying(url) {
+        for (let index = 0; index < this.__soundChannels.length; index++) {
+            const element = this.__soundChannels[index];
+            if (element.isPlaying && url2Key(element.url) == url2Key(url)) {
+                return element;
+            }
+        }
+        return null;
+    }
+    getIdleChannel() {
+        let index;
+        let channel;
+        for (index = 0; index < this.__soundChannels.length; index++) {
+            channel = this.__soundChannels[index];
+            if (channel.isPlaying == false) {
+                return channel;
+            }
+        }
+        if (index < AudioManager.MAX_SOUND_CHANNEL_COUNT) {
+            channel = new AudioChannel(this.__audioRoot);
+            this.__soundChannels.push(channel);
+            return channel;
+        }
+        return null;
+    }
+    tick(dt) {
+        for (let index = 0; index < this.__musicChannels.length; index++) {
+            const element = this.__musicChannels[index];
+            if (element.isPlaying) {
+                element.tick(dt);
+            }
+        }
+        for (let index = 0; index < this.__soundChannels.length; index++) {
+            const element = this.__soundChannels[index];
+            if (element.isPlaying) {
+                element.tick(dt);
+            }
+        }
+    }
+}
+
+/**
+ * 音频管理器
+ */
+class AudioManager {
+    /**
+     * 总音量
+     */
+    static get volume() {
+        return this.impl.volume;
+    }
+    static set volume(value) {
+        this.impl.volume = value;
+    }
+    /**
+     * 音乐音量
+     */
+    static get musicVolume() {
+        return this.impl.musicVolume;
+    }
+    static set musicVolume(value) {
+        this.impl.musicVolume = value;
+    }
+    /**
+     * 声音音量
+     */
+    static get soundVolume() {
+        return this.impl.soundVolume;
+    }
+    static set soundVolume(value) {
+        this.impl.soundVolume = value;
+    }
+    /**
+     * 静音总开关
+     */
+    static get mute() {
+        return this.impl.mute;
+    }
+    static set mute(value) {
+        this.impl.mute = value;
+    }
+    /**
+     * 音乐静音开关
+     */
+    static get muteMusic() {
+        return this.impl.muteMusic;
+    }
+    static set muteMusic(value) {
+        this.impl.muteMusic = value;
+    }
+    /**
+     * 声音静音开关
+     */
+    static get muteSound() {
+        return this.impl.muteSound;
+    }
+    static set muteSound(value) {
+        this.impl.muteSound = value;
+    }
+    /**
+     * 播放音乐
+     * @param value
+     */
+    static playMusic(url, volume = 1, speed = 1, loop = false) {
+        this.impl.playMusic(url, volume, speed, loop);
+    }
+    /**
+     * 停止音乐
+     */
+    static stopMusic() {
+        this.impl.stopMusic();
+    }
+    /**
+     * 暂停
+     */
+    static pauseMusic() {
+        this.impl.pauseMusic();
+    }
+    /**
+     * 继续播放
+     */
+    static resumeMusic() {
+        this.impl.resumeMusic();
+    }
+    /**
+     * 播放声音
+     * @param value
+     */
+    static playSound(url, playedCallBack, volume, speed, loop) {
+        this.impl.playSound(url, playedCallBack, volume, speed, loop);
+    }
+    /**
+     * 获取正在播放指定音频的轨道
+     * @param url
+     */
+    static getPlaying(url) {
+        return this.impl.getPlaying(url);
+    }
+    static get impl() {
+        if (this.__impl == null) {
+            this.__impl = Injector.getInject(this.KEY);
+        }
+        if (this.__impl == null) {
+            this.__impl = new AudioManagerImpl();
+        }
+        return this.__impl;
+    }
+}
+/**
+ * 全局唯一注入KEY
+ */
+AudioManager.KEY = "drongo.AudioManager";
+/**
+ * 最大音频轨道数量
+ */
+AudioManager.MAX_SOUND_CHANNEL_COUNT = 30;
+
+class Resource {
+    constructor() {
+        /**
+         * 状态 0 正常 1待删除
+         */
+        this.state = 0;
+        this.key = "";
+        this.lastOpTime = 0;
+        /**
+         * @internal
+         */
+        this.__refs = [];
+        this.__content = null;
+    }
+    reset() {
+    }
+    set content(value) {
+        this.__content = value;
+        if (this.__content instanceof Asset) {
+            //防止自动回收
+            this.__content.addRef();
+        }
+    }
+    get content() {
+        return this.__content;
+    }
+    addRef(refKey) {
+        let rf = new ResRef();
+        rf.key = this.key;
+        rf.refKey = refKey;
+        if (this.content instanceof Asset) {
+            if (this.content instanceof Prefab) {
+                rf.content = instantiate(this.content);
+            }
+            else {
+                rf.content = this.content;
+            }
+            this.content.addRef();
+        }
+        else {
+            rf.content = this.content;
+        }
+        this.__refs.push(rf);
+        return rf;
+    }
+    removeRef(value) {
+        let index = this.__refs.indexOf(value);
+        if (index < 0) {
+            throw new Error("未找到需要删除的引用！");
+        }
+        if (this.content instanceof Asset) {
+            //预制体处理
+            if (this.content instanceof Prefab) {
+                let node = value.content;
+                if (isValid(node)) {
+                    node.destroy();
+                }
+            }
+            this.content.decRef();
+        }
+        this.__refs.splice(index, 1);
+        //回收
+        // ResRef.pool.recycle(value);
+        value.destroy();
+    }
+    destroy() {
+        if (this.refCount > 0 || this.refLength > 0) {
+            throw new Error("发现销毁资源时引用数量不为0");
+        }
+        //自身引用计数
+        if (this.__content instanceof Asset) {
+            this.__content.decRef();
+            if (this.__content.refCount <= 0) {
+                Debuger.log("Res", "资源销毁=>" + this.key);
+                assetManager.releaseAsset(this.__content);
+            }
+        }
+        this.key = "";
+        this.__refs.length = 0;
+        this.__content = null;
+    }
+    /**
+     * 引用数量
+     */
+    get refCount() {
+        if (this.__content instanceof Asset) {
+            return this.__content.refCount - 1;
+        }
+        return this.__refs.length;
+    }
+    /**
+     * 引用列表长度
+     */
+    get refLength() {
+        return this.__refs.length;
+    }
+}
+
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -940,9 +1994,6 @@ class Res {
      */
     static getResRef(urls, refKey, progress) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!this.resourcePool) {
-                throw new Error("资源对象池未设置！");
-            }
             if (Array.isArray(urls)) {
                 let list = [];
                 let loaded = 0;
@@ -959,7 +2010,7 @@ class Res {
             }
             else {
                 //已加载完成
-                let urlKey = resURL2Key(urls);
+                let urlKey = url2Key(urls);
                 if (ResManager.hasRes(urlKey)) {
                     return Promise.resolve(ResManager.addResRef(urlKey, refKey));
                 }
@@ -974,7 +2025,7 @@ class Res {
     static loadAsset(url, refKey, progress) {
         return __awaiter(this, void 0, void 0, function* () {
             //已加载完成
-            const urlKey = resURL2Key(url);
+            const urlKey = url2Key(url);
             if (ResManager.hasRes(urlKey)) {
                 return Promise.resolve(ResManager.addResRef(urlKey, refKey));
             }
@@ -990,52 +2041,34 @@ class Res {
                             reject(err);
                             return;
                         }
-                        if (typeof url.type == "function") {
-                            loader = this.defaultAssetLoader;
-                        }
-                        else {
+                        if (typeof url.type == "string") {
                             loader = this.getResLoader(url.type);
                         }
-                        loader(url, bundle, progress, (err, asset) => {
+                        else {
+                            loader = this.defaultAssetLoader;
+                        }
+                        loader(url, bundle, refKey, progress, (err, resRef) => {
                             if (err) {
                                 reject(err);
                                 return;
                             }
-                            if (ResManager.hasRes(urlKey)) {
-                                resolve(ResManager.addResRef(urlKey, refKey));
-                            }
-                            else {
-                                let res = this.resourcePool.allocate();
-                                res.key = urlKey;
-                                res.content = asset;
-                                ResManager.addRes(res);
-                                resolve(ResManager.addResRef(urlKey, refKey));
-                            }
+                            resolve(resRef);
                         });
                     });
                 }
                 else {
-                    if (typeof url.type == "function") {
-                        loader = this.defaultAssetLoader;
-                    }
-                    else {
+                    if (typeof url.type == "string") {
                         loader = this.getResLoader(url.type);
                     }
-                    loader(url, bundle, progress, (err, asset) => {
+                    else {
+                        loader = this.defaultAssetLoader;
+                    }
+                    loader(url, bundle, refKey, progress, (err, resRef) => {
                         if (err) {
                             reject(err);
                             return;
                         }
-                        if (ResManager.hasRes(urlKey)) {
-                            resolve(ResManager.addResRef(urlKey, refKey));
-                        }
-                        else {
-                            let res = this.resourcePool.allocate();
-                            res.key = urlKey;
-                            res.content = asset;
-                            ResManager.addRes(res);
-                            resolve(ResManager.addResRef(urlKey, refKey));
-                        }
+                        resolve(resRef);
                     });
                 }
             });
@@ -1049,51 +2082,35 @@ class Res {
      * @param progress
      * @param cb
      */
-    static defaultAssetLoader(url, bundle, progress, cb) {
+    static defaultAssetLoader(url, bundle, refKey, progress, cb) {
         if (typeof url == "string") {
             throw new Error("url不能为字符串" + url);
         }
         if (typeof url.type == "string") {
             throw new Error("url.type不能为字符串" + url);
         }
-        bundle.load(url.url, url.type, progress, cb);
+        bundle.load(url.url, url.type, progress, (err, asset) => {
+            if (err) {
+                cb(err);
+                return;
+            }
+            const urlKey = url2Key(url);
+            //如果已经存在
+            if (ResManager.hasRes(urlKey)) {
+                cb(undefined, ResManager.addResRef(urlKey, refKey));
+                return;
+            }
+            else {
+                let res = new Resource();
+                res.key = urlKey;
+                res.content = asset;
+                ResManager.addRes(res);
+                cb(undefined, ResManager.addResRef(urlKey, refKey));
+            }
+        });
     }
 }
 Res.__loaders = new Map();
-
-class ResRef {
-    constructor() {
-        /**唯一KEY */
-        this.key = "";
-        /**是否已释放 */
-        this.__isDispose = false;
-    }
-    /**释放 */
-    dispose() {
-        if (this.__isDispose) {
-            throw new Error("重复释放资源引用");
-        }
-        this.__isDispose = true;
-        // ResourceManager.removeResRef(this);
-    }
-    get isDispose() {
-        return this.__isDispose;
-    }
-    reset() {
-        this.key = "";
-        this.refKey = undefined;
-        this.content = null;
-        this.__isDispose = false;
-    }
-    /**
-     * 彻底销毁(注意内部接口，请勿调用)
-     */
-    destroy() {
-        this.key = "";
-        this.refKey = undefined;
-        this.content = null;
-    }
-}
 
 /**
  * 任务队列
@@ -1213,95 +2230,4 @@ class TaskSequence extends EventDispatcher {
     }
 }
 
-class Debuger {
-    /**
-     * 设置过滤
-     * @param key
-     * @param isOpen
-     */
-    static debug(key, isOpen) {
-        this.__debuger.set(key, isOpen);
-    }
-    /**
-     * 获取已保存的日志
-     * @param type
-     * @returns
-     */
-    static getLogs(type) {
-        if (type == undefined || type == null) {
-            type = "all";
-        }
-        if (this.__logs.has(type)) {
-            return this.__logs.get(type);
-        }
-        return null;
-    }
-    static __save(type, logType, msg) {
-        let list;
-        if (!this.__logs.has(type)) {
-            list = [];
-            this.__logs.set(type, list);
-        }
-        else {
-            list = this.__logs.get(type);
-        }
-        let data = "[" + type + "]" + logType + ":" + msg;
-        if (list.length >= this.MaxCount) {
-            list.unshift(); //删除最顶上的那条
-        }
-        list.push(data);
-        //保存到all
-        if (!this.__logs.has("all")) {
-            list = [];
-            this.__logs.set("all", list);
-        }
-        else {
-            list = this.__logs.get("all");
-        }
-        if (list.length >= this.MaxCount) {
-            list.unshift(); //删除最顶上的那条
-        }
-        list.push(data);
-        return data;
-    }
-    static log(type, msg) {
-        let data = this.__save(type, "Log", msg);
-        let isAll = this.__debuger.has("all") ? this.__debuger.get("all") : false;
-        let isOpen = this.__debuger.has(type) ? this.__debuger.get(type) : false;
-        if (isAll || isOpen) {
-            console.log(data);
-        }
-    }
-    static err(type, msg) {
-        let data = this.__save(type, "Error", msg);
-        let isAll = this.__debuger.has("all") ? this.__debuger.get("all") : false;
-        let isOpen = this.__debuger.has(type) ? this.__debuger.get(type) : false;
-        if (isAll || isOpen) {
-            console.error(data);
-        }
-    }
-    static warn(type, msg) {
-        let data = this.__save(type, "Warn", msg);
-        let isAll = this.__debuger.has("all") ? this.__debuger.get("all") : false;
-        let isOpen = this.__debuger.has(type) ? this.__debuger.get(type) : false;
-        if (isAll || isOpen) {
-            console.warn(data);
-        }
-    }
-    static info(type, msg) {
-        let data = this.__save(type, "Info", msg);
-        let isAll = this.__debuger.has("all") ? this.__debuger.get("all") : false;
-        let isOpen = this.__debuger.has(type) ? this.__debuger.get(type) : false;
-        if (isAll || isOpen) {
-            console.info(data);
-        }
-    }
-}
-/**
- * 最大保存条数
- */
-Debuger.MaxCount = Number.MAX_SAFE_INTEGER;
-Debuger.__logs = new Dictionary();
-Debuger.__debuger = new Map();
-
-export { AudioManager, Debuger, Dictionary, Injector, List, Res, ResRef, TaskQueue, TaskSequence, TickManager, Timer };
+export { AudioChannel, AudioManager, Debuger, Dictionary, Event, EventDispatcher, Injector, List, Pool, Res, ResManager, ResRef, Resource, TaskQueue, TaskSequence, TickerManager, Timer, key2URL, url2Key };

@@ -3,92 +3,34 @@
 //   ../cc
 
 declare module 'drongo-cc' {
-    export { AudioManager } from "drongo-cc/audios/AudioManager";
     export { Injector } from "drongo-cc/utils/Injector";
-    export { Timer } from "drongo-cc/utils/Timer";
-    export { TickManager } from "drongo-cc/tick/TickerManager";
+    export { Debuger } from "drongo-cc/utils/Debuger";
+    export { Pool } from "drongo-cc/utils/Pool";
+    export { IEventDispatcher } from "drongo-cc/events/IEventDispatcher";
+    export { Event } from "drongo-cc/events/Event";
+    export { EventDispatcher } from "drongo-cc/events/EventDispatcher";
     export { List } from "drongo-cc/containers/List";
     export { Dictionary } from "drongo-cc/containers/Dictionary";
+    export { ITicker } from "drongo-cc/ticker/ITicker";
+    export { ITickerManager } from "drongo-cc/ticker/ITickerManager";
+    export { TickerManager } from "drongo-cc/ticker/TickerManager";
+    export { ITimer } from "drongo-cc/timer/ITimer";
+    export { Timer } from "drongo-cc/timer/Timer";
+    export { IAudioChannel } from "drongo-cc/audios/IAudioChannel";
+    export { IAudioGroup } from "drongo-cc/audios/IAudioGroup";
+    export { IAudioManager } from "drongo-cc/audios/IAudioManager";
+    export { AudioChannel } from "drongo-cc/audios/AudioChannel";
+    export { AudioManager } from "drongo-cc/audios/AudioManager";
+    export { IResource } from "drongo-cc/res/IResource";
+    export { IResManager } from "drongo-cc/res/IResManager";
+    export { ResManager } from "drongo-cc/res/ResManager";
+    export { Resource } from "drongo-cc/res/Resource";
     export { Res } from "drongo-cc/res/Res";
     export { ResRef } from "drongo-cc/res/ResRef";
+    export { ResURL, url2Key, key2URL } from "drongo-cc/res/ResURL";
+    export { ITask } from "drongo-cc/task/ITask";
     export { TaskQueue } from "drongo-cc/task/TaskQueue";
     export { TaskSequence } from "drongo-cc/task/TaskSequence";
-    export { Debuger } from "drongo-cc/utils/Debuger";
-}
-
-declare module 'drongo-cc/audios/AudioManager' {
-    import { ResURL } from "drongo-cc/res/ResURL";
-    import { IAudioChannel } from "drongo-cc/audios/IAudioChannel";
-    /**
-        * 音频管理器
-        */
-    export class AudioManager {
-            /**
-                * 全局唯一注入KEY
-                */
-            static KEY: string;
-            /**
-                * 最大音频轨道数量
-                */
-            static MAX_SOUND_CHANNEL_COUNT: number;
-            /**
-                * 总音量
-                */
-            static get volume(): number;
-            static set volume(value: number);
-            /**
-                * 音乐音量
-                */
-            static get musicVolume(): number;
-            static set musicVolume(value: number);
-            /**
-                * 声音音量
-                */
-            static get soundVolume(): number;
-            static set soundVolume(value: number);
-            /**
-                * 静音总开关
-                */
-            static get mute(): boolean;
-            static set mute(value: boolean);
-            /**
-                * 音乐静音开关
-                */
-            static get muteMusic(): boolean;
-            static set muteMusic(value: boolean);
-            /**
-                * 声音静音开关
-                */
-            static get muteSound(): boolean;
-            static set muteSound(value: boolean);
-            /**
-                * 播放音乐
-                * @param value
-                */
-            static playMusic(url: ResURL, volume?: number, speed?: number, loop?: boolean): void;
-            /**
-                * 停止音乐
-                */
-            static stopMusic(): void;
-            /**
-                * 暂停
-                */
-            static pauseMusic(): void;
-            /**
-                * 继续播放
-                */
-            static resumeMusic(): void;
-            /**
-                * 播放声音
-                * @param value
-                */
-            static playSound(url: ResURL, playedCallBack: Function, volume: number, speed: number, loop: boolean): void;
-            /**
-                * 获取正在播放指定音频的轨道
-                * @param url
-                */
-            static getPlaying(url: ResURL): IAudioChannel;
-    }
 }
 
 declare module 'drongo-cc/utils/Injector' {
@@ -109,66 +51,243 @@ declare module 'drongo-cc/utils/Injector' {
     }
 }
 
-declare module 'drongo-cc/utils/Timer' {
-    export interface ITimer {
+declare module 'drongo-cc/utils/Debuger' {
+    export class Debuger {
             /**
-                * 当前时间(推荐使用)
+                * 最大保存条数
                 */
-            readonly currentTime: number;
+            static MaxCount: number;
             /**
-                * 绝对时间(注意效率较差，不推荐使用！)
+                * 设置过滤
+                * @param key
+                * @param isOpen
                 */
-            readonly absTime: number;
+            static debug(key: string, isOpen: boolean): void;
             /**
-                * 重新校准
+                * 获取已保存的日志
+                * @param type
+                * @returns
                 */
-            reset(): void;
-    }
-    /**
-        * 时间工具类
-        */
-    export class Timer {
-            static KEY: string;
-            /**
-                * 当前时间(推荐使用)
-                */
-            static get currentTime(): number;
-            /**
-                * 绝对时间(注意效率较差，不推荐使用！)
-                */
-            static get absTime(): number;
-            /**
-                * 重新校准
-                */
-            static reset(): void;
+            static getLogs(type?: string): Array<string>;
+            static log(type: string, msg: any): void;
+            static err(type: string, msg: any): void;
+            static warn(type: string, msg: any): void;
+            static info(type: string, msg: any): void;
     }
 }
 
-declare module 'drongo-cc/tick/TickerManager' {
-    import { ITicker } from "drongo-cc/tick/ITicker";
-    import { ITickManager } from "drongo-cc/tick/ITickManager";
+declare module 'drongo-cc/utils/Pool' {
     /**
-        * 心跳管理器
+        * 可重复利用对象接口
         */
-    export class TickManager {
-            static KEY: string;
+    export interface IRecyclable {
             /**
-                * 添加
-                * @param value
+                * 重置到可复用状态
                 */
-            static addTicker(value: ITicker): void;
+            reset(): void;
             /**
-                * 删除
-                * @param value
+                * 销毁
                 */
-            static removeTicker(value: ITicker): void;
+            destroy(): void;
+    }
+    /**
+        * 对象池
+        */
+    export class Pool<T extends IRecyclable> {
+            constructor(clazz: {
+                    new (): T;
+            }, maxCount?: number);
             /**
-                * 下一帧回调
-                * @param value
+             * 在池中的对象
+             */
+            get count(): number;
+            /**
+                * 使用中的数量
                 */
-            static callNextFrame(value: Function, caller: any): void;
-            static clearNextFrame(value: Function, caller: any): void;
-            static get impl(): ITickManager;
+            get usingCount(): number;
+            /**
+                * 分配
+                * @returns
+                */
+            allocate(): T;
+            /**
+                * 回收到池中
+                * @param value
+                * @returns
+                */
+            recycle(value: T): void;
+            /**
+                * 批量回收
+                * @param list
+                */
+            recycleList(list: Array<T>): void;
+            /**
+                * 将所有使用中的对象都回收到池中
+                */
+            recycleAll(): void;
+            destroy(): void;
+    }
+}
+
+declare module 'drongo-cc/events/IEventDispatcher' {
+    /**
+        * 事件分发器
+        */
+    export interface IEventDispatcher {
+            /**
+                * 添加事件
+                * @param key
+                * @param caller
+                * @param handler
+                * @param priority 优先级 数字越小优先级越高
+                */
+            on(key: string, handler: (type: string, target?: any, ...arg: any[]) => void, caller: any, priority?: number): void;
+            /**
+                * 删除事件监听
+                * @param key
+                * @param caller
+                * @param handler
+                */
+            off(key: string, handler: (type: string, target?: any, ...arg: any[]) => void, caller: any): void;
+            /**
+                * 删除指定对象所有的事件处理
+                * @param caller
+                */
+            offByCaller(caller: any): void;
+            /**
+                * 删除所有事件监听
+                */
+            offAllEvent(): void;
+            /**
+                * 派发事件
+                * @param key
+                * @param data
+                */
+            emit(key: string, data?: any): void;
+            /**
+                * 是否有事件监听
+                * @param key
+                */
+            hasEvent(key: string): boolean;
+            /**
+                * 是否包含指定函数事件监听
+                * @param key
+                * @param caller
+                * @param handler
+                */
+            hasEventHandler(key: string, handler: (type: string, target?: any, ...arg: any[]) => void, caller: any): boolean;
+    }
+}
+
+declare module 'drongo-cc/events/Event' {
+    import { EventDispatcher } from "drongo-cc/events/EventDispatcher";
+    export class Event {
+            static readonly START: string;
+            static readonly PROGRESS: string;
+            static readonly COMPLETE: string;
+            static readonly ERROR: string;
+            static readonly ADD: string;
+            static readonly REMOVE: string;
+            static readonly UPDATE: string;
+            static readonly CLEAR: string;
+            static readonly State_Changed: string;
+            /**
+                * 获取事件通道
+                * @param key
+                * @returns
+                */
+            static getChannel(key?: string): EventDispatcher;
+            /**
+                * 派发事件
+                * @param eventType
+                * @param data
+                * @param channel   通道
+                */
+            static emit(eventType: string, data?: any, channel?: string): void;
+            /**
+                * 添加事件监听
+                * @param type
+                * @param handler
+                * @param caller
+                * @param priority  优先级
+                * @param channel   事件通道
+                */
+            static on(type: string, handler: (type: string, target?: any, ...arg: any[]) => void, caller: any, priority?: number, channel?: string): void;
+            /**
+                * 删除事件监听
+                * @param type
+                * @param handler
+                * @param caller
+                * @param channel
+                * @returns
+                */
+            static off(type: string, handler: (type: string, target?: any, ...arg: any[]) => void, caller: any, channel?: string): void;
+            /**
+                * 删除指定对象上的所有事件监听
+                * @param caller
+                * @param channel
+                * @returns
+                */
+            static offByCaller(caller: any, channel?: string): void;
+            /**
+                * 删除指定通道上的所有事件监听
+                * @param channel
+                * @returns
+                */
+            static offAll(channel?: string): void;
+    }
+}
+
+declare module 'drongo-cc/events/EventDispatcher' {
+    import { IEventDispatcher } from "drongo-cc/events/IEventDispatcher";
+    /**
+        * 事件分发器(只有一对多的情况下去使用)
+        */
+    export class EventDispatcher implements IEventDispatcher {
+            constructor();
+            /**
+                * 添加事件
+                * @param key
+                * @param caller
+                * @param func
+                * @param priority 优先级（数字越小优先级越高）
+                */
+            on(key: string, handler: (type: string, target?: any, ...arg: any[]) => void, caller: any, priority?: number): void;
+            /**
+                * 删除事件监听
+                * @param key
+                * @param caller
+                * @param handler
+                */
+            off(key: string, handler: (type: string, target?: any, ...arg: any[]) => void, caller: any): void;
+            /**
+                * 删除指定对象所有的事件处理
+                * @param caller
+                */
+            offByCaller(caller: any): void;
+            /**
+                * 删除所有事件监听
+                */
+            offAllEvent(): void;
+            /**
+                * 派发事件
+                * @param key
+                * @param data
+                */
+            emit(key: string, data?: any): void;
+            /**
+                * 是否有事件监听
+                * @param key
+                */
+            hasEvent(key: string): boolean;
+            /**
+                * 是否包含指定函数事件监听
+                * @param key
+                * @param caller
+                * @param func
+                */
+            hasEventHandler(key: string, handler: (type: string, target?: any, ...arg: any[]) => void, caller: any): boolean;
+            destroy(): void;
     }
 }
 
@@ -294,130 +413,112 @@ declare module 'drongo-cc/containers/Dictionary' {
     }
 }
 
-declare module 'drongo-cc/res/Res' {
-    import { Asset, AssetManager } from "cc";
-    import { Pool } from "drongo-cc/utils/Pool";
-    import { ResRef } from "drongo-cc/res/ResRef";
-    import { ResURL } from "drongo-cc/res/ResURL";
-    export type ResLoader = (url: ResURL, bundle: AssetManager.Bundle, progress?: (progress: number) => void, cb?: (err: Error, asset: Asset) => void) => void;
-    export class Res {
-            /**资源对象池 */
-            static resourcePool: Pool<any>;
-            static setResLoader(key: string, loader: ResLoader): void;
-            static getResLoader(key: string): ResLoader;
-            /**
-                * 获取资源引用
-                * @param urls
-                * @param refKey    谁持有该引用
-                * @param progress  进度汇报函数
-                * @returns
-                */
-            static getResRef(urls: ResURL | Array<ResURL>, refKey: string, progress?: (progress: number) => void): Promise<ResRef | Array<ResRef>>;
-            /**
-                * 默认加载器
-                * @param url
-                * @param bundle
-                * @param progress
-                * @param cb
-                */
-            static defaultAssetLoader(url: ResURL, bundle: AssetManager.Bundle, progress?: (progress: number) => void, cb?: (err: Error, asset: any) => void): void;
-    }
-}
-
-declare module 'drongo-cc/res/ResRef' {
-    export class ResRef {
-            /**唯一KEY */
-            key: string;
-            /**引用KEY */
-            refKey: string | undefined;
-            /**资源内容 */
-            content: any;
-            constructor();
-            /**释放 */
-            dispose(): void;
-            get isDispose(): boolean;
-            reset(): void;
-            /**
-                * 彻底销毁(注意内部接口，请勿调用)
-                */
-            destroy(): void;
-    }
-}
-
-declare module 'drongo-cc/task/TaskQueue' {
-    import { EventDispatcher } from "drongo-cc/events/EventDispatcher";
-    import { ITask } from "drongo-cc/task/ITask";
+declare module 'drongo-cc/ticker/ITicker' {
     /**
-      * 任务队列
-      */
-    export class TaskQueue extends EventDispatcher implements ITask {
-        constructor();
-        addTask(value: ITask): void;
-        removeTask(value: ITask): void;
-        start(data?: any): void;
-        destroy(): void;
-    }
-}
-
-declare module 'drongo-cc/task/TaskSequence' {
-    import { EventDispatcher } from "drongo-cc/events/EventDispatcher";
-    import { ITask } from "drongo-cc/task/ITask";
-    /**
-      * 任务序列（并行）
-      */
-    export class TaskSequence extends EventDispatcher implements ITask {
-        constructor();
-        addTask(value: ITask): void;
-        removeTask(value: ITask): void;
-        start(data?: any): void;
-        destroy(): void;
-    }
-}
-
-declare module 'drongo-cc/utils/Debuger' {
-    export class Debuger {
-            /**
-                * 最大保存条数
-                */
-            static MaxCount: number;
-            /**
-                * 设置过滤
-                * @param key
-                * @param isOpen
-                */
-            static debug(key: string, isOpen: boolean): void;
-            /**
-                * 获取已保存的日志
-                * @param type
-                * @returns
-                */
-            static getLogs(type?: string): Array<string>;
-            static log(type: string, msg: any): void;
-            static err(type: string, msg: any): void;
-            static warn(type: string, msg: any): void;
-            static info(type: string, msg: any): void;
-    }
-}
-
-declare module 'drongo-cc/res/ResURL' {
-    import { Asset } from "cc";
-    export type ResURL = string | {
-            url: string;
-            bundle: string;
-            type: string | typeof Asset;
-    };
-    /**
-        * 资源地址转唯一KEY
-        * @param url
-        * @returns
+        * 心跳器接口
         */
-    export function resURL2Key(url: ResURL): string;
+    export interface ITicker {
+            /**
+                * 心跳
+                * @param dt  间隔时间(秒)
+                */
+            tick(dt: number): void;
+    }
+}
+
+declare module 'drongo-cc/ticker/ITickerManager' {
+    import { ITicker } from "drongo-cc/ticker/ITicker";
+    export interface ITickerManager {
+            /**
+                * 添加心跳
+                * @param value
+                */
+            addTicker(value: ITicker): void;
+            /**
+                * 删除心跳
+                * @param value
+                */
+            removeTicker(value: ITicker): void;
+            /**
+                * 下一帧回调
+                * @param value
+                * @param caller
+                */
+            callNextFrame(value: Function, caller: any): void;
+            /**
+                * 清理下一帧回调请求(如果存在的话)
+                * @param value
+                * @param caller
+                */
+            clearNextFrame(value: Function, caller: any): void;
+    }
+}
+
+declare module 'drongo-cc/ticker/TickerManager' {
+    import { ITicker } from "drongo-cc/ticker/ITicker";
+    import { ITickerManager } from "drongo-cc/ticker/ITickerManager";
     /**
-        * 唯一key转URL
-        * @param key
-        * @returns
+        * 心跳管理器
         */
-    export function key2ResURL(key: string): ResURL;
+    export class TickerManager {
+            static KEY: string;
+            /**
+                * 添加
+                * @param value
+                */
+            static addTicker(value: ITicker): void;
+            /**
+                * 删除
+                * @param value
+                */
+            static removeTicker(value: ITicker): void;
+            /**
+                * 下一帧回调
+                * @param value
+                */
+            static callNextFrame(value: Function, caller: any): void;
+            static clearNextFrame(value: Function, caller: any): void;
+            static get impl(): ITickerManager;
+    }
+}
+
+declare module 'drongo-cc/timer/ITimer' {
+    export interface ITimer {
+            /**
+                * 当前时间(推荐使用)
+                */
+            readonly currentTime: number;
+            /**
+                * 绝对时间(注意效率较差，不推荐使用！)
+                */
+            readonly absTime: number;
+            /**
+                * 重新校准
+                */
+            reset(time?: number): void;
+    }
+}
+
+declare module 'drongo-cc/timer/Timer' {
+    /**
+        * 时间工具类
+        */
+    export class Timer {
+            static KEY: string;
+            /**
+                * 当前时间(推荐使用)
+                */
+            static get currentTime(): number;
+            /**
+                * 绝对时间(注意效率较差，不推荐使用！)
+                */
+            static get absTime(): number;
+            /**
+                * 重新校准
+                * @param time  时间起点，如果不设置则获取系统当前时间点
+                */
+            static reset(time?: number): void;
+    }
 }
 
 declare module 'drongo-cc/audios/IAudioChannel' {
@@ -471,148 +572,420 @@ declare module 'drongo-cc/audios/IAudioChannel' {
     }
 }
 
-declare module 'drongo-cc/tick/ITicker' {
-    export interface ITicker {
-        /**
-          * 心跳
-          * @param dt  间隔时间(秒)
-          */
-        tick(dt: number): void;
-    }
-}
-
-declare module 'drongo-cc/tick/ITickManager' {
-    import { ITicker } from "drongo-cc/tick/ITicker";
-    export interface ITickManager {
-            /**
-                * 添加心跳
-                * @param value
-                */
-            addTicker(value: ITicker): void;
-            /**
-                * 删除心跳
-                * @param value
-                */
-            removeTicker(value: ITicker): void;
-            /**
-                * 下一帧回调
-                * @param value
-                * @param caller
-                */
-            callNextFrame(value: Function, caller: any): void;
-            /**
-                * 清理下一帧回调请求(如果存在的话)
-                * @param value
-                * @param caller
-                */
-            clearNextFrame(value: Function, caller: any): void;
-    }
-}
-
-declare module 'drongo-cc/events/EventDispatcher' {
-    import { IEventDispatcher } from "drongo-cc/events/IEventDispatcher";
+declare module 'drongo-cc/audios/IAudioGroup' {
+    import { ResURL } from "drongo-cc/res/ResURL";
+    import { IAudioChannel } from "drongo-cc/audios/IAudioChannel";
     /**
-        * 事件分发器(只有一对多的情况下去使用)
+      * 音频组
+      */
+    export interface IAudioGroup {
+        key: number;
+        volume: number;
+        calculateVolume(): void;
+        mute: boolean;
+        calculateMute(): void;
+        tick(dt: number): void;
+        play(url: ResURL, playedCallBack: Function, volume: number, speed: number, loop: boolean): void;
+        getPlayingChannel(url: ResURL): IAudioChannel;
+        stopAll(): void;
+    }
+}
+
+declare module 'drongo-cc/audios/IAudioManager' {
+    import { ResURL } from "drongo-cc/res/ResURL";
+    import { IAudioChannel } from "drongo-cc/audios/IAudioChannel";
+    /**
+        * 音频管理器
         */
-    export class EventDispatcher implements IEventDispatcher {
-            constructor();
+    export interface IAudioManager {
             /**
-                * 添加事件
-                * @param key
-                * @param caller
-                * @param func
-                * @param priority 优先级（数字越小优先级越高）
+                * 总音量
                 */
-            on(key: string, handler: (type: string, target?: any, ...arg: any[]) => void, caller: any, priority?: number): void;
+            volume: number;
             /**
-                * 删除事件监听
-                * @param key
-                * @param caller
-                * @param handler
+                * 音乐音量
                 */
-            off(key: string, handler: (type: string, target?: any, ...arg: any[]) => void, caller: any): void;
+            musicVolume: number;
             /**
-                * 删除指定对象所有的事件处理
-                * @param caller
+                * 声音音量
                 */
-            offByCaller(caller: any): void;
+            soundVolume: number;
+            mute: boolean;
+            muteMusic: boolean;
+            muteSound: boolean;
             /**
-                * 删除所有事件监听
+                * 播放音乐
+                * @param value
                 */
-            offAllEvent(): void;
+            playMusic(url: ResURL, volume: number, speed: number, loop: boolean): void;
             /**
-                * 派发事件
-                * @param key
-                * @param data
+                * 停止音乐
                 */
-            emit(key: string, data?: any): void;
+            stopMusic(): void;
             /**
-                * 是否有事件监听
-                * @param key
+                * 暂停
                 */
-            hasEvent(key: string): boolean;
+            pauseMusic(): void;
             /**
-                * 是否包含指定函数事件监听
-                * @param key
-                * @param caller
-                * @param func
+                * 继续播放
                 */
-            hasEventHandler(key: string, handler: (type: string, target?: any, ...arg: any[]) => void, caller: any): boolean;
+            resumeMusic(): void;
+            /**
+                * 播放声音
+                * @param value
+                */
+            playSound(url: ResURL, playedCallBack: Function, volume: number, speed: number, loop: boolean): void;
+            /**
+                * 获取正在播放指定音频的轨道
+                * @param url
+                */
+            getPlaying(url: ResURL): IAudioChannel;
+    }
+}
+
+declare module 'drongo-cc/audios/AudioChannel' {
+    import { AudioSource, Node } from "cc";
+    import { ResURL } from "drongo-cc/res/ResURL";
+    import { IAudioChannel } from "drongo-cc/audios/IAudioChannel";
+    export class AudioChannel implements IAudioChannel {
+        volume: number;
+        constructor(node: Node, source?: AudioSource);
+        get url(): ResURL;
+        get mute(): boolean;
+        set mute(value: boolean);
+        play(url: ResURL, playedComplete: Function, volume: number, fade?: {
+            time: number;
+            startVolume?: number;
+            complete?: Function;
+            completeStop?: boolean;
+        }, loop?: boolean, speed?: number): void;
+        stop(): void;
+        get isPlaying(): boolean;
+        /**
+          *
+          * @param time
+          * @param endVolume
+          * @param startVolume
+          * @param complete
+          * @param completeStop
+          * @returns
+          */
+        fade(time: number, endVolume: number, startVolume?: number, complete?: Function, completeStop?: boolean): void;
+        tick(dt: number): void;
+        resume(): void;
+        pause(): void;
+        get curVolume(): number;
+    }
+}
+
+declare module 'drongo-cc/audios/AudioManager' {
+    import { ResURL } from "drongo-cc/res/ResURL";
+    import { IAudioChannel } from "drongo-cc/audios/IAudioChannel";
+    /**
+        * 音频管理器
+        */
+    export class AudioManager {
+            /**
+                * 全局唯一注入KEY
+                */
+            static KEY: string;
+            /**
+                * 最大音频轨道数量
+                */
+            static MAX_SOUND_CHANNEL_COUNT: number;
+            /**
+                * 总音量
+                */
+            static get volume(): number;
+            static set volume(value: number);
+            /**
+                * 音乐音量
+                */
+            static get musicVolume(): number;
+            static set musicVolume(value: number);
+            /**
+                * 声音音量
+                */
+            static get soundVolume(): number;
+            static set soundVolume(value: number);
+            /**
+                * 静音总开关
+                */
+            static get mute(): boolean;
+            static set mute(value: boolean);
+            /**
+                * 音乐静音开关
+                */
+            static get muteMusic(): boolean;
+            static set muteMusic(value: boolean);
+            /**
+                * 声音静音开关
+                */
+            static get muteSound(): boolean;
+            static set muteSound(value: boolean);
+            /**
+                * 播放音乐
+                * @param value
+                */
+            static playMusic(url: ResURL, volume?: number, speed?: number, loop?: boolean): void;
+            /**
+                * 停止音乐
+                */
+            static stopMusic(): void;
+            /**
+                * 暂停
+                */
+            static pauseMusic(): void;
+            /**
+                * 继续播放
+                */
+            static resumeMusic(): void;
+            /**
+                * 播放声音
+                * @param value
+                */
+            static playSound(url: ResURL, playedCallBack: Function, volume: number, speed: number, loop: boolean): void;
+            /**
+                * 获取正在播放指定音频的轨道
+                * @param url
+                */
+            static getPlaying(url: ResURL): IAudioChannel;
+    }
+}
+
+declare module 'drongo-cc/res/IResource' {
+    import { ResRef } from "drongo-cc/res/ResRef";
+    /**
+        * 资源接口
+        */
+    export interface IResource {
+            /**
+                * 资源全局唯一KEY
+                */
+            key: string;
+            /**
+                * 最后一次操作的时间点
+                */
+            lastOpTime: number;
+            /**
+                * 资源
+                */
+            content: any;
+            /**
+                * 资源引用数量
+                */
+            readonly refCount: number;
+            /**
+                * 资源引用列表长度
+                */
+            readonly refLength: number;
+            /**
+                * 添加一个引用
+                * @param refKey
+                */
+            addRef(refKey?: string): ResRef;
+            /**
+                * 删除引用
+                * @param value
+                */
+            removeRef(value: ResRef): void;
+            /**销毁*/
             destroy(): void;
     }
 }
 
-declare module 'drongo-cc/utils/Pool' {
+declare module 'drongo-cc/res/IResManager' {
+    import { ITicker } from "drongo-cc/ticker/ITicker";
+    import { IResource } from "drongo-cc/res/IResource";
+    import { ResRef } from "drongo-cc/res/ResRef";
     /**
-        * 可重复利用对象接口
+        * 资源管理器接口
         */
-    export interface IRecyclable {
+    export interface IResManager extends ITicker {
             /**
-                * 重置到可复用状态
+                * 添加一个资源
+                * @param value
                 */
+            addRes(value: IResource): void;
+            /**
+                * 获取资源(内部接口)
+                * @param key
+                */
+            _getRes(key: string): IResource;
+            /**
+                * 是否包含该资源
+                * @param key
+                */
+            hasRes(key: string): boolean;
+            /**
+                * 添加并返回一个资源引用
+                * @param key
+                * @param refKey
+                */
+            addResRef(key: string, refKey?: string): ResRef;
+            /**
+                * 删除一个资源引用
+                * @param value
+                */
+            removeResRef(value: ResRef): void;
+            /**
+                * 资源清理
+                */
+            gc(ignoreTime?: boolean): void;
+            /**
+                * 资源列表
+                */
+            readonly resList: Array<IResource>;
+    }
+}
+
+declare module 'drongo-cc/res/ResManager' {
+    import { IResource } from "drongo-cc/res/IResource";
+    import { ResRef } from "drongo-cc/res/ResRef";
+    export class ResManager {
+            static KEY: string;
+            /**
+                * 资源保留长时间GC
+                */
+            static GC_TIME: number;
+            /**
+                * 自动清理
+                */
+            static AUTO_GC: boolean;
+            /**
+                * 添加一个资源
+                * @param value
+                */
+            static addRes(value: IResource): void;
+            /**
+                * 是否包含该资源
+                * @param key
+                */
+            static hasRes(key: string): boolean;
+            /**
+                * 获取资源（内部接口）
+                * @param key
+                * @returns
+                */
+            static _getRes(key: string): IResource;
+            /**
+                * 添加并返回一个资源引用
+                * @param key
+                * @param refKey
+                */
+            static addResRef(key: string, refKey?: string): ResRef;
+            /**
+                * 删除一个资源引用
+                * @param value
+                */
+            static removeResRef(value: ResRef): void;
+            /**
+                * 资源清理
+                */
+            static gc(ignoreTime?: boolean): void;
+            /**
+                * 资源列表
+                * @returns
+                */
+            static resList(): Array<IResource>;
+    }
+}
+
+declare module 'drongo-cc/res/Resource' {
+    import { IRecyclable } from "drongo-cc/utils/Pool";
+    import { IResource } from "drongo-cc/res/IResource";
+    import { ResRef } from "drongo-cc/res/ResRef";
+    export class Resource implements IResource, IRecyclable {
+            /**
+                * 状态 0 正常 1待删除
+                */
+            state: number;
+            key: string;
+            lastOpTime: number;
+            constructor();
+            reset(): void;
+            set content(value: any);
+            get content(): any;
+            addRef(refKey?: string): ResRef;
+            removeRef(value: ResRef): void;
+            destroy(): void;
+            /**
+                * 引用数量
+                */
+            get refCount(): number;
+            /**
+                * 引用列表长度
+                */
+            get refLength(): number;
+    }
+}
+
+declare module 'drongo-cc/res/Res' {
+    import { AssetManager } from "cc";
+    import { ResRef } from "drongo-cc/res/ResRef";
+    import { ResURL } from "drongo-cc/res/ResURL";
+    export type ResLoader = (url: ResURL, bundle: AssetManager.Bundle, refKey: string, progress?: (progress: number) => void, cb?: (err: Error, resRef: ResRef) => void) => void;
+    export class Res {
+            static setResLoader(key: string, loader: ResLoader): void;
+            static getResLoader(key: string): ResLoader;
+            /**
+                * 获取资源引用
+                * @param urls
+                * @param refKey    谁持有该引用
+                * @param progress  进度汇报函数
+                * @returns
+                */
+            static getResRef(urls: ResURL | Array<ResURL>, refKey: string, progress?: (progress: number) => void): Promise<ResRef | Array<ResRef>>;
+            /**
+                * 默认加载器
+                * @param url
+                * @param bundle
+                * @param progress
+                * @param cb
+                */
+            static defaultAssetLoader(url: ResURL, bundle: AssetManager.Bundle, refKey: string, progress?: (progress: number) => void, cb?: (err?: Error, resRef?: ResRef) => void): void;
+    }
+}
+
+declare module 'drongo-cc/res/ResRef' {
+    export class ResRef {
+            /**唯一KEY */
+            key: string;
+            /**引用KEY */
+            refKey: string | undefined;
+            /**资源内容 */
+            content: any;
+            constructor();
+            /**释放 */
+            dispose(): void;
+            get isDispose(): boolean;
             reset(): void;
             /**
-                * 销毁
+                * 彻底销毁(注意内部接口，请勿调用)
                 */
             destroy(): void;
     }
+}
+
+declare module 'drongo-cc/res/ResURL' {
+    import { Asset } from "cc";
+    export type ResURL = string | {
+            url: string;
+            bundle: string;
+            type: string | typeof Asset;
+    };
     /**
-        * 对象池
+        * 资源地址转唯一KEY
+        * @param url
+        * @returns
         */
-    export class Pool<T extends IRecyclable> {
-            constructor(clazz: {
-                    new (): T;
-            }, maxCount?: number);
-            /**
-             * 在池中的对象
-             */
-            get count(): number;
-            /**
-                * 使用中的数量
-                */
-            get usingCount(): number;
-            /**
-                * 分配
-                * @returns
-                */
-            allocate(): T;
-            /**
-                * 回收到池中
-                * @param value
-                * @returns
-                */
-            recycle(value: T): void;
-            /**
-                * 批量回收
-                * @param list
-                */
-            recycleList(list: Array<T>): void;
-            /**
-                * 将所有使用中的对象都回收到池中
-                */
-            recycleAll(): void;
-            destroy(): void;
-    }
+    export function url2Key(url: ResURL): string;
+    /**
+        * 唯一key转URL
+        * @param key
+        * @returns
+        */
+    export function key2URL(key: string): ResURL;
 }
 
 declare module 'drongo-cc/task/ITask' {
@@ -633,53 +1006,33 @@ declare module 'drongo-cc/task/ITask' {
     }
 }
 
-declare module 'drongo-cc/events/IEventDispatcher' {
+declare module 'drongo-cc/task/TaskQueue' {
+    import { EventDispatcher } from "drongo-cc/events/EventDispatcher";
+    import { ITask } from "drongo-cc/task/ITask";
     /**
-        * 事件分发器
-        */
-    export interface IEventDispatcher {
-            /**
-                * 添加事件
-                * @param key
-                * @param caller
-                * @param handler
-                * @param priority 优先级 数字越小优先级越高
-                */
-            on(key: string, handler: (type: string, target?: any, ...arg: any[]) => void, caller: any, priority?: number): void;
-            /**
-                * 删除事件监听
-                * @param key
-                * @param caller
-                * @param handler
-                */
-            off(key: string, handler: (type: string, target?: any, ...arg: any[]) => void, caller: any): void;
-            /**
-                * 删除指定对象所有的事件处理
-                * @param caller
-                */
-            offByCaller(caller: any): void;
-            /**
-                * 删除所有事件监听
-                */
-            offAllEvent(): void;
-            /**
-                * 派发事件
-                * @param key
-                * @param data
-                */
-            emit(key: string, data?: any): void;
-            /**
-                * 是否有事件监听
-                * @param key
-                */
-            hasEvent(key: string): boolean;
-            /**
-                * 是否包含指定函数事件监听
-                * @param key
-                * @param caller
-                * @param handler
-                */
-            hasEventHandler(key: string, handler: (type: string, target?: any, ...arg: any[]) => void, caller: any): boolean;
+      * 任务队列
+      */
+    export class TaskQueue extends EventDispatcher implements ITask {
+        constructor();
+        addTask(value: ITask): void;
+        removeTask(value: ITask): void;
+        start(data?: any): void;
+        destroy(): void;
+    }
+}
+
+declare module 'drongo-cc/task/TaskSequence' {
+    import { EventDispatcher } from "drongo-cc/events/EventDispatcher";
+    import { ITask } from "drongo-cc/task/ITask";
+    /**
+      * 任务序列（并行）
+      */
+    export class TaskSequence extends EventDispatcher implements ITask {
+        constructor();
+        addTask(value: ITask): void;
+        removeTask(value: ITask): void;
+        start(data?: any): void;
+        destroy(): void;
     }
 }
 

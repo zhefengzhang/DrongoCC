@@ -1,8 +1,8 @@
 
 import { List } from "../containers/List";
 import { Dictionary } from "../drongo-cc";
-import { TickManager } from "../tick/TickerManager";
-import { Timer } from "../utils/Timer";
+import { TickerManager } from "../ticker/TickerManager";
+import { Timer } from "../timer/Timer";
 import { IResManager } from "./IResManager";
 import { IResource } from "./IResource";
 import { ResManager } from "./ResManager";
@@ -14,7 +14,7 @@ import { ResRef } from "./ResRef";
  * 默认资源管理器
  * @internal
  */
-export class ResourceManagerImpl implements IResManager {
+export class ResManagerImpl implements IResManager {
 
     /**
      * 资源
@@ -26,7 +26,7 @@ export class ResourceManagerImpl implements IResManager {
     protected _waitDestory: List<IResource> = new List<IResource>();
 
     constructor() {
-        TickManager.addTicker(this);
+        TickerManager.addTicker(this);
     }
 
     tick(dt: number): void {
@@ -47,6 +47,10 @@ export class ResourceManagerImpl implements IResManager {
 
     hasRes(key: string): boolean {
         return this.__resDic.has(key);
+    }
+
+    _getRes(key: string): IResource {
+        return this.__resDic.get(key);
     }
 
     addResRef(key: string, refKey?: string): ResRef {
@@ -102,7 +106,7 @@ export class ResourceManagerImpl implements IResManager {
      */
     protected destoryRes(value: IResource): void {
         this.__resDic.delete(value.key);
-        value.destory();
+        value.destroy();
     }
 
     get resList(): Array<IResource> {

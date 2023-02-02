@@ -1,19 +1,7 @@
-import { Injector } from "./Injector";
+import { Injector } from "../utils/Injector";
+import { ITimer } from "./ITimer";
+import { TimerImpl } from "./TimerImpl";
 
-export interface ITimer{
-    /**
-     * 当前时间(推荐使用)
-     */
-    readonly currentTime: number;
-    /**
-     * 绝对时间(注意效率较差，不推荐使用！)
-     */
-    readonly absTime: number;
-    /**
-     * 重新校准
-     */
-    reset(): void;
-}
 
 /**
  * 时间工具类
@@ -27,7 +15,7 @@ export class Timer {
     static get currentTime(): number {
         return this.impl.currentTime;
     }
-    
+
     /**
      * 绝对时间(注意效率较差，不推荐使用！)
      */
@@ -37,9 +25,10 @@ export class Timer {
 
     /**
      * 重新校准
+     * @param time  时间起点，如果不设置则获取系统当前时间点
      */
-    static reset(): void {
-        this.impl.reset();
+    static reset(time?: number): void {
+        this.impl.reset(time);
     }
 
     private static __impl: ITimer;
@@ -48,7 +37,7 @@ export class Timer {
             this.__impl = Injector.getInject(this.KEY);
         }
         if (this.__impl == null) {
-            throw new Error("未注入：" + this.KEY);
+            this.__impl = new TimerImpl();
         }
         return this.__impl;
     }

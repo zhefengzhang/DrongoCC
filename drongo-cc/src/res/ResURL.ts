@@ -9,8 +9,8 @@ export type ResURL = string | { url: string, bundle: string, type: string|typeof
  * @param url 
  * @returns 
  */
-export function resURL2Key(url: ResURL): string {
-    return ResURLUtils.resURL2Key(url);
+export function url2Key(url: ResURL): string {
+    return ResURLUtils.url2Key(url);
 }
 
 /**
@@ -18,8 +18,8 @@ export function resURL2Key(url: ResURL): string {
  * @param key 
  * @returns 
  */
-export function key2ResURL(key: string): ResURL {
-    return ResURLUtils.key2ResURL(key);
+export function key2URL(key: string): ResURL {
+    return ResURLUtils.key2Url(key);
 }
 
 
@@ -40,7 +40,7 @@ class ResURLUtils {
      * @param key 
      * @returns 
      */
-    static key2ResURL(key: string): ResURL {
+    static key2Url(key: string): ResURL {
         if (key.indexOf("|")) {
             let arr: Array<string> = key.split("|");
             return { url: arr[0], bundle: arr[1], type: this.getAssetType(arr[2]) };
@@ -53,7 +53,7 @@ class ResURLUtils {
      * @param url 
      * @returns 
      */
-    static resURL2Key(url: ResURL): string {
+    static url2Key(url: ResURL): string {
         if (url == null || url == undefined) {
             return "";
         }

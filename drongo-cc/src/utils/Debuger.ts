@@ -1,4 +1,4 @@
-import { Dictionary } from "../drongo-cc";
+import { Dictionary } from "../containers/Dictionary";
 
 
 

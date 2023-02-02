@@ -1,7 +1,7 @@
 import { ITicker } from "./ITicker";
 
 
-export interface ITickManager{
+export interface ITickerManager{
     
     /**
      * 添加心跳

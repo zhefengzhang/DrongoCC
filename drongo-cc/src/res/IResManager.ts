@@ -1,4 +1,4 @@
-import { ITicker } from "../tick/ITicker";
+import { ITicker } from "../ticker/ITicker";
 import { IResource } from "./IResource";
 import { ResRef } from "./ResRef";
 
@@ -14,6 +14,12 @@ export interface IResManager extends ITicker {
      */
     addRes(value: IResource): void;
 
+    /**
+     * 获取资源(内部接口)
+     * @param key 
+     */
+    _getRes(key:string):IResource;
+    
     /**
      * 是否包含该资源
      * @param key 

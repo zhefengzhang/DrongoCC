@@ -36,5 +36,5 @@ export interface IResource {
      */
     removeRef(value: ResRef): void;
     /**销毁*/
-    destory(): void;
+    destroy(): void;
 }

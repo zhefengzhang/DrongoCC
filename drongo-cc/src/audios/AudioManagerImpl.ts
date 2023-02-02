@@ -1,6 +1,6 @@
 import { director, find, Node } from "cc";
-import { TickManager } from "../drongo-cc";
-import { ResURL, resURL2Key } from "../res/ResURL";
+import { TickerManager } from "../ticker/TickerManager";
+import { ResURL, url2Key } from "../res/ResURL";
 import { AudioChannel } from "./AudioChannel";
 import { AudioManager } from "./AudioManager";
 import { IAudioChannel } from "./IAudioChannel";
@@ -24,7 +24,7 @@ export class AudioManagerImpl implements IAudioManager {
         this.__musicChannels = [];
         this.__soundChannels = [];
 
-        TickManager.addTicker(this);
+        TickerManager.addTicker(this);
         this.__audioRoot = find("AudioManager");
         if (this.__audioRoot == null) {
             this.__audioRoot = new Node("AudioManager");
@@ -174,7 +174,7 @@ export class AudioManagerImpl implements IAudioManager {
         //正在播放的轨道
         let current: IAudioChannel = this.__musicChannels[this.__musicChannelIndex];
         if (current && current.isPlaying) {
-            if (resURL2Key(current.url) == resURL2Key(url)) {
+            if (url2Key(current.url) == url2Key(url)) {
                 //播放相同的音乐
                 return;
             }
@@ -234,7 +234,7 @@ export class AudioManagerImpl implements IAudioManager {
     getPlaying(url: ResURL): IAudioChannel {
         for (let index = 0; index < this.__soundChannels.length; index++) {
             const element = this.__soundChannels[index];
-            if (element.isPlaying && resURL2Key(element.url) == resURL2Key(url)) {
+            if (element.isPlaying && url2Key(element.url) == url2Key(url)) {
                 return element;
             }
         }
