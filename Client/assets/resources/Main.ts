@@ -6,7 +6,7 @@ const { ccclass, property } = _decorator;
 @ccclass('Main')
 export class Main extends Component {
     async start() {
-        // fgui.GRoot.create();
+        GRoot.create();
         // Res.getResRef({url:"test",bundle:"resources",type:JsonAsset},"MainScene").then((value:ResRef)=>{
         //     console.log(value.content.json);
         //     value.dispose();
