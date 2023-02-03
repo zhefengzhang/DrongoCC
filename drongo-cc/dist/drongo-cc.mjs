@@ -1,4 +1,4 @@
-import { find, Node, director, Component, AudioSource, Asset, Prefab, instantiate, isValid, assetManager } from 'cc';
+import { sys, find, Node, director, Component as Component$1, SpriteFrame, Texture2D, AudioSource, Asset, Prefab, instantiate, isValid, assetManager } from 'cc';
 
 /**
  * 注入器
@@ -513,7 +513,7 @@ class Debuger {
 /**
  * 最大保存条数
  */
-Debuger.MaxCount = Number.MAX_SAFE_INTEGER;
+Debuger.MaxCount = 1000;
 Debuger.__logs = new Dictionary();
 Debuger.__debuger = new Map();
 
@@ -605,6 +605,758 @@ class Pool {
         this.__cacheStack = null;
         this.__usingArray.length = 0;
         this.__usingArray = null;
+    }
+}
+
+/**
+ * bit位操作
+ */
+class BitFlag {
+    constructor() {
+        this.__flags = 0;
+        this.__elements = [];
+    }
+    add(flag) {
+        this.__flags |= flag;
+        if (this.__elements.indexOf(flag) < 0) {
+            this.__elements.push(flag);
+        }
+    }
+    remove(flag) {
+        this.__flags ^= flag;
+        let index = this.__elements.indexOf(flag);
+        if (index >= 0) {
+            this.__elements.splice(index, 1);
+        }
+    }
+    /**
+     * 是否包含
+     * @param flag
+     * @returns
+     */
+    has(flag) {
+        return (this.__flags & flag) == flag;
+    }
+    /**
+     * 位码
+     */
+    get flags() {
+        return this.__flags;
+    }
+    get elements() {
+        return this.__elements;
+    }
+    destroy() {
+        this.__flags = 0;
+        this.__elements.length = 0;
+        this.__elements = null;
+    }
+}
+
+/**
+ * 本地数据缓存
+ */
+class LocalStorage {
+    /**
+     * 初始化
+     * @param gameName
+     */
+    static init(gameName) {
+        this.__gameName = gameName;
+        let localDataStr = sys.localStorage.getItem(this.__gameName);
+        if (!localDataStr) {
+            this.data = {};
+        }
+        else {
+            this.data = JSON.parse(localDataStr);
+        }
+    }
+    /**
+     * 获取指定数据
+     * @param key
+     * @returns
+     */
+    static getItem(key) {
+        return this.data[key];
+    }
+    /**
+     * 设置指定数据
+     * @param key
+     * @param value
+     */
+    static setItem(key, value) {
+        this.data[key] = value;
+    }
+    /**
+     * 清理
+     * @param key
+     */
+    static clearItem(key) {
+        delete this.data[key];
+    }
+    /**
+     * 清理所有
+     */
+    static clearAll() {
+        this.data = {};
+    }
+    /**
+     * 保存
+     */
+    static save() {
+        //保存到本地
+        let localDataStr = JSON.stringify(this.data);
+        sys.localStorage.setItem(this.__gameName, localDataStr);
+    }
+}
+
+class StringUtils {
+    /**
+     * 是否为空
+     * @param str
+     */
+    static isEmpty(str) {
+        if (str == null || str == undefined || str.length == 0) {
+            return true;
+        }
+        return false;
+    }
+    /**
+     * 参数替换
+     *  @param  str
+     *  @param  rest
+     *
+     *  @example
+     *
+     *  var str:string = "here is some info '{0}' and {1}";
+     *  trace(StringUtil.substitute(str, 15.4, true));
+     *
+     *  // this will output the following string:
+     *  // "here is some info '15.4' and true"
+     */
+    static substitute(str, ...rest) {
+        if (str == null)
+            return '';
+        // Replace all of the parameters in the msg string.
+        var len = rest.length;
+        var args;
+        if (len == 1 && rest[0] instanceof Array) {
+            args = rest[0];
+            len = args.length;
+        }
+        else {
+            args = rest;
+        }
+        for (var i = 0; i < len; i++) {
+            str = str.replace(new RegExp("\\{" + i + "\\}", "g"), args[i]);
+        }
+        return str;
+    }
+    /**
+    * 替换全部字符串
+    * @param string src 源串
+    * @param string from_ch 被替换的字符
+    * @param string to_ch 替换的字符
+    *
+    * @return string 结果字符串
+    */
+    static replaceAll(src, from_ch, to_ch) {
+        return src.split(from_ch).join(to_ch);
+    }
+    /**
+     * 拆分字符串
+     * @param str
+     */
+    static splitString(str, split0, split1) {
+        let args = new Array();
+        let tmp = str.split(split0);
+        tmp.forEach((val, key) => {
+            let s = val.split(split1);
+            args.push(s);
+        });
+        return args;
+    }
+    /**
+     * 获取文件后缀名
+     * @param url
+     */
+    static getFileSuffix(url) {
+        let index = url.lastIndexOf(".");
+        if (index < 0) {
+            throw new Error(url + "没有后缀！！！");
+        }
+        let suixx = url.substring(index + 1);
+        return suixx;
+    }
+    /**
+     * 替换后缀
+     * @param url
+     * @param suff      后缀
+     * @returns
+     */
+    static replaceSuffix(url, suff) {
+        let index = url.lastIndexOf(".");
+        if (index < 0) {
+            throw new Error(url + "没有后缀！！！");
+        }
+        let suixx = url.substring(index + 1);
+        let changeUrl = url.replace(suixx, suff);
+        return changeUrl;
+    }
+}
+
+var FindPosition;
+(function (FindPosition) {
+    FindPosition[FindPosition["ShortSideFit"] = 0] = "ShortSideFit";
+    FindPosition[FindPosition["BottomLeft"] = 1] = "BottomLeft";
+    FindPosition[FindPosition["ContactPoint"] = 2] = "ContactPoint";
+    FindPosition[FindPosition["LongSideFit"] = 3] = "LongSideFit";
+    FindPosition[FindPosition["AreaFit"] = 4] = "AreaFit";
+})(FindPosition || (FindPosition = {}));
+class MaxRectBinPack {
+    /**
+     * 构建方程
+     * @param width {number} 画板宽度
+     * @param height {number} 画板高度
+     * @param allowRotate {boolean} 允许旋转
+     */
+    constructor(width, height, allowRotate) {
+        this.freeRects = [];
+        this.usedRects = [];
+        this.containerHeight = height;
+        this.containerWidth = width;
+        this.allowRotate = allowRotate === true;
+        const rect = new Rect();
+        rect.x = 0;
+        rect.y = 0;
+        rect.width = width;
+        rect.height = height;
+        this.freeRects.push(rect);
+    }
+    /**
+     * 在线算法入口 插入矩形方法
+     * @param width {number}
+     * @param height {number}
+     * @param method {FindPosition}
+     */
+    insert(width, height, method) {
+        // width height 参数合法性检查
+        if (width <= 0 || height <= 0) {
+            throw new Error(`width & height should greater than 0, but got width as ${width}, height as ${height}`);
+        }
+        // method 合法性检查
+        if (method <= FindPosition.ShortSideFit || method >= FindPosition.AreaFit) {
+            method = FindPosition.ShortSideFit;
+        }
+        let newRect = new Rect();
+        const score1 = {
+            value: 0,
+        };
+        const score2 = {
+            value: 0,
+        };
+        switch (method) {
+            case FindPosition.ShortSideFit:
+                newRect = this.findPositionForNewNodeBestShortSideFit(width, height, score1, score2);
+                break;
+            case FindPosition.BottomLeft:
+                newRect = this.findPositionForNewNodeBottomLeft(width, height, score1, score2);
+                break;
+            case FindPosition.ContactPoint:
+                newRect = this.findPositionForNewNodeContactPoint(width, height, score1);
+                break;
+            case FindPosition.LongSideFit:
+                newRect = this.findPositionForNewNodeBestLongSideFit(width, height, score2, score1);
+                break;
+            case FindPosition.AreaFit:
+                newRect = this.findPositionForNewNodeBestAreaFit(width, height, score1, score2);
+                break;
+        }
+        if (newRect.height === 0) {
+            return newRect;
+        }
+        if (this.allowRotate) { // 更新旋转属性
+            if (newRect.height === height && newRect.width === width) {
+                newRect.isRotated = false;
+            }
+            else {
+                newRect.isRotated = true;
+            }
+        }
+        this.placeRectangle(newRect);
+        return newRect;
+    }
+    // /**
+    //  * 算法离线入口 插入一组举行
+    //  * @param rects {Rect[]} 矩形数组
+    //  * @param method {FindPosition} 查找位置的方法
+    //  */
+    // public insertRects(rects: Rect[], method: FindPosition): Rect[] {
+    //     // rects 参数合法性检查
+    //     if (rects && rects.length === 0) {
+    //         throw new Error('rects should be array with length greater than zero');
+    //     }
+    //     // method 合法性检查
+    //     if (method <= FindPosition.ShortSideFit || method >= FindPosition.AreaFit) {
+    //         method = FindPosition.ShortSideFit;
+    //     }
+    //     const result: Rect[] = [];
+    //     while (rects.length > 0) {
+    //         const bestScore1: IScoreCounter = {
+    //             value: Infinity,
+    //         };
+    //         const bestScore2: IScoreCounter = {
+    //             value: Infinity,
+    //         };
+    //         let bestRectIndex = -1;
+    //         let bestNode: Rect;
+    //         for (let i = 0; i < rects.length; ++i) {
+    //             const score1: IScoreCounter = {
+    //                 value: 0,
+    //             };
+    //             const score2: IScoreCounter = {
+    //                 value: 0,
+    //             };
+    //             const newNode: Rect = this.scoreRectangle(
+    //                 rects[i].width,
+    //                 rects[i].height,
+    //                 method,
+    //                 score1,
+    //                 score2,
+    //             );
+    //             if (
+    //                 score1.value < bestScore1.value ||
+    //                 (score1.value === bestScore1.value && score2.value < bestScore2.value)
+    //             ) {
+    //                 bestScore1.value = score1.value;
+    //                 bestScore2.value = score2.value;
+    //                 bestNode = newNode;
+    //                 bestRectIndex = i;
+    //             }
+    //         }
+    //         if (bestRectIndex === -1) {
+    //             return result;
+    //         }
+    //         this.placeRectangle(bestNode);
+    //         bestNode.info = rects[bestRectIndex].info;
+    //         if (this.allowRotate) {
+    //             if (
+    //                 bestNode.height === rects[bestRectIndex].height &&
+    //                 bestNode.width === rects[bestRectIndex].width
+    //             ) {
+    //                 bestNode.isRotated = false;
+    //             } else {
+    //                 bestNode.isRotated = true;
+    //             }
+    //         }
+    //         rects.splice(bestRectIndex, 1);
+    //         result.push(bestNode);
+    //     }
+    //     return result;
+    // }
+    /**
+     * 占有率
+     * @returns
+     */
+    get occupancy() {
+        let usedSurfaceArea = 0;
+        for (const rect of this.usedRects) {
+            usedSurfaceArea += rect.width * rect.height;
+        }
+        return usedSurfaceArea / (this.containerWidth * this.containerHeight);
+    }
+    /**
+     * 擦除节点
+     * @param rect
+     */
+    eraseNoce(rect) {
+        let index = this.usedRects.indexOf(rect);
+        if (index != -1) {
+            this.usedRects.splice(index, 1);
+        }
+        index = this.freeRects.indexOf(rect);
+        if (index == -1) {
+            this.freeRects.push(rect);
+            this.pruneFreeList();
+        }
+    }
+    /**
+     *
+     * @param node
+     */
+    placeRectangle(node) {
+        let numRectanglesToProcess = this.freeRects.length;
+        for (let i = 0; i < numRectanglesToProcess; i++) {
+            if (this.splitFreeNode(this.freeRects[i], node)) {
+                this.freeRects.splice(i, 1);
+                i--;
+                numRectanglesToProcess--;
+            }
+        }
+        this.pruneFreeList();
+        this.usedRects.push(node);
+    }
+    scoreRectangle(width, height, method, score1, score2) {
+        let newNode = new Rect();
+        score1.value = Infinity;
+        score2.value = Infinity;
+        switch (method) {
+            case FindPosition.ShortSideFit:
+                newNode = this.findPositionForNewNodeBestShortSideFit(width, height, score1, score2);
+                break;
+            case FindPosition.BottomLeft:
+                newNode = this.findPositionForNewNodeBottomLeft(width, height, score1, score2);
+                break;
+            case FindPosition.ContactPoint:
+                newNode = this.findPositionForNewNodeContactPoint(width, height, score1);
+                // todo: reverse
+                score1.value = -score1.value; // Reverse since we are minimizing, but for contact point score bigger is better.
+                break;
+            case FindPosition.LongSideFit:
+                newNode = this.findPositionForNewNodeBestLongSideFit(width, height, score2, score1);
+                break;
+            case FindPosition.AreaFit:
+                newNode = this.findPositionForNewNodeBestAreaFit(width, height, score1, score2);
+                break;
+        }
+        // Cannot fit the current Rectangle.
+        if (newNode.height === 0) {
+            score1.value = Infinity;
+            score2.value = Infinity;
+        }
+        return newNode;
+    }
+    findPositionForNewNodeBottomLeft(width, height, bestY, bestX) {
+        this.freeRects;
+        const bestNode = new Rect();
+        bestY.value = Infinity;
+        let topSideY;
+        for (const rect of this.freeRects) {
+            // Try to place the Rectangle in upright (non-flipped) orientation.
+            if (rect.width >= width && rect.height >= height) {
+                topSideY = rect.y + height;
+                if (topSideY < bestY.value ||
+                    (topSideY === bestY.value && rect.x < bestX.value)) {
+                    bestNode.x = rect.x;
+                    bestNode.y = rect.y;
+                    bestNode.width = width;
+                    bestNode.height = height;
+                    bestY.value = topSideY;
+                    bestX.value = rect.x;
+                }
+            }
+            if (this.allowRotate && rect.width >= height && rect.height >= width) {
+                topSideY = rect.y + width;
+                if (topSideY < bestY.value ||
+                    (topSideY === bestY.value && rect.x < bestX.value)) {
+                    bestNode.x = rect.x;
+                    bestNode.y = rect.y;
+                    bestNode.width = height;
+                    bestNode.height = width;
+                    bestY.value = topSideY;
+                    bestX.value = rect.x;
+                }
+            }
+        }
+        return bestNode;
+    }
+    findPositionForNewNodeBestShortSideFit(width, height, bestShortSideFit, bestLongSideFit) {
+        const bestNode = new Rect();
+        bestShortSideFit.value = Infinity;
+        let leftoverHoriz;
+        let leftoverVert;
+        let shortSideFit;
+        let longSideFit;
+        for (const rect of this.freeRects) {
+            // Try to place the Rectangle in upright (non-flipped) orientation.
+            if (rect.width >= width && rect.height >= height) {
+                leftoverHoriz = Math.abs(rect.width - width);
+                leftoverVert = Math.abs(rect.height - height);
+                shortSideFit = Math.min(leftoverHoriz, leftoverVert);
+                longSideFit = Math.max(leftoverHoriz, leftoverVert);
+                if (shortSideFit < bestShortSideFit.value ||
+                    (shortSideFit === bestShortSideFit.value &&
+                        longSideFit < bestLongSideFit.value)) {
+                    bestNode.x = rect.x;
+                    bestNode.y = rect.y;
+                    bestNode.width = width;
+                    bestNode.height = height;
+                    bestShortSideFit.value = shortSideFit;
+                    bestLongSideFit.value = longSideFit;
+                }
+            }
+            let flippedLeftoverHoriz;
+            let flippedLeftoverVert;
+            let flippedShortSideFit;
+            let flippedLongSideFit;
+            if (this.allowRotate && rect.width >= height && rect.height >= width) {
+                flippedLeftoverHoriz = Math.abs(rect.width - height);
+                flippedLeftoverVert = Math.abs(rect.height - width);
+                flippedShortSideFit = Math.min(flippedLeftoverHoriz, flippedLeftoverVert);
+                flippedLongSideFit = Math.max(flippedLeftoverHoriz, flippedLeftoverVert);
+                if (flippedShortSideFit < bestShortSideFit.value ||
+                    (flippedShortSideFit === bestShortSideFit.value &&
+                        flippedLongSideFit < bestLongSideFit.value)) {
+                    bestNode.x = rect.x;
+                    bestNode.y = rect.y;
+                    bestNode.width = height;
+                    bestNode.height = width;
+                    bestShortSideFit.value = flippedShortSideFit;
+                    bestLongSideFit.value = flippedLongSideFit;
+                }
+            }
+        }
+        return bestNode;
+    }
+    findPositionForNewNodeBestLongSideFit(width, height, bestShortSideFit, bestLongSideFit) {
+        const bestNode = new Rect();
+        bestLongSideFit.value = Infinity;
+        let leftoverHoriz;
+        let leftoverVert;
+        let shortSideFit;
+        let longSideFit;
+        for (const rect of this.freeRects) {
+            // Try to place the Rectangle in upright (non-flipped) orientation.
+            if (rect.width >= width && rect.height >= height) {
+                leftoverHoriz = Math.abs(rect.width - width);
+                leftoverVert = Math.abs(rect.height - height);
+                shortSideFit = Math.min(leftoverHoriz, leftoverVert);
+                longSideFit = Math.max(leftoverHoriz, leftoverVert);
+                if (longSideFit < bestLongSideFit.value ||
+                    (longSideFit === bestLongSideFit.value &&
+                        shortSideFit < bestShortSideFit.value)) {
+                    bestNode.x = rect.x;
+                    bestNode.y = rect.y;
+                    bestNode.width = width;
+                    bestNode.height = height;
+                    bestShortSideFit.value = shortSideFit;
+                    bestLongSideFit.value = longSideFit;
+                }
+            }
+            if (this.allowRotate && rect.width >= height && rect.height >= width) {
+                leftoverHoriz = Math.abs(rect.width - height);
+                leftoverVert = Math.abs(rect.height - width);
+                shortSideFit = Math.min(leftoverHoriz, leftoverVert);
+                longSideFit = Math.max(leftoverHoriz, leftoverVert);
+                if (longSideFit < bestLongSideFit.value ||
+                    (longSideFit === bestLongSideFit.value &&
+                        shortSideFit < bestShortSideFit.value)) {
+                    bestNode.x = rect.x;
+                    bestNode.y = rect.y;
+                    bestNode.width = height;
+                    bestNode.height = width;
+                    bestShortSideFit.value = shortSideFit;
+                    bestLongSideFit.value = longSideFit;
+                }
+            }
+        }
+        return bestNode;
+    }
+    findPositionForNewNodeBestAreaFit(width, height, bestAreaFit, bestShortSideFit) {
+        const bestNode = new Rect();
+        bestAreaFit.value = Infinity;
+        let leftoverHoriz;
+        let leftoverVert;
+        let shortSideFit;
+        let areaFit;
+        for (const rect of this.freeRects) {
+            areaFit = rect.width * rect.height - width * height;
+            // Try to place the Rectangle in upright (non-flipped) orientation.
+            if (rect.width >= width && rect.height >= height) {
+                leftoverHoriz = Math.abs(rect.width - width);
+                leftoverVert = Math.abs(rect.height - height);
+                shortSideFit = Math.min(leftoverHoriz, leftoverVert);
+                if (areaFit < bestAreaFit.value ||
+                    (areaFit === bestAreaFit.value &&
+                        shortSideFit < bestShortSideFit.value)) {
+                    bestNode.x = rect.x;
+                    bestNode.y = rect.y;
+                    bestNode.width = width;
+                    bestNode.height = height;
+                    bestShortSideFit.value = shortSideFit;
+                    bestAreaFit.value = areaFit;
+                }
+            }
+            if (this.allowRotate && rect.width >= height && rect.height >= width) {
+                leftoverHoriz = Math.abs(rect.width - height);
+                leftoverVert = Math.abs(rect.height - width);
+                shortSideFit = Math.min(leftoverHoriz, leftoverVert);
+                if (areaFit < bestAreaFit.value ||
+                    (areaFit === bestAreaFit.value &&
+                        shortSideFit < bestShortSideFit.value)) {
+                    bestNode.x = rect.x;
+                    bestNode.y = rect.y;
+                    bestNode.width = height;
+                    bestNode.height = width;
+                    bestShortSideFit.value = shortSideFit;
+                    bestAreaFit.value = areaFit;
+                }
+            }
+        }
+        return bestNode;
+    }
+    commonIntervalLength(i1start, i1end, i2start, i2end) {
+        if (i1end < i2start || i2end < i1start) {
+            return 0;
+        }
+        return Math.min(i1end, i2end) - Math.max(i1start, i2start);
+    }
+    contactPointScoreNode(x, y, width, height) {
+        let score = 0;
+        if (x === 0 || x + width === this.containerWidth) {
+            score += height;
+        }
+        if (y === 0 || y + height === this.containerHeight) {
+            score += width;
+        }
+        for (const rect of this.usedRects) {
+            if (rect.x === x + width || rect.x + rect.width === x) {
+                score += this.commonIntervalLength(rect.y, rect.y + rect.height, y, y + height);
+            }
+            if (rect.y === y + height || rect.y + rect.height === y) {
+                score += this.commonIntervalLength(rect.x, rect.x + rect.width, x, x + width);
+            }
+        }
+        return score;
+    }
+    findPositionForNewNodeContactPoint(width, height, bestContactScore) {
+        const bestNode = new Rect();
+        bestContactScore.value = -1;
+        let score;
+        for (const rect of this.freeRects) {
+            // Try to place the Rectangle in upright (non-flipped) orientation.
+            if (rect.width >= width && rect.height >= height) {
+                score = this.contactPointScoreNode(rect.x, rect.y, width, height);
+                if (score > bestContactScore.value) {
+                    bestNode.x = rect.x;
+                    bestNode.y = rect.y;
+                    bestNode.width = width;
+                    bestNode.height = height;
+                    bestContactScore.value = score;
+                }
+            }
+            if (this.allowRotate && rect.width >= height && rect.height >= width) {
+                score = this.contactPointScoreNode(rect.x, rect.y, height, width);
+                if (score > bestContactScore.value) {
+                    bestNode.x = rect.x;
+                    bestNode.y = rect.y;
+                    bestNode.width = height;
+                    bestNode.height = width;
+                    bestContactScore.value = score;
+                }
+            }
+        }
+        return bestNode;
+    }
+    splitFreeNode(freeNode, usedNode) {
+        const freeRectangles = this.freeRects;
+        // Test with SAT if the Rectangles even intersect.
+        if (usedNode.x >= freeNode.x + freeNode.width ||
+            usedNode.x + usedNode.width <= freeNode.x ||
+            usedNode.y >= freeNode.y + freeNode.height ||
+            usedNode.y + usedNode.height <= freeNode.y) {
+            return false;
+        }
+        let newNode;
+        if (usedNode.x < freeNode.x + freeNode.width &&
+            usedNode.x + usedNode.width > freeNode.x) {
+            // New node at the top side of the used node.
+            if (usedNode.y > freeNode.y &&
+                usedNode.y < freeNode.y + freeNode.height) {
+                newNode = freeNode.clone();
+                newNode.height = usedNode.y - newNode.y;
+                freeRectangles.push(newNode);
+            }
+            // New node at the bottom side of the used node.
+            if (usedNode.y + usedNode.height < freeNode.y + freeNode.height) {
+                newNode = freeNode.clone();
+                newNode.y = usedNode.y + usedNode.height;
+                newNode.height =
+                    freeNode.y + freeNode.height - (usedNode.y + usedNode.height);
+                freeRectangles.push(newNode);
+            }
+        }
+        if (usedNode.y < freeNode.y + freeNode.height &&
+            usedNode.y + usedNode.height > freeNode.y) {
+            // New node at the left side of the used node.
+            if (usedNode.x > freeNode.x && usedNode.x < freeNode.x + freeNode.width) {
+                newNode = freeNode.clone();
+                newNode.width = usedNode.x - newNode.x;
+                freeRectangles.push(newNode);
+            }
+            // New node at the right side of the used node.
+            if (usedNode.x + usedNode.width < freeNode.x + freeNode.width) {
+                newNode = freeNode.clone();
+                newNode.x = usedNode.x + usedNode.width;
+                newNode.width =
+                    freeNode.x + freeNode.width - (usedNode.x + usedNode.width);
+                freeRectangles.push(newNode);
+            }
+        }
+        return true;
+    }
+    pruneFreeList() {
+        const freeRectangles = this.freeRects;
+        for (let i = 0; i < freeRectangles.length; i++) {
+            for (let j = i + 1; j < freeRectangles.length; j++) {
+                if (freeRectangles[i].isIn(freeRectangles[j])) {
+                    freeRectangles.splice(i, 1);
+                    break;
+                }
+                if (freeRectangles[j].isIn(freeRectangles[i])) {
+                    freeRectangles.splice(j, 1);
+                }
+            }
+        }
+    }
+}
+class Rect {
+    constructor() {
+        /**
+         * 起点 x 坐标
+         */
+        this.x = 0;
+        /**
+         * 起点 y 坐标
+         */
+        this.y = 0;
+        /**
+         * 宽度
+         */
+        this.width = 0;
+        /**
+         * 高度
+         */
+        this.height = 0;
+        /**
+         * 当前是否被旋转了
+         */
+        this.isRotated = false;
+    }
+    /**
+     * 克隆
+     */
+    clone() {
+        const cloned = new Rect();
+        cloned.x = this.x;
+        cloned.y = this.y;
+        cloned.height = this.height;
+        cloned.width = this.width;
+        cloned.info = this.info;
+        return cloned;
+    }
+    /**
+     * 矩形是否在另一个矩形内部
+     * @param otherRect {Rect}
+     */
+    isIn(otherRect) {
+        return (this.x >= otherRect.x &&
+            this.y >= otherRect.y &&
+            this.x + this.width <= otherRect.x + otherRect.width &&
+            this.y + this.height <= otherRect.y + otherRect.height);
+    }
+    get isEmpty() {
+        return this.x == 0 && this.y == 0 && this.width == 0 && this.height == 0;
     }
 }
 
@@ -803,7 +1555,7 @@ class TickerManagerImpl {
         this.__tickerManager.clearNextFrame(value, caller);
     }
 }
-class TickManagerComponent extends Component {
+class TickManagerComponent extends Component$1 {
     constructor() {
         super(...arguments);
         this.__tickerList = [];
@@ -1189,6 +1941,22 @@ class ResURLUtils {
         }
         return this.__assetTypes.get(key);
     }
+    static __getURL(key) {
+        let len = key.length;
+        let end = len - 8;
+        //texture
+        let t = key.substring(end);
+        if (t === "/texture") {
+            return key.substring(0, end);
+        }
+        //spriteFrame
+        end = len - 12;
+        t = key.substring(end);
+        if (t === "/spriteFrame") {
+            return key.substring(0, end);
+        }
+        return key;
+    }
     /**
      * 唯一key转URL
      * @param key
@@ -1197,7 +1965,7 @@ class ResURLUtils {
     static key2Url(key) {
         if (key.indexOf("|")) {
             let arr = key.split("|");
-            return { url: arr[0], bundle: arr[1], type: this.getAssetType(arr[2]) };
+            return { url: this.__getURL(arr[0]), bundle: arr[1], type: this.getAssetType(arr[2]) };
         }
         return key;
     }
@@ -1212,6 +1980,12 @@ class ResURLUtils {
         }
         if (typeof url == "string") {
             return url;
+        }
+        if (url.type == SpriteFrame) {
+            return url.url + "/spriteFrame" + "|" + url.bundle + "|" + this.getClassName(url.type);
+        }
+        if (url.type == Texture2D) {
+            return url.url + "/texture" + "|" + url.bundle + "|" + this.getClassName(url.type);
         }
         return url.url + "|" + url.bundle + "|" + this.getClassName(url.type);
     }
@@ -2230,4 +3004,433 @@ class TaskSequence extends EventDispatcher {
     }
 }
 
-export { AudioChannel, AudioManager, Debuger, Dictionary, Event, EventDispatcher, Injector, List, Pool, Res, ResManager, ResRef, Resource, TaskQueue, TaskSequence, TickerManager, Timer, key2URL, url2Key };
+class Matcher extends BitFlag {
+    constructor(flags) {
+        super();
+        for (let index = 0; index < flags.length; index++) {
+            this.add(flags[index]);
+        }
+    }
+}
+
+/**
+ * 必须所有成立
+ */
+class MatcherAllOf extends Matcher {
+}
+
+/**
+ * 任意一个成立
+ */
+class MatcherAnyOf extends Matcher {
+}
+
+/**
+ * 不能包含
+ */
+class MatcherNoneOf extends Matcher {
+}
+
+class Component {
+    /**
+     * 类型
+     */
+    get type() {
+        return 0;
+    }
+    dispose() {
+    }
+}
+
+class Entity {
+    constructor(id, world) {
+        this.__id = id;
+        this.__world = world;
+        this.__components = new Dictionary();
+        this.__componentFlags = new BitFlag();
+    }
+    /**
+     * 添加组件
+     * @param value
+     */
+    addComponent(value) {
+        let list = this.__components.get(value.type);
+        if (list) {
+            let index = list.indexOf(value);
+            if (index >= 0) {
+                throw new Error("重复添加Component到Entity");
+            }
+        }
+        else {
+            list = [];
+            this.__components.set(value.type, list);
+        }
+        let world = true;
+        //如果已经在实体上
+        if (value.entity) {
+            value.entity.__removeComponent(value, false);
+            world = false;
+        }
+        value.entity = this;
+        list.push(value);
+        this.__componentFlags.add(value.type);
+        if (world) {
+            this.__world._addComponent(value);
+        }
+        return value;
+    }
+    /**
+     * 删除组件
+     * @param id
+     */
+    removeComponent(value) {
+        this.__removeComponent(value, true);
+    }
+    /**
+     * 获取组件
+     * @param type
+     */
+    getComponent(type) {
+        let list = this.__components.get(type);
+        if (list && list.length > 0) {
+            return list[0];
+        }
+        return null;
+    }
+    /**
+     * 获取组件列表
+     * @param type
+     * @returns
+     */
+    getComponents(type) {
+        return this.__components.get(type);
+    }
+    __removeComponent(value, world) {
+        let list = this.__components.get(value.type);
+        if (list == null && list.length == 0) {
+            throw new Error("该组件不是属于Entity:" + this.__id);
+        }
+        let index = list.indexOf(value);
+        if (index < 0) {
+            throw new Error("该组件不是属于Entity:" + this.__id);
+        }
+        this.__componentFlags.remove(value.type);
+        if (world) {
+            this.__world._removeComponent(value);
+        }
+        list.splice(index, 1);
+        value.entity = null;
+    }
+    /**
+     * 唯一ID
+     */
+    get id() {
+        return this.__id;
+    }
+    /**
+     * 销毁
+     */
+    dispose() {
+        //从世界中删除组件记录
+        let components = this.__components.elements;
+        let comList;
+        let com;
+        for (let index = 0; index < components.length; index++) {
+            comList = components[index];
+            for (let index = 0; index < comList.length; index++) {
+                com = comList[index];
+                this.__world._removeComponent(com);
+            }
+        }
+        this.__world._removeEntity(this);
+        this.__components = null;
+        this.__world = null;
+        this.__componentFlags.destroy();
+        this.__componentFlags = null;
+    }
+    /**
+     * 是否符合匹配规则
+     * @param group
+     */
+    _matcherGroup(group) {
+        let mainMatcher = false;
+        if (group.matcher instanceof MatcherAllOf) {
+            if (this.__componentFlags.has(group.matcher.flags)) {
+                mainMatcher = true;
+            }
+        }
+        else {
+            if (this.__componentFlags.flags & group.matcher.flags) {
+                mainMatcher = true;
+            }
+        }
+        let noneMatcher = true;
+        if (group.matcherNoneOf) {
+            if (this.__componentFlags.flags & group.matcherNoneOf.flags) {
+                noneMatcher = false;
+            }
+        }
+        return mainMatcher && noneMatcher;
+    }
+}
+
+class Group {
+    constructor() {
+        /**
+         * 编组所匹配的元素(内部接口)
+         */
+        this._entitys = new Dictionary();
+    }
+    init(allOrAny, none) {
+        this.matcher = allOrAny;
+        this.matcherNoneOf = none;
+        if (none) {
+            this.__id = "id:" + this.matcher.flags + "|" + none.flags;
+        }
+        else {
+            this.__id = "id:" + this.matcher.flags;
+        }
+    }
+    get id() {
+        return this.__id;
+    }
+    static create(allOrAny, none) {
+        let result;
+        if (this.__pool.length) {
+            result = this.__pool.shift();
+        }
+        else {
+            result = new Group();
+        }
+        result.init(allOrAny, none);
+        return result;
+    }
+    static recycle(value) {
+        let index = this.__pool.indexOf(value);
+        if (index >= 0) {
+            throw new Error("重复回收!");
+        }
+        this.__pool.push(value);
+    }
+}
+Group.__pool = [];
+
+class System {
+    /**
+     * 系统
+     * @param allOrAny  所有或任意一个包含
+     * @param none      不能包含
+     */
+    constructor(allOrAny, none) {
+        this._group = Group.create(allOrAny, none);
+    }
+    tick(time) {
+    }
+}
+
+class World {
+    constructor() {
+        this.__components = new Dictionary();
+        this.__entitys = new Dictionary();
+        this.__systems = [];
+    }
+    /**
+     * 心跳驱动
+     * @param time
+     */
+    tick(time) {
+        for (var system of this.__systems) {
+            system.tick(time);
+        }
+    }
+    /**
+     * 创建一个实体
+     */
+    createEntity(id) {
+        let entity = new Entity(id, this);
+        this.__entitys.set(entity.id, entity);
+        return entity;
+    }
+    /**
+     * 通过ID获取实体
+     * @param id
+     */
+    getEntity(id) {
+        return this.__entitys.get(id);
+    }
+    /**
+     * 添加系统
+     */
+    addSystem(value) {
+        let index = this.__systems.indexOf(value);
+        if (index >= 0) {
+            throw new Error("重复添加系统");
+        }
+        this.__systems.push(value);
+        //按照编组规则匹配
+        this._matcherGroup(value._group);
+    }
+    /**
+     * 删除系统
+     * @param value
+     */
+    removeSystem(value) {
+        let index = this.__systems.indexOf(value);
+        if (index < 0) {
+            throw new Error("找不到要删除的系统");
+        }
+        this.__systems.splice(index, 1);
+        //回收
+        Group.recycle(value._group);
+    }
+    /**
+     * 根据类型获取组件列表
+     * @param type
+     */
+    getComponent(type) {
+        return this.__components.get(type);
+    }
+    //=====================================内部接口=======================================================//
+    _matcherGroup(group) {
+        //通过主匹配规则筛选出最短的
+        for (let index = 0; index < group.matcher.elements.length; index++) {
+            group.matcher.elements[index];
+            {
+                continue;
+            }
+        }
+        {
+            return;
+        }
+    }
+    /**
+     * 内部接口，请勿调用
+     * @param com
+     */
+    _addComponent(com) {
+        let list = this.__components.get(com.type);
+        if (list == null) {
+            list = [];
+            this.__components.set(com.type, list);
+        }
+        let index = list.indexOf(com);
+        if (index >= 0) {
+            throw new Error("重复添加组件！");
+        }
+        list.push(com);
+        for (let index = 0; index < this.__systems.length; index++) {
+            const system = this.__systems[index];
+            //已经在里面了，就不管这个组了
+            if (system._group._entitys.has(com.entity.id)) {
+                continue;
+            }
+            if (com.entity._matcherGroup(system._group)) {
+                system._group._entitys.set(com.entity.id, com.entity);
+            }
+        }
+    }
+    /**
+     * 内部接口，请勿调用
+     * @param com
+     */
+    _removeComponent(com) {
+        let list = this.__components.get(com.type);
+        if (list == null) {
+            return;
+        }
+        let index = list.indexOf(com);
+        if (index < 0) {
+            throw new Error("找不到要删除的组件");
+        }
+        list.splice(index, 0);
+        for (let index = 0; index < this.__systems.length; index++) {
+            const system = this.__systems[index];
+            if (system._group._entitys.has(com.entity.id)) {
+                system._group._entitys.delete(com.entity.id);
+            }
+        }
+    }
+    /**
+     * 内部接口，请勿调用
+     * @param value
+     */
+    _removeEntity(value) {
+        if (!this.__entitys.has(value.id)) {
+            throw new Error("找不到要删除的entity:" + value.id);
+        }
+        this.__entitys.delete(value.id);
+    }
+}
+
+/**
+ * 状态机
+ */
+class FSM extends EventDispatcher {
+    constructor(owner, name) {
+        super();
+        this.owner = owner;
+        this.__name = name;
+        this.__states = new Map();
+    }
+    tick(dt) {
+        if (this.__current) {
+            this.__current.tick(dt);
+        }
+    }
+    /**
+     * 添加
+     * @param key
+     * @param v
+     */
+    addState(key, v) {
+        this.__states.set(key, v);
+        v.init(this);
+    }
+    /**
+     * 切换状态
+     * @param value
+     * @param data
+     * @returns
+     */
+    switchState(value, data) {
+        if (this.__state == value) {
+            return;
+        }
+        let oldKey = this.__state;
+        let old = this.__current;
+        if (old) {
+            if (this.debug) {
+                Debuger.log("FSM", this.__name + " 所属:" + this.owner.name + " 退出状态==>" + this.__current.name);
+            }
+            old.exit();
+        }
+        this.__current = null;
+        if (!this.__states.has(value)) {
+            throw new Error("状态机:" + this.__name + " 所属:" + this.owner.name + "未找到状态==>" + value);
+        }
+        this.__state = value;
+        this.__current = this.__states.get(value);
+        if (this.debug) {
+            Debuger.log("FSM", this.__name + " 所属:" + this.owner.name + " 进入状态==>" + this.__current.name);
+        }
+        this.__current.enter(data);
+        this.emit(Event.State_Changed, oldKey);
+    }
+    get state() {
+        return this.__state;
+    }
+    get current() {
+        return this.__current;
+    }
+    destroy() {
+        if (this.__current) {
+            this.__current.exit();
+        }
+        this.__states.forEach(element => {
+            element.destroy();
+        });
+        this.__states.clear();
+    }
+}
+
+export { AudioChannel, AudioManager, BitFlag, Component, Debuger, Dictionary, Entity, Event, EventDispatcher, FSM, FindPosition, Group, Injector, List, LocalStorage, Matcher, MatcherAllOf, MatcherAnyOf, MatcherNoneOf, MaxRectBinPack, Pool, Rect, Res, ResManager, ResRef, Resource, StringUtils, System, TaskQueue, TaskSequence, TickerManager, Timer, World, key2URL, url2Key };

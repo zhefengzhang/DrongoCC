@@ -6,6 +6,10 @@ declare module 'drongo-cc' {
     export { Injector } from "drongo-cc/utils/Injector";
     export { Debuger } from "drongo-cc/utils/Debuger";
     export { Pool } from "drongo-cc/utils/Pool";
+    export { BitFlag } from "drongo-cc/utils/BitFlag";
+    export { LocalStorage } from "drongo-cc/utils/LocalStorage";
+    export { StringUtils } from "drongo-cc/utils/StringUtils";
+    export { MaxRectBinPack, FindPosition, Rect } from "drongo-cc/utils/MaxRectsBinPack";
     export { IEventDispatcher } from "drongo-cc/events/IEventDispatcher";
     export { Event } from "drongo-cc/events/Event";
     export { EventDispatcher } from "drongo-cc/events/EventDispatcher";
@@ -31,6 +35,18 @@ declare module 'drongo-cc' {
     export { ITask } from "drongo-cc/task/ITask";
     export { TaskQueue } from "drongo-cc/task/TaskQueue";
     export { TaskSequence } from "drongo-cc/task/TaskSequence";
+    export { IMatcher } from "drongo-cc/entitys/matchers/IMatcher";
+    export { Matcher } from "drongo-cc/entitys/matchers/Matcher";
+    export { MatcherAllOf } from "drongo-cc/entitys/matchers/MatcherAllOf";
+    export { MatcherAnyOf } from "drongo-cc/entitys/matchers/MatcherAnyOf";
+    export { MatcherNoneOf } from "drongo-cc/entitys/matchers/MatcherNoneOf";
+    export { Component } from "drongo-cc/entitys/Component";
+    export { Entity } from "drongo-cc/entitys/Entity";
+    export { Group } from "drongo-cc/entitys/Group";
+    export { System } from "drongo-cc/entitys/System";
+    export { World } from "drongo-cc/entitys/World";
+    export { IState } from "drongo-cc/fsm/IState";
+    export { FSM } from "drongo-cc/fsm/FSM";
 }
 
 declare module 'drongo-cc/utils/Injector' {
@@ -126,6 +142,189 @@ declare module 'drongo-cc/utils/Pool' {
                 */
             recycleAll(): void;
             destroy(): void;
+    }
+}
+
+declare module 'drongo-cc/utils/BitFlag' {
+    /**
+        * bit位操作
+        */
+    export class BitFlag {
+            constructor();
+            add(flag: number): void;
+            remove(flag: number): void;
+            /**
+                * 是否包含
+                * @param flag
+                * @returns
+                */
+            has(flag: number): boolean;
+            /**
+                * 位码
+                */
+            get flags(): number;
+            get elements(): Array<number>;
+            destroy(): void;
+    }
+}
+
+declare module 'drongo-cc/utils/LocalStorage' {
+    /**
+        * 本地数据缓存
+        */
+    export class LocalStorage {
+            /**
+                * 初始化
+                * @param gameName
+                */
+            static init(gameName: string): void;
+            /**
+                * 获取指定数据
+                * @param key
+                * @returns
+                */
+            static getItem(key: string): any;
+            /**
+                * 设置指定数据
+                * @param key
+                * @param value
+                */
+            static setItem(key: string, value: any): void;
+            /**
+                * 清理
+                * @param key
+                */
+            static clearItem(key: string): void;
+            /**
+                * 清理所有
+                */
+            static clearAll(): void;
+            /**
+                * 保存
+                */
+            static save(): void;
+    }
+}
+
+declare module 'drongo-cc/utils/StringUtils' {
+    export class StringUtils {
+            /**
+                * 是否为空
+                * @param str
+                */
+            static isEmpty(str: string): boolean;
+            /**
+                * 参数替换
+                *  @param  str
+                *  @param  rest
+                *
+                *  @example
+                *
+                *  var str:string = "here is some info '{0}' and {1}";
+                *  trace(StringUtil.substitute(str, 15.4, true));
+                *
+                *  // this will output the following string:
+                *  // "here is some info '15.4' and true"
+                */
+            static substitute(str: string, ...rest: any[]): string;
+            /**
+             * 替换全部字符串
+             * @param string src 源串
+             * @param string from_ch 被替换的字符
+             * @param string to_ch 替换的字符
+             *
+             * @return string 结果字符串
+             */
+            static replaceAll(src: string, from_ch: string, to_ch: string): string;
+            /**
+                * 拆分字符串
+                * @param str
+                */
+            static splitString(str: string, split0: string, split1: string): string[][];
+            /**
+                * 获取文件后缀名
+                * @param url
+                */
+            static getFileSuffix(url: string): string;
+            /**
+                * 替换后缀
+                * @param url
+                * @param suff      后缀
+                * @returns
+                */
+            static replaceSuffix(url: string, suff: string): string;
+    }
+}
+
+declare module 'drongo-cc/utils/MaxRectsBinPack' {
+    export enum FindPosition {
+            ShortSideFit = 0,
+            BottomLeft = 1,
+            ContactPoint = 2,
+            LongSideFit = 3,
+            AreaFit = 4
+    }
+    export class MaxRectBinPack {
+            /**
+                * 构建方程
+                * @param width {number} 画板宽度
+                * @param height {number} 画板高度
+                * @param allowRotate {boolean} 允许旋转
+                */
+            constructor(width: number, height: number, allowRotate?: boolean);
+            /**
+                * 在线算法入口 插入矩形方法
+                * @param width {number}
+                * @param height {number}
+                * @param method {FindPosition}
+                */
+            insert(width: number, height: number, method: FindPosition): Rect;
+            /**
+                * 占有率
+                * @returns
+                */
+            get occupancy(): number;
+            /**
+                * 擦除节点
+                * @param rect
+                */
+            eraseNoce(rect: Rect): void;
+    }
+    export class Rect {
+            /**
+                * 起点 x 坐标
+                */
+            x: number;
+            /**
+                * 起点 y 坐标
+                */
+            y: number;
+            /**
+                * 宽度
+                */
+            width: number;
+            /**
+                * 高度
+                */
+            height: number;
+            /**
+                * 当前是否被旋转了
+                */
+            isRotated: boolean;
+            /**
+                * 自定义信息
+                */
+            info: any;
+            /**
+                * 克隆
+                */
+            clone(): Rect;
+            /**
+                * 矩形是否在另一个矩形内部
+                * @param otherRect {Rect}
+                */
+            isIn(otherRect: Rect): boolean;
+            get isEmpty(): boolean;
     }
 }
 
@@ -1033,6 +1232,258 @@ declare module 'drongo-cc/task/TaskSequence' {
         removeTask(value: ITask): void;
         start(data?: any): void;
         destroy(): void;
+    }
+}
+
+declare module 'drongo-cc/entitys/matchers/IMatcher' {
+    export interface IMatcher {
+        readonly flags: number;
+        readonly elements: Array<number>;
+    }
+}
+
+declare module 'drongo-cc/entitys/matchers/Matcher' {
+    import { BitFlag } from "drongo-cc/utils/BitFlag";
+    import { IMatcher } from "drongo-cc/entitys/matchers/IMatcher";
+    export class Matcher extends BitFlag implements IMatcher {
+        constructor(flags: Array<number>);
+    }
+}
+
+declare module 'drongo-cc/entitys/matchers/MatcherAllOf' {
+    import { Matcher } from "drongo-cc/entitys/matchers/Matcher";
+    /**
+      * 必须所有成立
+      */
+    export class MatcherAllOf extends Matcher {
+    }
+}
+
+declare module 'drongo-cc/entitys/matchers/MatcherAnyOf' {
+    import { Matcher } from "drongo-cc/entitys/matchers/Matcher";
+    /**
+      * 任意一个成立
+      */
+    export class MatcherAnyOf extends Matcher {
+    }
+}
+
+declare module 'drongo-cc/entitys/matchers/MatcherNoneOf' {
+    import { Matcher } from "drongo-cc/entitys/matchers/Matcher";
+    /**
+      * 不能包含
+      */
+    export class MatcherNoneOf extends Matcher {
+    }
+}
+
+declare module 'drongo-cc/entitys/Component' {
+    import { Entity } from "drongo-cc/entitys/Entity";
+    export class Component {
+            /**
+                * 所属实体
+                */
+            entity: Entity;
+            /**
+                * 类型
+                */
+            get type(): number;
+            dispose(): void;
+    }
+}
+
+declare module 'drongo-cc/entitys/Entity' {
+    import { Component } from "drongo-cc/entitys/Component";
+    import { Group } from "drongo-cc/entitys/Group";
+    import { World } from "drongo-cc/entitys/World";
+    export class Entity {
+            constructor(id: string, world: World);
+            /**
+                * 添加组件
+                * @param value
+                */
+            addComponent(value: Component): Component;
+            /**
+                * 删除组件
+                * @param id
+                */
+            removeComponent(value: Component): void;
+            /**
+                * 获取组件
+                * @param type
+                */
+            getComponent(type: number): Component;
+            /**
+                * 获取组件列表
+                * @param type
+                * @returns
+                */
+            getComponents(type: number): Array<Component>;
+            /**
+                * 唯一ID
+                */
+            get id(): string;
+            /**
+                * 销毁
+                */
+            dispose(): void;
+            /**
+                * 是否符合匹配规则
+                * @param group
+                */
+            _matcherGroup(group: Group): boolean;
+    }
+}
+
+declare module 'drongo-cc/entitys/Group' {
+    import { Dictionary } from "drongo-cc/containers/Dictionary";
+    import { Entity } from "drongo-cc/entitys/Entity";
+    import { MatcherAllOf } from "drongo-cc/entitys/matchers/MatcherAllOf";
+    import { MatcherAnyOf } from "drongo-cc/entitys/matchers/MatcherAnyOf";
+    import { MatcherNoneOf } from "drongo-cc/entitys/matchers/MatcherNoneOf";
+    export class Group {
+            /**
+                * 全部包含或任意包含
+                */
+            matcher: MatcherAllOf | MatcherAnyOf;
+            /**
+                * 不能包含的
+                */
+            matcherNoneOf: MatcherNoneOf;
+            /**
+                * 编组所匹配的元素(内部接口)
+                */
+            _entitys: Dictionary<string, Entity>;
+            constructor();
+            init(allOrAny: MatcherAllOf | MatcherAnyOf, none?: MatcherNoneOf): void;
+            get id(): string;
+            static create(allOrAny: MatcherAllOf | MatcherAnyOf, none?: MatcherNoneOf): Group;
+            static recycle(value: Group): void;
+    }
+}
+
+declare module 'drongo-cc/entitys/System' {
+    import { MatcherAllOf } from "drongo-cc/entitys/matchers/MatcherAllOf";
+    import { MatcherAnyOf } from "drongo-cc/entitys/matchers/MatcherAnyOf";
+    import { MatcherNoneOf } from "drongo-cc/entitys/matchers/MatcherNoneOf";
+    import { Group } from "drongo-cc/entitys/Group";
+    export class System {
+            /**
+                * 内部接口
+                */
+            _group: Group;
+            /**
+                * 系统
+                * @param allOrAny  所有或任意一个包含
+                * @param none      不能包含
+                */
+            constructor(allOrAny: MatcherAllOf | MatcherAnyOf, none?: MatcherNoneOf);
+            tick(time: number): void;
+    }
+}
+
+declare module 'drongo-cc/entitys/World' {
+    import { Component } from "drongo-cc/entitys/Component";
+    import { Entity } from "drongo-cc/entitys/Entity";
+    import { Group } from "drongo-cc/entitys/Group";
+    import { System } from "drongo-cc/entitys/System";
+    export class World {
+            constructor();
+            /**
+                * 心跳驱动
+                * @param time
+                */
+            tick(time: number): void;
+            /**
+                * 创建一个实体
+                */
+            createEntity(id: string): Entity;
+            /**
+                * 通过ID获取实体
+                * @param id
+                */
+            getEntity(id: string): Entity;
+            /**
+                * 添加系统
+                */
+            addSystem(value: System): void;
+            /**
+                * 删除系统
+                * @param value
+                */
+            removeSystem(value: System): void;
+            /**
+                * 根据类型获取组件列表
+                * @param type
+                */
+            getComponent(type: number): Component[];
+            _matcherGroup(group: Group): void;
+            /**
+                * 内部接口，请勿调用
+                * @param com
+                */
+            _addComponent(com: Component): void;
+            /**
+                * 内部接口，请勿调用
+                * @param com
+                */
+            _removeComponent(com: Component): void;
+            /**
+                * 内部接口，请勿调用
+                * @param value
+                */
+            _removeEntity(value: Entity): void;
+    }
+}
+
+declare module 'drongo-cc/fsm/IState' {
+    import { FSM } from "drongo-cc/fsm/FSM";
+    /**
+      * 状态接口
+      */
+    export interface IState {
+        name: string;
+        /**初始化 */
+        init(content: FSM): void;
+        /**进入 */
+        enter(data?: any): void;
+        /**心跳 */
+        tick(dt: number): void;
+        /**退出 */
+        exit(): void;
+        /**销毁 */
+        destroy(): void;
+    }
+}
+
+declare module 'drongo-cc/fsm/FSM' {
+    import { EventDispatcher } from "drongo-cc/events/EventDispatcher";
+    import { IState } from "drongo-cc/fsm/IState";
+    /**
+        * 状态机
+        */
+    export class FSM extends EventDispatcher {
+            /**所属*/
+            owner: any;
+            debug: boolean;
+            constructor(owner: any, name: string);
+            tick(dt: number): void;
+            /**
+                * 添加
+                * @param key
+                * @param v
+                */
+            addState(key: number, v: IState): void;
+            /**
+                * 切换状态
+                * @param value
+                * @param data
+                * @returns
+                */
+            switchState(value: number, data?: any): void;
+            get state(): number;
+            get current(): IState;
+            destroy(): void;
     }
 }
 

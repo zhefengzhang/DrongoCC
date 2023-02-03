@@ -4,6 +4,8 @@ export { Debuger } from "./utils/Debuger"
 export { Pool } from "./utils/Pool"
 export { BitFlag } from "./utils/BitFlag"
 export { LocalStorage } from "./utils/LocalStorage"
+export { StringUtils } from "./utils/StringUtils"
+export { MaxRectBinPack, FindPosition, Rect } from "./utils/MaxRectsBinPack"
 
 //events
 export { IEventDispatcher } from "./events/IEventDispatcher"
