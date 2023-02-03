@@ -1,6 +1,7 @@
 import { Color, EventMouse } from "cc";
 import { Controller } from "./Controller";
 import { Event as FUIEvent } from "./event/Event";
+import { CCURL } from "./FairyGUI";
 import { PopupDirection, ObjectPropID, RelationType } from "./FieldTypes";
 import { GButton } from "./GButton";
 import { GComponent } from "./GComponent";
@@ -58,14 +59,14 @@ export class GComboBox extends GComponent {
         this.updateGear(6);
     }
 
-    public get icon(): string | null {
+    public get icon(): CCURL | null {
         if (this._iconObject)
             return this._iconObject.icon;
         else
             return null;
     }
 
-    public set icon(value: string | null) {
+    public set icon(value: CCURL | null) {
         if (this._iconObject)
             this._iconObject.icon = value;
         this.updateGear(7);

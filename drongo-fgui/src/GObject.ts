@@ -2,6 +2,7 @@ import { Vec2, Rect, Component, director, Node, UITransform, UIOpacity, Vec3, Co
 import { Controller } from "./Controller";
 import { BlendMode, BlendModeUtils } from "./display/BlendMode";
 import { Event as FUIEvent } from "./event/Event";
+import { CCURL, TooltipsData } from "./FairyGUI";
 import { RelationType, ObjectPropID } from "./FieldTypes";
 import { GComponent } from "./GComponent";
 import { GearAnimation } from "./gears/GearAnimation";
@@ -40,7 +41,7 @@ export class GObject {
     protected _sortingOrder: number = 0;
     protected _internalVisible: boolean = true;
     protected _handlingController?: boolean;
-    protected _tooltips?: string;
+    protected _tooltips?: TooltipsData;
     protected _blendMode: BlendMode;
     protected _pixelSnapping?: boolean;
     protected _dragTesting?: boolean;
@@ -436,11 +437,11 @@ export class GObject {
     public requestFocus(): void {
     }
 
-    public get tooltips(): string | null {
+    public get tooltips(): TooltipsData | null {
         return this._tooltips;
     }
 
-    public set tooltips(value: string | null) {
+    public set tooltips(value: TooltipsData | null) {
         if (this._tooltips) {
             this._node.off(FUIEvent.ROLL_OVER, this.onRollOver, this);
             this._node.off(FUIEvent.ROLL_OUT, this.onRollOut, this);
@@ -621,11 +622,11 @@ export class GObject {
     public set text(value: string | null) {
     }
 
-    public get icon(): string | null {
+    public get icon(): CCURL | null {
         return null;
     }
 
-    public set icon(value: string | null) {
+    public set icon(value: CCURL | null) {
     }
 
     public get treeNode(): GTreeNode {
@@ -1012,10 +1013,18 @@ export class GObject {
 
     //toolTips support
     private onRollOver(): void {
-        Decls.GRoot.inst.showTooltips(this.tooltips);
+        if (UIConfig.tooltipsManager) {
+            UIConfig.tooltipsManager.show(this.tooltips);
+        } else {
+            Decls.GRoot.inst.showTooltips(this.tooltips);
+        }
     };
     private onRollOut(): void {
-        Decls.GRoot.inst.hideTooltips();
+        if (UIConfig.tooltipsManager) {
+            UIConfig.tooltipsManager.hide();
+        } else {
+            Decls.GRoot.inst.hideTooltips();
+        }
     };
 
     //drag support

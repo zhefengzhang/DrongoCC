@@ -1,6 +1,7 @@
 import { AudioClip, Color, EventMouse } from "cc";
 import { Controller } from "./Controller";
 import { Event as FUIEvent } from "./event/Event";
+import { CCURL } from "./FairyGUI";
 import { ButtonMode, ObjectPropID } from "./FieldTypes";
 import { GComponent } from "./GComponent";
 import { GObject } from "./GObject";
@@ -20,8 +21,8 @@ export class GButton extends GComponent {
     private _selected: boolean;
     private _title: string;
     private _selectedTitle: string;
-    private _icon: string;
-    private _selectedIcon: string;
+    private _icon: CCURL;
+    private _selectedIcon: CCURL;
     private _sound: string;
     private _soundVolumeScale: number;
     private _buttonController: Controller;
@@ -57,11 +58,11 @@ export class GButton extends GComponent {
         this._downEffectValue = 0.8;
     }
 
-    public get icon(): string | null {
+    public get icon(): CCURL | null {
         return this._icon;
     }
 
-    public set icon(value: string | null) {
+    public set icon(value: CCURL | null) {
         this._icon = value;
         value = (this._selected && this._selectedIcon) ? this._selectedIcon : this._icon;
         if (this._iconObject)
@@ -69,11 +70,11 @@ export class GButton extends GComponent {
         this.updateGear(7);
     }
 
-    public get selectedIcon(): string | null {
+    public get selectedIcon(): CCURL | null {
         return this._selectedIcon;
     }
 
-    public set selectedIcon(value: string | null) {
+    public set selectedIcon(value: CCURL | null) {
         this._selectedIcon = value;
         value = (this._selected && this._selectedIcon) ? this._selectedIcon : this._icon;
         if (this._iconObject)
@@ -136,7 +137,7 @@ export class GButton extends GComponent {
         if (tf)
             tf.fontSize = value;
     }
-    
+
     public get sound(): string | null {
         return this._sound;
     }
@@ -163,7 +164,7 @@ export class GButton extends GComponent {
             if (this._selectedTitle && this._titleObject)
                 this._titleObject.text = this._selected ? this._selectedTitle : this._title;
             if (this._selectedIcon) {
-                var str: string = this._selected ? this._selectedIcon : this._icon;
+                var str = this._selected ? this._selectedIcon : this._icon;
                 if (this._iconObject)
                     this._iconObject.icon = str;
             }

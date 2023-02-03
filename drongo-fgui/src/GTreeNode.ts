@@ -1,3 +1,4 @@
+import { CCURL } from "./FairyGUI";
 import { GComponent } from "./GComponent";
 import { GTree } from "./GTree";
 
@@ -58,14 +59,14 @@ export class GTreeNode {
             this._cell.text = value;
     }
 
-    public get icon(): string | null {
+    public get icon(): CCURL | null {
         if (this._cell)
             return this._cell.icon;
         else
             return null;
     }
 
-    public set icon(value: string | null) {
+    public set icon(value: CCURL | null) {
         if (this._cell)
             this._cell.icon = value;
     }

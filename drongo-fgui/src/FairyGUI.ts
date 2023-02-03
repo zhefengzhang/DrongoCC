@@ -1,3 +1,8 @@
+import { Asset } from "cc";
+
+export type CCURL = string | { url: string, bundle: string, type: string | typeof Asset };
+export type TooltipsData = string | { type: string, data: any };
+
 export { GGroup } from "./GGroup";
 export { GObject } from "./GObject";
 export { GGraph } from "./GGraph";

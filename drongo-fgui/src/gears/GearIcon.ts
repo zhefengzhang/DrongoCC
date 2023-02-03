@@ -1,9 +1,10 @@
+import { CCURL } from "../FairyGUI";
 import { ByteBuffer } from "../utils/ByteBuffer";
 import { GearBase } from "./GearBase";
 
 export class GearIcon extends GearBase {
-    private _storage: { [index: string]: string };
-    private _default: string;
+    private _storage: { [index: string]: CCURL };
+    private _default: CCURL;
 
     protected init(): void {
         this._default = this._owner.icon;

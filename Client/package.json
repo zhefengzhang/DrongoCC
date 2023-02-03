@@ -6,6 +6,6 @@
   },
   "dependencies": {
     "drongo-cc": "^1.0.8",
-    "fairygui-cc": "^1.1.1"
+    "drongo-fgui": "^1.1.2"
   }
 }

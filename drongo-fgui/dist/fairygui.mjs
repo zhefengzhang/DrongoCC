@@ -3229,11 +3229,21 @@ class GObject {
     }
     //toolTips support
     onRollOver() {
-        Decls$1.GRoot.inst.showTooltips(this.tooltips);
+        if (UIConfig.tooltipsManager) {
+            UIConfig.tooltipsManager.show(this.tooltips);
+        }
+        else {
+            Decls$1.GRoot.inst.showTooltips(this.tooltips);
+        }
     }
     ;
     onRollOut() {
-        Decls$1.GRoot.inst.hideTooltips();
+        if (UIConfig.tooltipsManager) {
+            UIConfig.tooltipsManager.hide();
+        }
+        else {
+            Decls$1.GRoot.inst.hideTooltips();
+        }
     }
     ;
     //drag support
@@ -11979,7 +11989,7 @@ class GLoader extends GObject {
         this.clearContent();
         if (!this._url)
             return;
-        if (this._url.startsWith("ui://"))
+        if (typeof this._url == "string" && this._url.startsWith("ui://"))
             this.loadFromPackage(this._url);
         else
             this.loadExternal();
@@ -12061,12 +12071,17 @@ class GLoader extends GObject {
                 this.onExternalLoadSuccess(sf);
             }
         };
-        if (this._url.startsWith("http://")
-            || this._url.startsWith("https://")
-            || this._url.startsWith('/'))
-            assetManager.loadRemote(this._url, callback);
-        else
-            resources.load(this._url + "/spriteFrame", Asset, callback);
+        if (typeof this._url == "string") {
+            if (this._url.startsWith("http://")
+                || this._url.startsWith("https://")
+                || this._url.startsWith('/'))
+                assetManager.loadRemote(this._url, callback);
+            else
+                resources.load(this._url + "/spriteFrame", Asset, callback);
+        }
+        else {
+            throw new Error("fgui底层未实现CCURL的非string资源加载！");
+        }
     }
     freeExternal(texture) {
     }

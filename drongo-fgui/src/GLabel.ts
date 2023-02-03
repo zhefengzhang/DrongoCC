@@ -9,6 +9,7 @@ import { PackageItem } from "./PackageItem";
 import { UIPackage } from "./UIPackage";
 import { ByteBuffer } from "./utils/ByteBuffer";
 import { Event as FUIEvent } from "./event/Event";
+import { CCURL } from "./FairyGUI";
 
 export class GLabel extends GComponent {
     protected _titleObject: GObject;
@@ -22,12 +23,12 @@ export class GLabel extends GComponent {
         this._node.name = "GLabel";
     }
 
-    public get icon(): string | null {
+    public get icon(): CCURL | null {
         if (this._iconObject)
             return this._iconObject.icon;
     }
 
-    public set icon(value: string | null) {
+    public set icon(value: CCURL | null) {
         if (this._iconObject)
             this._iconObject.icon = value;
         this.updateGear(7);

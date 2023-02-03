@@ -1,5 +1,6 @@
 import { AssetManager, Color, Font, Layers, resources } from "cc";
 import { ScrollBarDisplayType } from "./FieldTypes";
+import { ITooltipsManager as ITooltipsManager } from "./tooltips/ITooltipManager";
 
 export class UIConfig {
     public constructor() {
@@ -42,7 +43,9 @@ export class UIConfig {
     public static loaderErrorSign: string;
     //Resources for tooltips.
     public static tooltipsWin: string;
-
+    /**提示管理器 */
+    public static tooltipsManager:ITooltipsManager
+    
     //Max items displayed in combobox without scrolling.
     public static defaultComboBoxVisibleItemCount: number = 10;
 

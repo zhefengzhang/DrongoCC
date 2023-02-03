@@ -3,6 +3,16 @@
 //   ../cc
 
 declare module 'drongo-fgui' {
+    import { Asset } from "cc";
+    export type CCURL = string | {
+        url: string;
+        bundle: string;
+        type: string | typeof Asset;
+    };
+    export type TooltipsData = string | {
+        type: string;
+        data: any;
+    };
     export { GGroup } from "drongo-fgui/GGroup";
     export { GObject } from "drongo-fgui/GObject";
     export { GGraph } from "drongo-fgui/GGraph";
@@ -98,6 +108,7 @@ declare module 'drongo-fgui/GObject' {
     import { Vec2, Rect, Component, Node, UITransform, UIOpacity } from "cc";
     import { Controller } from "drongo-fgui/Controller";
     import { BlendMode } from "drongo-fgui/display/BlendMode";
+    import { CCURL, TooltipsData } from "drongo-fgui/FairyGUI";
     import { GComponent } from "drongo-fgui/GComponent";
     import { GearBase } from "drongo-fgui/gears/GearBase";
     import { GearLook } from "drongo-fgui/gears/GearLook";
@@ -125,7 +136,7 @@ declare module 'drongo-fgui/GObject' {
         protected _sortingOrder: number;
         protected _internalVisible: boolean;
         protected _handlingController?: boolean;
-        protected _tooltips?: string;
+        protected _tooltips?: TooltipsData;
         protected _blendMode: BlendMode;
         protected _pixelSnapping?: boolean;
         protected _dragTesting?: boolean;
@@ -212,8 +223,8 @@ declare module 'drongo-fgui/GObject' {
         get sortingOrder(): number;
         set sortingOrder(value: number);
         requestFocus(): void;
-        get tooltips(): string | null;
-        set tooltips(value: string | null);
+        get tooltips(): TooltipsData | null;
+        set tooltips(value: TooltipsData | null);
         get blendMode(): BlendMode;
         set blendMode(value: BlendMode);
         get onStage(): boolean;
@@ -240,8 +251,8 @@ declare module 'drongo-fgui/GObject' {
         static cast(obj: Node): GObject;
         get text(): string | null;
         set text(value: string | null);
-        get icon(): string | null;
-        set icon(value: string | null);
+        get icon(): CCURL | null;
+        set icon(value: CCURL | null);
         get treeNode(): GTreeNode;
         get isDisposed(): boolean;
         dispose(): void;
@@ -592,6 +603,7 @@ declare module 'drongo-fgui/GTextInput' {
 declare module 'drongo-fgui/GLoader' {
     import { Color, SpriteFrame, Vec2 } from "cc";
     import { MovieClip } from "drongo-fgui/display/MovieClip";
+    import { CCURL } from "drongo-fgui/FairyGUI";
     import { AlignType, VertAlignType, LoaderFillType, FillMethod, FillOrigin } from "drongo-fgui/FieldTypes";
     import { GComponent } from "drongo-fgui/GComponent";
     import { GObject } from "drongo-fgui/GObject";
@@ -600,10 +612,10 @@ declare module 'drongo-fgui/GLoader' {
         _content: MovieClip;
         constructor();
         dispose(): void;
-        get url(): string | null;
-        set url(value: string | null);
-        get icon(): string | null;
-        set icon(value: string | null);
+        get url(): CCURL | null;
+        set url(value: CCURL | null);
+        get icon(): CCURL | null;
+        set icon(value: CCURL | null);
         get align(): AlignType;
         set align(value: AlignType);
         get verticalAlign(): VertAlignType;
@@ -807,12 +819,13 @@ declare module 'drongo-fgui/GLabel' {
     import { GObject } from "drongo-fgui/GObject";
     import { GTextField } from "drongo-fgui/GTextField";
     import { ByteBuffer } from "drongo-fgui/utils/ByteBuffer";
+    import { CCURL } from "drongo-fgui/FairyGUI";
     export class GLabel extends GComponent {
         protected _titleObject: GObject;
         protected _iconObject: GObject;
         constructor();
-        get icon(): string | null;
-        set icon(value: string | null);
+        get icon(): CCURL | null;
+        set icon(value: CCURL | null);
         get title(): string | null;
         set title(value: string | null);
         get text(): string | null;
@@ -834,6 +847,7 @@ declare module 'drongo-fgui/GLabel' {
 declare module 'drongo-fgui/GButton' {
     import { Color } from "cc";
     import { Controller } from "drongo-fgui/Controller";
+    import { CCURL } from "drongo-fgui/FairyGUI";
     import { ButtonMode } from "drongo-fgui/FieldTypes";
     import { GComponent } from "drongo-fgui/GComponent";
     import { GObject } from "drongo-fgui/GObject";
@@ -849,10 +863,10 @@ declare module 'drongo-fgui/GButton' {
         static DISABLED: string;
         static SELECTED_DISABLED: string;
         constructor();
-        get icon(): string | null;
-        set icon(value: string | null);
-        get selectedIcon(): string | null;
-        set selectedIcon(value: string | null);
+        get icon(): CCURL | null;
+        set icon(value: CCURL | null);
+        get selectedIcon(): CCURL | null;
+        set selectedIcon(value: CCURL | null);
         get title(): string | null;
         set title(value: string | null);
         get text(): string | null;
@@ -895,6 +909,7 @@ declare module 'drongo-fgui/GButton' {
 declare module 'drongo-fgui/GComboBox' {
     import { Color } from "cc";
     import { Controller } from "drongo-fgui/Controller";
+    import { CCURL } from "drongo-fgui/FairyGUI";
     import { PopupDirection } from "drongo-fgui/FieldTypes";
     import { GComponent } from "drongo-fgui/GComponent";
     import { GList } from "drongo-fgui/GList";
@@ -909,8 +924,8 @@ declare module 'drongo-fgui/GComboBox' {
         constructor();
         get text(): string | null;
         set text(value: string | null);
-        get icon(): string | null;
-        set icon(value: string | null);
+        get icon(): CCURL | null;
+        set icon(value: CCURL | null);
         get titleColor(): Color;
         set titleColor(value: Color);
         get titleFontSize(): number;
@@ -1124,6 +1139,7 @@ declare module 'drongo-fgui/GTree' {
 }
 
 declare module 'drongo-fgui/GTreeNode' {
+    import { CCURL } from "drongo-fgui/FairyGUI";
     import { GComponent } from "drongo-fgui/GComponent";
     import { GTree } from "drongo-fgui/GTree";
     export class GTreeNode {
@@ -1137,8 +1153,8 @@ declare module 'drongo-fgui/GTreeNode' {
         get parent(): GTreeNode;
         get text(): string | null;
         set text(value: string | null);
-        get icon(): string | null;
-        set icon(value: string | null);
+        get icon(): CCURL | null;
+        set icon(value: CCURL | null);
         get cell(): GComponent;
         get level(): number;
         _setLevel(value: number): void;
@@ -1730,6 +1746,7 @@ declare module 'drongo-fgui/UIObjectFactory' {
 
 declare module 'drongo-fgui/UIConfig' {
     import { AssetManager, Color, Font } from "cc";
+    import { ITooltipsManager as ITooltipsManager } from "drongo-fgui/tooltips/ITooltipManager";
     export class UIConfig {
         constructor();
         static defaultFont: string;
@@ -1749,6 +1766,8 @@ declare module 'drongo-fgui/UIConfig' {
         static popupMenu_seperator: string;
         static loaderErrorSign: string;
         static tooltipsWin: string;
+        /**提示管理器 */
+        static tooltipsManager: ITooltipsManager;
         static defaultComboBoxVisibleItemCount: number;
         static touchScrollSensitivity: number;
         static touchDragSensitivity: number;
@@ -2310,6 +2329,40 @@ declare module 'drongo-fgui/Margin' {
     }
 }
 
+declare module 'drongo-fgui/tooltips/ITooltipManager' {
+    import { TooltipsData } from "drongo-fgui/FairyGUI";
+    import { ITooltipsView } from "drongo-fgui/tooltips/ITooltipsView";
+    /**
+        * tooltip管理器
+        */
+    export interface ITooltipsManager {
+            /**
+                * 注册
+                * @param type
+                * @param value
+                */
+            register(type: string, value: ITooltipsView): void;
+            /**
+                * 注销
+                * @param type
+                */
+            unregister(type: string): void;
+            /**
+                * 是否正在显示中
+                */
+            readonly isShowing: boolean;
+            /**
+                * 显示
+                * @param data
+                */
+            show(data: TooltipsData | undefined): void;
+            /**
+                * 隐藏
+                */
+            hide(): void;
+    }
+}
+
 declare module 'drongo-fgui/tween/GPath' {
     import { Vec2 } from "cc";
     import { GPathPoint } from "drongo-fgui/tween/GPathPoint";
@@ -2339,6 +2392,25 @@ declare module 'drongo-fgui/tween/TweenValue' {
         getField(index: number): number;
         setField(index: number, value: number): void;
         setZero(): void;
+    }
+}
+
+declare module 'drongo-fgui/tooltips/ITooltipsView' {
+    import { TooltipsData } from "drongo-fgui/FairyGUI";
+    export interface ITooltipsView {
+            /**
+                * view
+                */
+            viewComponent: any;
+            /**
+                * 更新数据
+                * @param data
+                */
+            update(data: TooltipsData): void;
+            /**
+                * 销毁
+                */
+            destroy(): void;
     }
 }
 

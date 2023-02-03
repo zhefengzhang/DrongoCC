@@ -1,5 +1,6 @@
 import { Asset, assetManager, Color, ImageAsset, isValid, Node, resources, Sprite, SpriteFrame, Texture2D, UITransform, Vec2 } from "cc";
 import { MovieClip } from "./display/MovieClip";
+import { CCURL } from "./FairyGUI";
 import { AlignType, VertAlignType, LoaderFillType, FillMethod, FillOrigin, PackageItemType, ObjectPropID } from "./FieldTypes";
 import { GComponent } from "./GComponent";
 import { GObject } from "./GObject";
@@ -12,7 +13,7 @@ import { ByteBuffer } from "./utils/ByteBuffer";
 export class GLoader extends GObject {
     public _content: MovieClip;
 
-    private _url: string;
+    private _url: CCURL;
     private _align: AlignType;
     private _verticalAlign: VertAlignType;
     private _autoSize: boolean;
@@ -63,11 +64,11 @@ export class GLoader extends GObject {
         super.dispose();
     }
 
-    public get url(): string | null {
+    public get url(): CCURL | null {
         return this._url;
     }
 
-    public set url(value: string | null) {
+    public set url(value: CCURL | null) {
         if (this._url == value)
             return;
 
@@ -76,11 +77,11 @@ export class GLoader extends GObject {
         this.updateGear(7);
     }
 
-    public get icon(): string | null {
+    public get icon(): CCURL | null {
         return this._url;
     }
 
-    public set icon(value: string | null) {
+    public set icon(value: CCURL | null) {
         this.url = value;
     }
 
@@ -245,7 +246,7 @@ export class GLoader extends GObject {
         if (!this._url)
             return;
 
-        if (this._url.startsWith("ui://"))
+        if (typeof this._url == "string" && this._url.startsWith("ui://"))
             this.loadFromPackage(this._url);
         else
             this.loadExternal();
@@ -334,12 +335,16 @@ export class GLoader extends GObject {
                 this.onExternalLoadSuccess(sf);
             }
         };
-        if (this._url.startsWith("http://")
-            || this._url.startsWith("https://")
-            || this._url.startsWith('/'))
-            assetManager.loadRemote(this._url, callback);
-        else
-            resources.load(this._url + "/spriteFrame", Asset, callback);
+        if (typeof this._url == "string") {
+            if (this._url.startsWith("http://")
+                || this._url.startsWith("https://")
+                || this._url.startsWith('/'))
+                assetManager.loadRemote(this._url, callback);
+            else
+                resources.load(this._url + "/spriteFrame", Asset, callback);
+        }else{
+            throw new Error("fgui底层未实现CCURL的非string资源加载！");
+        }
     }
 
     protected freeExternal(texture: SpriteFrame): void {
