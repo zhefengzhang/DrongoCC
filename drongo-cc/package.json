@@ -1,6 +1,6 @@
 {
   "name": "drongo-cc",
-  "version": "1.0.9",
+  "version": "1.0.14",
   "description": "基础库",
   "main": "dist/drongo-cc.mjs",
   "types": "dist/drongo-cc.d.ts",

@@ -1,137 +1,125 @@
-// import { Texture2D } from "cc";
+import { gfx, Texture2D } from "cc";
 
 
-// /**
-//  * RGBA8888二进制纹理
-//  */
-// export class RGBA8888Texture extends Texture2D {
+/**
+ * RGBA8888二进制纹理
+ */
+export class RGBA8888Texture extends Texture2D {
 
-//     private __buffer: Uint8Array;
-//     private __width: number;
-//     private __height: number;
+    constructor(width: number, height: number) {
+        super();
+        this.reset({ width, height, format: Texture2D.PixelFormat.RGBA8888 });
+    }
 
-//     constructor(width: number, height: number) {
-//         super();
-//         this.__width = width;
-//         this.__height = height;
-//         this.__buffer = new Uint8Array(width * height * 4);
-//     }
+    /**
+     * 填充颜色
+     * @param x 
+     * @param y 
+     * @param width 
+     * @param height 
+     * @param color 
+     */
+    fillRect(x: number, y: number, width: number, height: number, color: number): void {
+        let a = ((color >> 24) & 0xff);
+        let r = ((color >> 16) & 0xff);
+        let g = ((color >> 8) & 0xff);
+        let b = ((color) & 0xff);
+        this.__fillRect(x, y, width, height, a, r, g, b);
+    }
 
-//     fillRect(x:number,y:number,width:number,height:number,color:number):void{
-//         for (let ix = 0; ix < width; ix++) {
-//             for (let iy = 0; iy < height; iy++) {
-//                 this.setPixelColor(color,ix+x,iy+y);
-//             }
-//         }
-//     }
+    private __fillRect(x: number, y: number, width: number, height: number, a: number, r: number, g: number, b: number): void {
+        let bytes: Uint8Array = new Uint8Array(width * height * 4);
+        let index: number;
+        for (let ix = 0; ix < width; ix++) {
+            for (let iy = 0; iy < height; iy++) {
+                index = (iy * width + ix) * 4
+                bytes[index] = r;
+                bytes[index + 1] = g;
+                bytes[index + 2] = b;
+                bytes[index + 3] = a;
+            }
+        }
+        this.copyBuffersToTexture(bytes, x, y, width, height);
+    }
 
-//     /**
-//      * 颜色数据写入
-//      * @param data 
-//      * @param width 
-//      * @param height 
-//      * @param tx 
-//      * @param ty 
-//      */
-//     setPixels(data: ArrayBufferView, width: number, tx: number, ty: number): void {
-//         let x: number, y: number;
-//         let tIndex: number;
-//         let sIndex: number;
-//         let len: number = Math.floor(data.byteLength / 4);
-//         for (let index = 0; index < len; index++) {
-//             x = index % width;
-//             y = Math.floor(index / width);
-//             sIndex = (y * width + x) * 4;
-//             tIndex = ((ty + y) * this.__width + (tx + x)) * 4;
-//             this.__buffer[tIndex] = data[sIndex];
-//             this.__buffer[tIndex + 1] = data[sIndex + 1];
-//             this.__buffer[tIndex + 2] = data[sIndex + 2];
-//             this.__buffer[tIndex + 3] = data[sIndex + 3];
-//         }
-//     }
+    /**
+     * 通过颜色分量设置
+     * @param r 
+     * @param g 
+     * @param b 
+     * @param a 
+     * @param x 
+     * @param y 
+     */
+    setPixel(r: number, g: number, b: number, a: number, x: number, y: number): void {
+        this.__fillRect(x, y, 1, 1, a, r, g, b);
+    }
 
-//     /**
-//      * 通过颜色分量设置
-//      * @param r 
-//      * @param g 
-//      * @param b 
-//      * @param a 
-//      * @param x 
-//      * @param y 
-//      */
-//     setPixel(r: number, g: number, b: number, a: number, x: number, y: number): void {
-//         let index: number = (y * this.__width + x) * 4
-//         this.__buffer[index] = r;
-//         this.__buffer[index + 1] = g;
-//         this.__buffer[index + 2] = b;
-//         this.__buffer[index + 3] = a;
-//     }
+    /**
+     * 通过单个颜色值设置
+     * @param color 
+     * @param x 
+     * @param y 
+     */
+    setPixelColor(color: number, x: number, y: number): void {
+        let a = ((color >> 24) & 0xff);
+        let r = ((color >> 16) & 0xff);
+        let g = ((color >> 8) & 0xff);
+        let b = ((color) & 0xff);
+        this.setPixel(r, g, b, a, x, y);
+    }
 
-//     /**
-//      * 通过单个颜色值设置
-//      * @param color 
-//      * @param x 
-//      * @param y 
-//      */
-//     setPixelColor(color:number,x:number,y:number):void{
-//         let a = ((color >> 24) & 0xff);
-//         let r = ((color >> 16) & 0xff);
-//         let g = ((color >> 8) & 0xff);
-//         let b = ((color) & 0xff);
-//         this.setPixel(r,g,b,a,x,y);
-//     }
+    /**
+     * 将纹理绘制到纹理
+     * @param texture 
+     * @param sx 
+     * @param sy 
+     * @param width 
+     * @param height 
+     * @param tx 
+     * @param ty 
+     * @param filter 
+     * @returns 
+     */
+    draw2Texture(texture: Texture2D, sx: number, sy: number, width: number, height: number, tx: number, ty: number, filter: gfx.Filter=gfx.Filter.POINT): void {
+        const gfxTexture = texture.getGFXTexture()
+        if (!gfxTexture) {
+            return;
+        }
+        let region = new gfx.TextureBlit();
+        region.srcOffset.x = sx;
+        region.srcOffset.y = sy;
+        region.srcExtent.width = width;
+        region.srcExtent.height = height;
 
-//     /**
-//      * 获取矩形范围内的颜色
-//      * @param x 
-//      * @param y 
-//      * @param width 
-//      * @param height 
-//      * @param result 
-//      * @returns 
-//      */
-//     getPixels(x: number, y: number, width: number, height: number, result?: Uint8Array): Uint8Array {
-//         result = result || new Uint8Array(width * height * 4);
-//         let fx: number, fy: number;
-//         let index: number = 0;
-//         let sIndex: number = 0;
-//         let color: { a: number, r: number, g: number, b: number };
-//         for (let ix = 0; ix < width; ix++) {
-//             for (let iy = 0; iy < height; iy++) {
-//                 fx = x + ix;
-//                 fy = y + iy;
-//                 sIndex = ((y + iy) * this.__width + (x + ix)) * 4;
-//                 color = this.getPixel(fx, fy);
-//                 result[index] = color.r;
-//                 result[index+1] = color.g;
-//                 result[index+2] = color.b;
-//                 result[index+3] = color.a;
-//                 index+=4;
-//             }
-//         }
-//         return result;
-//     }
+        region.dstOffset.x = tx;
+        region.dstOffset.y = ty;
+        region.dstExtent.width = width;
+        region.dstExtent.height = height;
 
-//     /**
-//      * 获取指定像素点的颜色
-//      * @param x 
-//      * @param y 
-//      * @returns 
-//      */
-//     getPixel(x: number, y: number): { a: number, r: number, g: number, b: number } {
-//         let index: number = (y * this.__width + x) * 4;
-//         return {
-//             r: this.__buffer[index],
-//             g: this.__buffer[index + 1],
-//             b: this.__buffer[index + 2],
-//             a: this.__buffer[index + 3]
-//         };
-//     }
+        gfx.deviceManager.gfxDevice.commandBuffer.blitTexture(gfxTexture, this.getGFXTexture(), [region], filter);
+    }
 
-//     /**
-//      * 将数据同步到纹理
-//      */
-//     update2Texture(): void {
-//         this.initWithData(this.__buffer, Texture2D.PixelFormat.RGBA8888, this.__width, this.__height);
-//     }
-// }
+    /**
+     * 将二进制数据填充到纹理的指定区域
+     * @param buffer 
+     * @param x 
+     * @param y 
+     * @param width 
+     * @param height 
+     * @returns 
+    */
+    copyBuffersToTexture(buffer: ArrayBufferView, x: number, y: number, width: number, height: number): void {
+        let regionInfo: gfx.BufferTextureCopy = new gfx.BufferTextureCopy();
+        regionInfo.texOffset.x = x;
+        regionInfo.texOffset.y = y;
+        regionInfo.texExtent.width = width;
+        regionInfo.texExtent.height = height;
+
+        const gfxTexture = this.getGFXTexture();
+        if (!gfxTexture) {
+            return;
+        }
+        this._getGFXDevice().copyBuffersToTexture([buffer], gfxTexture, [regionInfo]);
+    }
+}

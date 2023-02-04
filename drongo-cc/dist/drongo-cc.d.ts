@@ -10,6 +10,7 @@ declare module 'drongo-cc' {
     export { LocalStorage } from "drongo-cc/utils/LocalStorage";
     export { StringUtils } from "drongo-cc/utils/StringUtils";
     export { MaxRectBinPack, FindPosition, Rect } from "drongo-cc/utils/MaxRectsBinPack";
+    export { RGBA8888Texture } from "drongo-cc/utils/RGBA8888Texture";
     export { IEventDispatcher } from "drongo-cc/events/IEventDispatcher";
     export { Event } from "drongo-cc/events/Event";
     export { EventDispatcher } from "drongo-cc/events/EventDispatcher";
@@ -31,7 +32,7 @@ declare module 'drongo-cc' {
     export { Resource } from "drongo-cc/res/Resource";
     export { Res } from "drongo-cc/res/Res";
     export { ResRef } from "drongo-cc/res/ResRef";
-    export { ResURL, url2Key, key2URL } from "drongo-cc/res/ResURL";
+    export { ResURL, url2Key, key2URL, fullURL } from "drongo-cc/res/ResURL";
     export { ITask } from "drongo-cc/task/ITask";
     export { TaskQueue } from "drongo-cc/task/TaskQueue";
     export { TaskSequence } from "drongo-cc/task/TaskSequence";
@@ -325,6 +326,65 @@ declare module 'drongo-cc/utils/MaxRectsBinPack' {
                 */
             isIn(otherRect: Rect): boolean;
             get isEmpty(): boolean;
+    }
+}
+
+declare module 'drongo-cc/utils/RGBA8888Texture' {
+    import { gfx, Texture2D } from "cc";
+    /**
+        * RGBA8888二进制纹理
+        */
+    export class RGBA8888Texture extends Texture2D {
+            constructor(width: number, height: number);
+            /**
+                * 填充颜色
+                * @param x
+                * @param y
+                * @param width
+                * @param height
+                * @param color
+                */
+            fillRect(x: number, y: number, width: number, height: number, color: number): void;
+            /**
+                * 通过颜色分量设置
+                * @param r
+                * @param g
+                * @param b
+                * @param a
+                * @param x
+                * @param y
+                */
+            setPixel(r: number, g: number, b: number, a: number, x: number, y: number): void;
+            /**
+                * 通过单个颜色值设置
+                * @param color
+                * @param x
+                * @param y
+                */
+            setPixelColor(color: number, x: number, y: number): void;
+            /**
+                * 将纹理绘制到纹理
+                * @param texture
+                * @param sx
+                * @param sy
+                * @param width
+                * @param height
+                * @param tx
+                * @param ty
+                * @param filter
+                * @returns
+                */
+            draw2Texture(texture: Texture2D, sx: number, sy: number, width: number, height: number, tx: number, ty: number, filter?: gfx.Filter): void;
+            /**
+                * 将二进制数据填充到纹理的指定区域
+                * @param buffer
+                * @param x
+                * @param y
+                * @param width
+                * @param height
+                * @returns
+             */
+            copyBuffersToTexture(buffer: ArrayBufferView, x: number, y: number, width: number, height: number): void;
     }
 }
 
@@ -1185,6 +1245,12 @@ declare module 'drongo-cc/res/ResURL' {
         * @returns
         */
     export function key2URL(key: string): ResURL;
+    /**
+        * 获取全路径
+        * @param url
+        * @returns
+        */
+    export function fullURL(url: ResURL): string;
 }
 
 declare module 'drongo-cc/task/ITask' {

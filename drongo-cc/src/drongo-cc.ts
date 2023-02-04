@@ -6,6 +6,7 @@ export { BitFlag } from "./utils/BitFlag"
 export { LocalStorage } from "./utils/LocalStorage"
 export { StringUtils } from "./utils/StringUtils"
 export { MaxRectBinPack, FindPosition, Rect } from "./utils/MaxRectsBinPack"
+export { RGBA8888Texture } from "./utils/RGBA8888Texture"
 
 //events
 export { IEventDispatcher } from "./events/IEventDispatcher"
@@ -39,7 +40,7 @@ export { ResManager } from "./res/ResManager"
 export { Resource } from "./res/Resource"
 export { Res } from "./res/Res"
 export { ResRef } from "./res/ResRef"
-export { ResURL, url2Key, key2URL } from "./res/ResURL"
+export { ResURL, url2Key, key2URL, fullURL } from "./res/ResURL"
 
 //task
 export { ITask } from "./task/ITask"

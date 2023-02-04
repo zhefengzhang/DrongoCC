@@ -1,9 +1,8 @@
 import { Asset, AssetManager, assetManager } from "cc";
-import { IResource } from "./IResource";
 import { ResManager } from "./ResManager";
 import { Resource } from "./Resource";
 import { ResRef } from "./ResRef";
-import { ResURL, url2Key } from "./ResURL";
+import { fullURL, ResURL, url2Key } from "./ResURL";
 
 export type ResLoader = (url: ResURL,
     bundle: AssetManager.Bundle,
@@ -131,7 +130,7 @@ export class Res {
         if (typeof url.type == "string") {
             throw new Error("url.type不能为字符串" + url);
         }
-        bundle.load(url.url, url.type, progress, (err: Error, asset: Asset) => {
+        bundle.load(fullURL(url), url.type, progress, (err: Error, asset: Asset) => {
             if (err) {
                 cb(err);
                 return;
@@ -141,7 +140,7 @@ export class Res {
             if (ResManager.hasRes(urlKey)) {
                 cb(undefined, ResManager.addResRef(urlKey, refKey));
                 return;
-            }else{
+            } else {
                 let res: Resource = new Resource();
                 res.key = urlKey;
                 res.content = asset;

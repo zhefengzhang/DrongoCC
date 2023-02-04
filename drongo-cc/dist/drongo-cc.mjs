@@ -1,4 +1,4 @@
-import { sys, find, Node, director, Component as Component$1, SpriteFrame, Texture2D, AudioSource, Asset, Prefab, instantiate, isValid, assetManager } from 'cc';
+import { sys, Texture2D, gfx, find, Node, director, Component as Component$1, SpriteFrame, AudioSource, Asset, Prefab, instantiate, isValid, assetManager } from 'cc';
 
 /**
  * 注入器
@@ -1361,6 +1361,119 @@ class Rect {
 }
 
 /**
+ * RGBA8888二进制纹理
+ */
+class RGBA8888Texture extends Texture2D {
+    constructor(width, height) {
+        super();
+        this.reset({ width, height, format: Texture2D.PixelFormat.RGBA8888 });
+    }
+    /**
+     * 填充颜色
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     * @param color
+     */
+    fillRect(x, y, width, height, color) {
+        let a = ((color >> 24) & 0xff);
+        let r = ((color >> 16) & 0xff);
+        let g = ((color >> 8) & 0xff);
+        let b = ((color) & 0xff);
+        this.__fillRect(x, y, width, height, a, r, g, b);
+    }
+    __fillRect(x, y, width, height, a, r, g, b) {
+        let bytes = new Uint8Array(width * height * 4);
+        let index;
+        for (let ix = 0; ix < width; ix++) {
+            for (let iy = 0; iy < height; iy++) {
+                index = (iy * width + ix) * 4;
+                bytes[index] = r;
+                bytes[index + 1] = g;
+                bytes[index + 2] = b;
+                bytes[index + 3] = a;
+            }
+        }
+        this.copyBuffersToTexture(bytes, x, y, width, height);
+    }
+    /**
+     * 通过颜色分量设置
+     * @param r
+     * @param g
+     * @param b
+     * @param a
+     * @param x
+     * @param y
+     */
+    setPixel(r, g, b, a, x, y) {
+        this.__fillRect(x, y, 1, 1, a, r, g, b);
+    }
+    /**
+     * 通过单个颜色值设置
+     * @param color
+     * @param x
+     * @param y
+     */
+    setPixelColor(color, x, y) {
+        let a = ((color >> 24) & 0xff);
+        let r = ((color >> 16) & 0xff);
+        let g = ((color >> 8) & 0xff);
+        let b = ((color) & 0xff);
+        this.setPixel(r, g, b, a, x, y);
+    }
+    /**
+     * 将纹理绘制到纹理
+     * @param texture
+     * @param sx
+     * @param sy
+     * @param width
+     * @param height
+     * @param tx
+     * @param ty
+     * @param filter
+     * @returns
+     */
+    draw2Texture(texture, sx, sy, width, height, tx, ty, filter = gfx.Filter.POINT) {
+        const gfxTexture = texture.getGFXTexture();
+        if (!gfxTexture) {
+            return;
+        }
+        let region = new gfx.TextureBlit();
+        region.srcOffset.x = sx;
+        region.srcOffset.y = sy;
+        region.srcExtent.width = width;
+        region.srcExtent.height = height;
+        region.dstOffset.x = tx;
+        region.dstOffset.y = ty;
+        region.dstExtent.width = width;
+        region.dstExtent.height = height;
+        gfx.deviceManager.gfxDevice.commandBuffer.blitTexture(gfxTexture, this.getGFXTexture(), [region], filter);
+    }
+    /**
+     * 将二进制数据填充到纹理的指定区域
+     * @param buffer
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     * @returns
+    */
+    copyBuffersToTexture(buffer, x, y, width, height) {
+        let regionInfo = new gfx.BufferTextureCopy();
+        regionInfo.texOffset.x = x;
+        regionInfo.texOffset.y = y;
+        regionInfo.texExtent.width = width;
+        regionInfo.texExtent.height = height;
+        const gfxTexture = this.getGFXTexture();
+        if (!gfxTexture) {
+            return;
+        }
+        this._getGFXDevice().copyBuffersToTexture([buffer], gfxTexture, [regionInfo]);
+    }
+}
+
+/**
  * 列表
  */
 class List extends EventDispatcher {
@@ -1934,6 +2047,23 @@ function url2Key(url) {
 function key2URL(key) {
     return ResURLUtils.key2Url(key);
 }
+/**
+ * 获取全路径
+ * @param url
+ * @returns
+ */
+function fullURL(url) {
+    if (typeof url == "string") {
+        return url;
+    }
+    if (url.type == Texture2D) {
+        return url.url + "/texture";
+    }
+    if (url.type == SpriteFrame) {
+        return url.url + "/spriteFrame";
+    }
+    return url.url;
+}
 class ResURLUtils {
     static getAssetType(key) {
         if (!this.__assetTypes.has(key)) {
@@ -1941,7 +2071,12 @@ class ResURLUtils {
         }
         return this.__assetTypes.get(key);
     }
-    static __getURL(key) {
+    /**
+     * 获取全路径
+     * @param url
+     * @returns
+     */
+    static _getURL(key) {
         let len = key.length;
         let end = len - 8;
         //texture
@@ -1965,7 +2100,7 @@ class ResURLUtils {
     static key2Url(key) {
         if (key.indexOf("|")) {
             let arr = key.split("|");
-            return { url: this.__getURL(arr[0]), bundle: arr[1], type: this.getAssetType(arr[2]) };
+            return { url: this._getURL(arr[0]), bundle: arr[1], type: this.getAssetType(arr[2]) };
         }
         return key;
     }
@@ -2863,7 +2998,7 @@ class Res {
         if (typeof url.type == "string") {
             throw new Error("url.type不能为字符串" + url);
         }
-        bundle.load(url.url, url.type, progress, (err, asset) => {
+        bundle.load(fullURL(url), url.type, progress, (err, asset) => {
             if (err) {
                 cb(err);
                 return;
@@ -3433,4 +3568,4 @@ class FSM extends EventDispatcher {
     }
 }
 
-export { AudioChannel, AudioManager, BitFlag, Component, Debuger, Dictionary, Entity, Event, EventDispatcher, FSM, FindPosition, Group, Injector, List, LocalStorage, Matcher, MatcherAllOf, MatcherAnyOf, MatcherNoneOf, MaxRectBinPack, Pool, Rect, Res, ResManager, ResRef, Resource, StringUtils, System, TaskQueue, TaskSequence, TickerManager, Timer, World, key2URL, url2Key };
+export { AudioChannel, AudioManager, BitFlag, Component, Debuger, Dictionary, Entity, Event, EventDispatcher, FSM, FindPosition, Group, Injector, List, LocalStorage, Matcher, MatcherAllOf, MatcherAnyOf, MatcherNoneOf, MaxRectBinPack, Pool, RGBA8888Texture, Rect, Res, ResManager, ResRef, Resource, StringUtils, System, TaskQueue, TaskSequence, TickerManager, Timer, World, fullURL, key2URL, url2Key };

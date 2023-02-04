@@ -22,6 +22,23 @@ export function key2URL(key: string): ResURL {
     return ResURLUtils.key2Url(key);
 }
 
+/**
+ * 获取全路径
+ * @param url 
+ * @returns 
+ */
+export function fullURL(url: ResURL): string {
+    if(typeof url=="string"){
+        return url;
+    }
+    if(url.type==Texture2D){
+        return url.url+"/texture";
+    }
+    if(url.type==SpriteFrame){
+        return url.url+"/spriteFrame"
+    }
+    return url.url;
+}
 
 class ResURLUtils {
 
@@ -35,7 +52,12 @@ class ResURLUtils {
         return this.__assetTypes.get(key);
     }
 
-    private static __getURL(key: string): string {
+    /**
+     * 获取全路径
+     * @param url 
+     * @returns 
+     */
+    static _getURL(key: string): string {
         let len: number = key.length;
         let end: number = len - 8;
         //texture
@@ -60,7 +82,7 @@ class ResURLUtils {
     static key2Url(key: string): ResURL {
         if (key.indexOf("|")) {
             let arr: Array<string> = key.split("|");
-            return { url: this.__getURL(arr[0]), bundle: arr[1], type: this.getAssetType(arr[2]) };
+            return { url: this._getURL(arr[0]), bundle: arr[1], type: this.getAssetType(arr[2]) };
         }
         return key;
     }
