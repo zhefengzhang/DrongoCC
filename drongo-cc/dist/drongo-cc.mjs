@@ -1435,20 +1435,32 @@ class RGBA8888Texture extends Texture2D {
      * @returns
      */
     draw2Texture(texture, sx, sy, width, height, tx, ty, filter = gfx.Filter.POINT) {
-        const gfxTexture = texture.getGFXTexture();
-        if (!gfxTexture) {
-            return;
-        }
-        let region = new gfx.TextureBlit();
-        region.srcOffset.x = sx;
-        region.srcOffset.y = sy;
-        region.srcExtent.width = width;
-        region.srcExtent.height = height;
-        region.dstOffset.x = tx;
-        region.dstOffset.y = ty;
-        region.dstExtent.width = width;
-        region.dstExtent.height = height;
-        gfx.deviceManager.gfxDevice.commandBuffer.blitTexture(gfxTexture, this.getGFXTexture(), [region], filter);
+        // const gfxTexture = texture.getGFXTexture()
+        // if (!gfxTexture) {
+        //     return;
+        // }
+        // let region = new gfx.TextureBlit();
+        // region.srcOffset.x = sx;
+        // region.srcOffset.y = sy;
+        // region.srcExtent.width = width;
+        // region.srcExtent.height = height;
+        // region.dstOffset.x = tx;
+        // region.dstOffset.y = ty;
+        // region.dstExtent.width = width;
+        // region.dstExtent.height = height;
+        // gfx.deviceManager.gfxDevice.commandBuffer.blitTexture(gfxTexture, this.getGFXTexture(), [region], filter);
+        //先从纹理中获取二进制数据
+        let buffer = new Uint8Array(width * height * 4);
+        let region = new gfx.BufferTextureCopy();
+        region.texOffset.x = sx;
+        region.texOffset.y = sy;
+        region.texExtent.width = width;
+        region.texExtent.height = height;
+        this._getGFXDevice().copyTextureToBuffers(texture.getGFXTexture(), [buffer], [region]);
+        //然后将二进制数据填充到纹理
+        region.texOffset.x = tx;
+        region.texOffset.y = ty;
+        this._getGFXDevice().copyBuffersToTexture([buffer], this.getGFXTexture(), [region]);
     }
     /**
      * 将二进制数据填充到纹理的指定区域
@@ -1460,16 +1472,16 @@ class RGBA8888Texture extends Texture2D {
      * @returns
     */
     copyBuffersToTexture(buffer, x, y, width, height) {
-        let regionInfo = new gfx.BufferTextureCopy();
-        regionInfo.texOffset.x = x;
-        regionInfo.texOffset.y = y;
-        regionInfo.texExtent.width = width;
-        regionInfo.texExtent.height = height;
+        let region = new gfx.BufferTextureCopy();
+        region.texOffset.x = x;
+        region.texOffset.y = y;
+        region.texExtent.width = width;
+        region.texExtent.height = height;
         const gfxTexture = this.getGFXTexture();
         if (!gfxTexture) {
             return;
         }
-        this._getGFXDevice().copyBuffersToTexture([buffer], gfxTexture, [regionInfo]);
+        this._getGFXDevice().copyBuffersToTexture([buffer], gfxTexture, [region]);
     }
 }
 

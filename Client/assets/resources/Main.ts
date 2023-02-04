@@ -15,6 +15,7 @@ export class Main extends Component {
         this.sprite = this.node.addComponent(Sprite);
         let sf=new SpriteFrame();
         sf.texture=texture;
+        sf.rect=new Rect(0,0,100,100);
         this.sprite.spriteFrame=sf;
 
         let resRef = await Res.getResRef({ url: "001", bundle: "resources", type: Texture2D }, "MainScene");
