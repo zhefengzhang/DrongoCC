@@ -1435,6 +1435,7 @@ class RGBA8888Texture extends Texture2D {
      * @returns
      */
     draw2Texture(texture, sx, sy, width, height, tx, ty, filter = gfx.Filter.POINT) {
+        //废弃，经过测试blitTexture在微信平台会有颜色覆盖BUG
         // const gfxTexture = texture.getGFXTexture()
         // if (!gfxTexture) {
         //     return;
@@ -2908,39 +2909,65 @@ class Res {
     }
     /**
      * 获取资源引用
-     * @param urls
+     * @param url
      * @param refKey    谁持有该引用
      * @param progress  进度汇报函数
      * @returns
      */
-    static getResRef(urls, refKey, progress) {
+    static getResRef(url, refKey, progress) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (Array.isArray(urls)) {
-                let list = [];
-                let loaded = 0;
-                for (let index = 0; index < urls.length; index++) {
-                    const url = urls[index];
-                    const result = yield this.loadAsset(url, refKey, (childProgress) => {
-                        if (progress) {
-                            progress((loaded + childProgress) / urls.length);
-                        }
-                    });
-                    list.push(result);
-                }
-                return yield Promise.all(list);
+            if (Array.isArray(url)) {
+                throw new Error("获取资源列表请调用getResRefList或getResRefMap");
             }
-            else {
-                //已加载完成
-                let urlKey = url2Key(urls);
-                if (ResManager.hasRes(urlKey)) {
-                    return Promise.resolve(ResManager.addResRef(urlKey, refKey));
-                }
-                return yield this.loadAsset(urls, refKey, (childProgress) => {
+            //已加载完成
+            let urlKey = url2Key(url);
+            if (ResManager.hasRes(urlKey)) {
+                return Promise.resolve(ResManager.addResRef(urlKey, refKey));
+            }
+            return yield this.loadAsset(url, refKey, (childProgress) => { if (progress)
+                progress(childProgress); });
+        });
+    }
+    /**
+     * 获取资源引用列表
+     * @param urls
+     * @param refKey
+     * @param progress
+     * @returns
+     */
+    static getResRefList(urls, refKey, progress) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let tasks = [];
+            let loaded = 0;
+            for (let index = 0; index < urls.length; index++) {
+                const url = urls[index];
+                const task = yield this.loadAsset(url, refKey, (childProgress) => {
                     if (progress) {
-                        progress(childProgress);
+                        progress((loaded + childProgress) / urls.length);
                     }
                 });
+                tasks.push(task);
             }
+            return yield Promise.all(tasks);
+        });
+    }
+    /**
+     * 获取资源引用字典
+     * @param urls
+     * @param refKey
+     * @param result
+     * @param progress
+     * @returns
+     */
+    static getResRefMap(urls, refKey, result, progress) {
+        return __awaiter(this, void 0, void 0, function* () {
+            result = result || new Map();
+            let resRefs = yield this.getResRefList(urls, refKey, progress);
+            for (let index = 0; index < resRefs.length; index++) {
+                const element = resRefs[index];
+                result.set(element.key, element);
+            }
+            return Promise.resolve(result);
         });
     }
     static loadAsset(url, refKey, progress) {

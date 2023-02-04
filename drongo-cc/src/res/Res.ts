@@ -4,6 +4,9 @@ import { Resource } from "./Resource";
 import { ResRef } from "./ResRef";
 import { fullURL, ResURL, url2Key } from "./ResURL";
 
+/**
+ * 资源加载器
+ */
 export type ResLoader = (url: ResURL,
     bundle: AssetManager.Bundle,
     refKey: string,
@@ -24,46 +27,67 @@ export class Res {
         }
         return this.__loaders.get(key);
     }
-
+    
     /**
      * 获取资源引用
-     * @param urls      
+     * @param url   
      * @param refKey    谁持有该引用
      * @param progress  进度汇报函数
      * @returns
      */
-    static async getResRef(urls: ResURL | Array<ResURL>, refKey: string, progress?: (progress: number) => void): Promise<ResRef | Array<ResRef>> {
-        if (Array.isArray(urls)) {
-            let list = [];
-            let loaded: number = 0;
-            for (let index = 0; index < urls.length; index++) {
-                const url = urls[index];
-                const result = await this.loadAsset(
-                    url,
-                    refKey,
-                    (childProgress: number) => {
-                        if (progress) {
-                            progress((loaded + childProgress) / urls.length);
-                        }
-                    });
-                list.push(result);
-            }
-            return await Promise.all(list);
-        } else {
-            //已加载完成
-            let urlKey: string = url2Key(urls);
-            if (ResManager.hasRes(urlKey)) {
-                return Promise.resolve(ResManager.addResRef(urlKey, refKey));
-            }
-            return await this.loadAsset(
-                urls,
+    static async getResRef(url: ResURL, refKey: string, progress?: (progress: number) => void): Promise<ResRef> {
+        if (Array.isArray(url)) {
+            throw new Error("获取资源列表请调用getResRefList或getResRefMap");
+        }
+        //已加载完成
+        let urlKey: string = url2Key(url);
+        if (ResManager.hasRes(urlKey)) {
+            return Promise.resolve(ResManager.addResRef(urlKey, refKey));
+        }
+        return await this.loadAsset(url, refKey, (childProgress: number) => { if (progress) progress(childProgress) });
+    }
+    
+    /**
+     * 获取资源引用列表
+     * @param urls 
+     * @param refKey 
+     * @param progress 
+     * @returns 
+     */
+    static async getResRefList(urls: Array<ResURL>, refKey: string, progress?: (progress: number) => void): Promise<Array<ResRef>> {
+        let tasks = [];
+        let loaded: number = 0;
+        for (let index = 0; index < urls.length; index++) {
+            const url = urls[index];
+            const task = await this.loadAsset(
+                url,
                 refKey,
                 (childProgress: number) => {
                     if (progress) {
-                        progress(childProgress);
+                        progress((loaded + childProgress) / urls.length);
                     }
                 });
+            tasks.push(task);
         }
+        return await Promise.all(tasks);
+    }
+
+    /**
+     * 获取资源引用字典
+     * @param urls 
+     * @param refKey 
+     * @param result 
+     * @param progress 
+     * @returns 
+     */
+    static async getResRefMap(urls: Array<ResURL>, refKey: string, result?: Map<string, ResRef>, progress?: (progress: number) => void): Promise<Map<string, ResRef>> {
+        result = result || new Map<string, ResRef>();
+        let resRefs = await this.getResRefList(urls, refKey, progress);
+        for (let index = 0; index < resRefs.length; index++) {
+            const element = resRefs[index];
+            result.set(element.key, element);
+        }
+        return Promise.resolve(result);
     }
 
     private static async loadAsset(url: ResURL, refKey: string, progress: (progress: number) => void): Promise<ResRef> {

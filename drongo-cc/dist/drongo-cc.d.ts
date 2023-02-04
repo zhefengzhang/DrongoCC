@@ -1183,18 +1183,38 @@ declare module 'drongo-cc/res/Res' {
     import { AssetManager } from "cc";
     import { ResRef } from "drongo-cc/res/ResRef";
     import { ResURL } from "drongo-cc/res/ResURL";
+    /**
+        * 资源加载器
+        */
     export type ResLoader = (url: ResURL, bundle: AssetManager.Bundle, refKey: string, progress?: (progress: number) => void, cb?: (err: Error, resRef: ResRef) => void) => void;
     export class Res {
             static setResLoader(key: string, loader: ResLoader): void;
             static getResLoader(key: string): ResLoader;
             /**
                 * 获取资源引用
-                * @param urls
+                * @param url
                 * @param refKey    谁持有该引用
                 * @param progress  进度汇报函数
                 * @returns
                 */
-            static getResRef(urls: ResURL | Array<ResURL>, refKey: string, progress?: (progress: number) => void): Promise<ResRef | Array<ResRef>>;
+            static getResRef(url: ResURL, refKey: string, progress?: (progress: number) => void): Promise<ResRef>;
+            /**
+                * 获取资源引用列表
+                * @param urls
+                * @param refKey
+                * @param progress
+                * @returns
+                */
+            static getResRefList(urls: Array<ResURL>, refKey: string, progress?: (progress: number) => void): Promise<Array<ResRef>>;
+            /**
+                * 获取资源引用字典
+                * @param urls
+                * @param refKey
+                * @param result
+                * @param progress
+                * @returns
+                */
+            static getResRefMap(urls: Array<ResURL>, refKey: string, result?: Map<string, ResRef>, progress?: (progress: number) => void): Promise<Map<string, ResRef>>;
             /**
                 * 默认加载器
                 * @param url
