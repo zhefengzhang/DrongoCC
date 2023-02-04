@@ -1,4 +1,5 @@
 import { sys, Texture2D, gfx, find, Node, director, Component as Component$1, SpriteFrame, AudioSource, Asset, Prefab, instantiate, isValid, assetManager } from 'cc';
+import { DEBUG } from 'cc/env';
 
 /**
  * 注入器
@@ -318,7 +319,9 @@ class Event {
 Event.START = "start";
 Event.PROGRESS = "progress";
 Event.COMPLETE = "complete";
-Event.ERROR = "Error";
+Event.ERROR = "error";
+Event.SHOW = "show";
+Event.HIDE = "hide";
 Event.ADD = "add";
 Event.REMOVE = "remove";
 Event.UPDATE = "update";
@@ -3607,4 +3610,226 @@ class FSM extends EventDispatcher {
     }
 }
 
-export { AudioChannel, AudioManager, BitFlag, Component, Debuger, Dictionary, Entity, Event, EventDispatcher, FSM, FindPosition, Group, Injector, List, LocalStorage, Matcher, MatcherAllOf, MatcherAnyOf, MatcherNoneOf, MaxRectBinPack, Pool, RGBA8888Texture, Rect, Res, ResManager, ResRef, Resource, StringUtils, System, TaskQueue, TaskSequence, TickerManager, Timer, World, fullURL, key2URL, url2Key };
+/**
+ * 层管理器
+ */
+class LayerManager {
+    /**
+     * 添加一个层
+     * @param key
+     * @param layer
+     */
+    static addLayer(key, layer) {
+        this.impl.addLayer(key, layer);
+    }
+    /**
+     * 删除层
+     * @param key
+     */
+    static removeLayer(key) {
+        this.impl.removeLayer(key);
+    }
+    /**
+     * 获取层对象
+     * @param key
+     */
+    static getLayer(key) {
+        return this.impl.getLayer(key);
+    }
+    /**
+     * 获得所有层
+     */
+    static getAllLayer() {
+        return this.impl.getAllLayer();
+    }
+    static get impl() {
+        if (this.__impl == null) {
+            this.__impl = Injector.getInject(this.KEY);
+        }
+        if (this.__impl == null) {
+            throw new Error(this.KEY + "未注入！");
+        }
+        return this.__impl;
+    }
+}
+LayerManager.KEY = "drongo.LayerManager";
+
+var GUIState;
+(function (GUIState) {
+    /**
+     * 未使用状态
+     */
+    GUIState[GUIState["Null"] = 0] = "Null";
+    /**
+     * 显示处理中
+     */
+    GUIState[GUIState["Showing"] = 1] = "Showing";
+    /**
+     * 已显示
+     */
+    GUIState[GUIState["Showed"] = 2] = "Showed";
+    /**
+     * 关闭处理中
+     */
+    GUIState[GUIState["Closeing"] = 3] = "Closeing";
+    /**
+     * 已关闭
+     */
+    GUIState[GUIState["Closed"] = 4] = "Closed";
+})(GUIState || (GUIState = {}));
+
+/**
+     * GUI 管理器
+     */
+class GUIManager {
+    /**
+     * 注册
+     * @param info
+     * @returns
+     */
+    static register(info) {
+        return this.impl.register(info);
+    }
+    /**
+     * 注销
+     * @param key
+     * @returns
+     */
+    static unregister(key) {
+        return this.impl.unregister(key);
+    }
+    static open(key, data) {
+        this.impl.open(key, data);
+    }
+    /**
+     * 关闭
+     * @param key
+     * @param checkLayer 是否检查全屏记录
+     */
+    static close(key, checkLayer = true) {
+        this.impl.close(key, checkLayer);
+    }
+    static closeAll() {
+        this.impl.closeAll();
+    }
+    /**
+     * 获取界面状态
+     * @param key
+     * @returns  0 未显示  1显示中
+     */
+    static getGUIState(key) {
+        return this.impl.getGUIState(key);
+    }
+    /**
+     * 是否已打开或再打开中
+     * @param key
+     * @returns
+     */
+    static isOpen(key) {
+        return this.impl.isOpen(key);
+    }
+    /**
+     * 获取GUI中的某个组件
+     * @param key    界面全局唯一KEY
+     * @param path   组件名称/路径
+     */
+    static getUIComponent(key, path) {
+        return this.impl.getUIComponent(key, path);
+    }
+    /**
+     * 获取界面的mediator
+     */
+    static getMediatorByKey(key) {
+        return this.impl.getMediatorByKey(key);
+    }
+    /**
+     * 获得前一个打开的全屏界面
+     * @param curLayerKey 当前打开的全屏界面
+     */
+    static getPrevLayer() {
+        return this.impl.getPrevLayer();
+    }
+    static get impl() {
+        if (this.__impl == null) {
+            this.__impl = Injector.getInject(this.KEY);
+        }
+        if (this.__impl == null) {
+            throw new Error("未注入：" + GUIManager.KEY);
+        }
+        return this.__impl;
+    }
+}
+GUIManager.KEY = "drongo.GUIManager";
+/**
+ * 在界面关闭后多长时间不使用则销毁(秒)
+ */
+GUIManager.GUI_GC_INTERVAL = 30;
+
+/**
+* GUI 关联关系
+*/
+class RelationManager {
+    constructor() {
+    }
+    static addRelation(key, value) {
+        if (DEBUG) {
+            this.__checkValidity(key, value);
+        }
+        if (this.__map.has(key)) {
+            throw new Error("重复注册！");
+        }
+        this.__map.set(key, value);
+    }
+    static removeRelation(key) {
+        if (!this.__map.has(key)) {
+            throw new Error("找不到要删除的内容！");
+        }
+        this.__map.delete(key);
+    }
+    /**
+     * 检测合法性
+     * @param value
+     */
+    static __checkValidity(key, value) {
+        let guiKey = key;
+        let showList = value.show;
+        let hideList = value.hide;
+        let findex;
+        findex = showList.show.indexOf(guiKey);
+        if (findex >= 0) {
+            throw new Error("GuiRelation.config配置错误：gui:" + guiKey + " show.show:中不能包含自身！");
+        }
+        findex = showList.hide.indexOf(guiKey);
+        if (findex >= 0) {
+            throw new Error("GuiRelation.config配置错误：gui:" + guiKey + " show.hide:中不能包含自身！");
+        }
+        findex = hideList.show.indexOf(guiKey);
+        if (findex >= 0) {
+            throw new Error("GuiRelation.config配置错误：gui:" + guiKey + " hide.show:中不能包含自身！");
+        }
+        findex = hideList.hide.indexOf(guiKey);
+        if (findex >= 0) {
+            throw new Error("GuiRelation.config配置错误：gui:" + guiKey + " hide.hide:中不能包含自身！");
+        }
+        for (let index = 0; index < showList.show.length; index++) {
+            const showkey = showList.show[index];
+            const findex = showList.hide.indexOf(showkey);
+            if (findex >= 0) {
+                throw new Error("GuiRelation.config配置错误：gui:" + guiKey + " show.show和show.hide中包含相同的guikey:" + showkey);
+            }
+        }
+        for (let index = 0; index < hideList.show.length; index++) {
+            const showkey = hideList.show[index];
+            const findex = hideList.hide.indexOf(showkey);
+            if (findex >= 0) {
+                throw new Error("GuiRelation.config配置错误：gui:" + guiKey + " hide.show和hide.hide中包含相同的guikey:" + showkey);
+            }
+        }
+    }
+    static getRelation(key) {
+        return this.__map.get(key);
+    }
+}
+RelationManager.__map = new Map();
+
+export { AudioChannel, AudioManager, BitFlag, Component, Debuger, Dictionary, Entity, Event, EventDispatcher, FSM, FindPosition, GUIManager, GUIState, Group, Injector, LayerManager, List, LocalStorage, Matcher, MatcherAllOf, MatcherAnyOf, MatcherNoneOf, MaxRectBinPack, Pool, RGBA8888Texture, Rect, RelationManager, Res, ResManager, ResRef, Resource, StringUtils, System, TaskQueue, TaskSequence, TickerManager, Timer, World, fullURL, key2URL, url2Key };

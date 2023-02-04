@@ -1,25 +1,27 @@
 {
-  "name": "drongo-cc",
-  "version": "1.0.18",
-  "description": "Cocos Creator Game Base Framework",
-  "main": "dist/drongo-cc.mjs",
-  "types": "dist/drongo-cc.d.ts",
-  "module": "dist/drongo-cc.mjs",
+  "name": "drongo-gui",
+  "version": "1.0.3",
+  "description": "ui lib",
+  "main": "dist/drongo-gui.mjs",
+  "types": "dist/drongo-gui.d.ts",
+  "module": "dist/drongo-gui.mjs",
   "files": [
-    "dist/drongo-cc.mjs",
-    "dist/drongo-cc.min.mjs",
-    "dist/drongo-cc.d.ts"
+    "dist/drongo-gui.mjs",
+    "dist/drongo-gui.min.mjs",
+    "dist/drongo-gui.d.ts"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "Cocos Creator 游戏基础框架"
+    "ccc3.x + fgui ui lib"
   ],
   "author": "guojie.greg",
   "license": "ISC",
   "dependencies": {
     "@types/node": "^14.0.1",
+    "drongo-cc": "^1.0.18",
+    "drongo-fgui": "^1.1.2",
     "lodash": "^4.17.15",
     "rollup": "^3.7.3"
   },

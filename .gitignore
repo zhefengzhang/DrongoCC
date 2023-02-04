@@ -4,3 +4,5 @@
 /drongo-cc/build
 /drongo-fgui/build
 /drongo-fgui/node_modules
+/drongo-gui/node_modules
+/drongo-gui/build

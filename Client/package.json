@@ -5,7 +5,8 @@
     "version": "3.7.0"
   },
   "dependencies": {
-    "drongo-cc": "^1.0.16",
-    "drongo-fgui": "^1.1.2"
+    "drongo-cc": "^1.0.17",
+    "drongo-fgui": "^1.1.2",
+    "drongo-gui": "^1.0.2"
   }
 }

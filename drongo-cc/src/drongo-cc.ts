@@ -65,3 +65,17 @@ export { World } from "./entitys/World"
 export { IState } from "./fsm/IState"
 export { FSM } from "./fsm/FSM"
 
+//gui
+export { ILayer } from "./gui/layer/ILayer"
+export { ILayerManager } from "./gui/layer/ILayerManager"
+export { LayerManager } from "./gui/layer/LayerManager"
+
+export { GUIState } from "./gui/core/GUIState"
+export { IGUIMediator } from "./gui/core/IGUIMediator"
+export { IGUIManager } from "./gui/core/IGUIManager"
+export { IViewComponent } from "./gui/core/IViewComponent"
+export { GUIManager } from "./gui/GUIManager"
+
+export { IRelationList } from "./gui/relations/IRelationList"
+export { IRelationInfo } from "./gui/relations/IRelationInfo"
+export { RelationManager } from "./gui/relations/RelationManager"

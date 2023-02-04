@@ -20,13 +20,13 @@ gulp.task('buildJs', () => {
 
 gulp.task("rollup", async function () {
     let config = {
-        input: "build/drongo-cc.js",
+        input: "build/drongo-gui.js",
         external: ['cc', 'cc/env'],
         output: {
-            file: 'dist/drongo-cc.mjs',
+            file: 'dist/drongo-gui.mjs',
             format: 'es',
             extend: true,
-            name: 'drongo-cc',
+            name: 'drongo-gui',
         }
     };
     const subTask = await rollup.rollup(config);
@@ -34,7 +34,7 @@ gulp.task("rollup", async function () {
 });
 
 gulp.task("uglify", function () {
-    return gulp.src("dist/drongo-cc.mjs")
+    return gulp.src("dist/drongo-gui.mjs")
         .pipe(rename({ suffix: '.min' }))
         .pipe(uglify(/* options */))
         .pipe(gulp.dest("dist/"));
@@ -42,7 +42,7 @@ gulp.task("uglify", function () {
 
 gulp.task('buildDts', function () {
     return new Promise(function (resolve, reject) {
-        dts.bundle({ name: "drongo-cc", main: "./build/drongo-cc.d.ts", out: "../dist/drongo-cc.d.ts" });
+        dts.bundle({ name: "drongo-gui", main: "./build/drongo-gui.d.ts", out: "../dist/drongo-gui.d.ts" });
         resolve();
     });
 })

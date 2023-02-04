@@ -6,7 +6,11 @@ export class Event {
     static readonly START: string = "start";
     static readonly PROGRESS: string = "progress";
     static readonly COMPLETE: string = "complete";
-    static readonly ERROR: string = "Error";
+    static readonly ERROR: string = "error";
+
+
+    static readonly SHOW: string = "show";
+    static readonly HIDE: string = "hide";
 
 
     static readonly ADD: string = "add";
@@ -14,7 +18,7 @@ export class Event {
     static readonly UPDATE: string = "update";
     static readonly CLEAR: string = "clear";
 
-    static readonly State_Changed:string="stateChanged";
+    static readonly State_Changed: string = "stateChanged";
 
 
     /**事件通道 */

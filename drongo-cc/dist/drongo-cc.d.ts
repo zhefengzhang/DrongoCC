@@ -48,6 +48,17 @@ declare module 'drongo-cc' {
     export { World } from "drongo-cc/entitys/World";
     export { IState } from "drongo-cc/fsm/IState";
     export { FSM } from "drongo-cc/fsm/FSM";
+    export { ILayer } from "drongo-cc/gui/layer/ILayer";
+    export { ILayerManager } from "drongo-cc/gui/layer/ILayerManager";
+    export { LayerManager } from "drongo-cc/gui/layer/LayerManager";
+    export { GUIState } from "drongo-cc/gui/core/GUIState";
+    export { IGUIMediator } from "drongo-cc/gui/core/IGUIMediator";
+    export { IGUIManager } from "drongo-cc/gui/core/IGUIManager";
+    export { IViewComponent } from "drongo-cc/gui/core/IViewComponent";
+    export { GUIManager } from "drongo-cc/gui/GUIManager";
+    export { IRelationList } from "drongo-cc/gui/relations/IRelationList";
+    export { IRelationInfo } from "drongo-cc/gui/relations/IRelationInfo";
+    export { RelationManager } from "drongo-cc/gui/relations/RelationManager";
 }
 
 declare module 'drongo-cc/utils/Injector' {
@@ -445,6 +456,8 @@ declare module 'drongo-cc/events/Event' {
             static readonly PROGRESS: string;
             static readonly COMPLETE: string;
             static readonly ERROR: string;
+            static readonly SHOW: string;
+            static readonly HIDE: string;
             static readonly ADD: string;
             static readonly REMOVE: string;
             static readonly UPDATE: string;
@@ -1570,6 +1583,358 @@ declare module 'drongo-cc/fsm/FSM' {
             get state(): number;
             get current(): IState;
             destroy(): void;
+    }
+}
+
+declare module 'drongo-cc/gui/layer/ILayer' {
+    export interface ILayer {
+            addChild(child: any): void;
+            addChildAt(child: any, index: number): void;
+            removeChild(child: any): void;
+            removeChildAt(index: number): void;
+            /**
+                * 获取指定索引内容
+                * @param index
+                */
+            getChildAt(index: number): any;
+            /**
+                * 当前层拥有的子对象数量
+                */
+            getCount(): number;
+    }
+}
+
+declare module 'drongo-cc/gui/layer/ILayerManager' {
+    import { ILayer } from "drongo-cc/gui/layer/ILayer";
+    export interface ILayerManager {
+            /**
+                * 添加层
+                * @param key
+                * @param layer
+                */
+            addLayer(key: string, layer: ILayer): void;
+            /**
+                * 删除层
+                * @param key
+                */
+            removeLayer(key: string): void;
+            /**
+                * 获取层对象
+                * @param key
+                */
+            getLayer(key: string): ILayer | undefined;
+            /**
+                * 获得所有层
+                */
+            getAllLayer(): ILayer[];
+    }
+}
+
+declare module 'drongo-cc/gui/layer/LayerManager' {
+    import { ILayer } from "drongo-cc/gui/layer/ILayer";
+    /**
+        * 层管理器
+        */
+    export class LayerManager {
+            static KEY: string;
+            /**
+                * 添加一个层
+                * @param key
+                * @param layer
+                */
+            static addLayer(key: string, layer: ILayer): void;
+            /**
+                * 删除层
+                * @param key
+                */
+            static removeLayer(key: string): void;
+            /**
+                * 获取层对象
+                * @param key
+                */
+            static getLayer(key: string): ILayer | undefined;
+            /**
+                * 获得所有层
+                */
+            static getAllLayer(): ILayer[];
+    }
+}
+
+declare module 'drongo-cc/gui/core/GUIState' {
+    export enum GUIState {
+            /**
+                * 未使用状态
+                */
+            Null = 0,
+            /**
+                * 显示处理中
+                */
+            Showing = 1,
+            /**
+                * 已显示
+                */
+            Showed = 2,
+            /**
+                * 关闭处理中
+                */
+            Closeing = 3,
+            /**
+                * 已关闭
+                */
+            Closed = 4
+    }
+}
+
+declare module 'drongo-cc/gui/core/IGUIMediator' {
+    import { IViewComponent } from "drongo-cc/gui/core/IViewComponent";
+    export interface IGUIMediator {
+            info: any;
+            /**初始化完毕 */
+            inited: boolean;
+            /**
+                * 显示节点
+                */
+            viewComponent: IViewComponent | null;
+            /**
+                * 播放显示动画
+                * @param complete
+                */
+            playShowAnimation?: (complete: Function) => void;
+            /**
+                * 界面关闭时播放的动画
+                * @param complete
+                */
+            playHideAnimation?: (complete: Function) => void;
+            /**
+                * 创建UI
+                * @param info
+                * @param created
+                */
+            createUI(info: any, created: Function): void;
+            /**
+                * 初始化
+                */
+            init(): void;
+            /**
+                * 心跳
+                * @param dt
+                */
+            tick(dt: number): void;
+            /**
+                * 显示(内部接口，请勿调用)
+                * @param data
+                */
+            show(data?: any): void;
+            /**
+                * 当已经处在显示中 GUIManager.call时 则调用该方法而不调用showedUpdate
+                * @param data
+                */
+            showedUpdate(data?: any): void;
+            /**
+                * 隐藏(内部接口，请勿调用)
+                * @param info
+                */
+            hide(): void;
+            /**
+                * 销毁
+                */
+            destroy(): void;
+            /**
+                * 获取组件
+                * @param path
+                */
+            getUIComponent(path: string): any;
+    }
+}
+
+declare module 'drongo-cc/gui/core/IGUIManager' {
+    import { GUIState } from "drongo-cc/gui/core/GUIState";
+    import { IGUIMediator } from "drongo-cc/gui/core/IGUIMediator";
+    /**
+        * UI管理器接口
+        */
+    export interface IGUIManager {
+            /**
+                * 注册
+                * @param key
+                * @param mediatorClass
+                * @param data
+                */
+            register(info: {
+                    key: number;
+            }): void;
+            /**
+                * 注销
+                * @param key
+                */
+            unregister(key: number): void;
+            /**
+                * 心跳
+                * @param dt
+                */
+            tick(dt: number): void;
+            /**
+                * 打开
+                * @param key
+                * @param data
+                */
+            open(key: number, data?: any): void;
+            /**
+                * 关闭
+                * @param key
+                * @param checkLayer  是否检查全屏打开记录
+                */
+            close(key: number, checkLayer: boolean): void;
+            /**
+                * 关闭所有
+                * @param key
+                */
+            closeAll(): void;
+            /**
+                * 是否已打开
+                * @param key
+                * @returns
+                */
+            getGUIState(key: number): GUIState;
+            /**
+                * 获取GUI中的某个组件
+                * @param key    界面全局唯一KEY
+                * @param path   组件名称/路径
+                */
+            getUIComponent(key: number, path: string): any;
+            /**
+                * 获取界面Mediator
+                * @param key 界面全局唯一KEY
+                */
+            getMediatorByKey(key: number): IGUIMediator;
+            /**
+                * 获得前一个打开的全屏界面
+                */
+            getPrevLayer(): number;
+            /**
+                * 是否已打开或打开中
+                * @param key
+                */
+            isOpen(key: number): boolean;
+    }
+}
+
+declare module 'drongo-cc/gui/core/IViewComponent' {
+    export interface IViewComponent {
+        /**
+          * 激活
+          */
+        visible: boolean;
+    }
+}
+
+declare module 'drongo-cc/gui/GUIManager' {
+    import { GUIState } from "drongo-cc/gui/core/GUIState";
+    import { IGUIMediator } from "drongo-cc/gui/core/IGUIMediator";
+    /**
+                * GUI 管理器
+                */
+    export class GUIManager {
+            static KEY: string;
+            /**
+                * 在界面关闭后多长时间不使用则销毁(秒)
+                */
+            static GUI_GC_INTERVAL: number;
+            /**
+                * 注册
+                * @param info
+                * @returns
+                */
+            static register(info: {
+                    key: number;
+            }): void;
+            /**
+                * 注销
+                * @param key
+                * @returns
+                */
+            static unregister(key: number): void;
+            static open(key: number, data?: any): void;
+            /**
+                * 关闭
+                * @param key
+                * @param checkLayer 是否检查全屏记录
+                */
+            static close(key: number, checkLayer?: boolean): void;
+            static closeAll(): void;
+            /**
+                * 获取界面状态
+                * @param key
+                * @returns  0 未显示  1显示中
+                */
+            static getGUIState(key: number): GUIState;
+            /**
+                * 是否已打开或再打开中
+                * @param key
+                * @returns
+                */
+            static isOpen(key: number): boolean;
+            /**
+                * 获取GUI中的某个组件
+                * @param key    界面全局唯一KEY
+                * @param path   组件名称/路径
+                */
+            static getUIComponent(key: number, path: string): any;
+            /**
+                * 获取界面的mediator
+                */
+            static getMediatorByKey(key: number): IGUIMediator;
+            /**
+                * 获得前一个打开的全屏界面
+                * @param curLayerKey 当前打开的全屏界面
+                */
+            static getPrevLayer(): number;
+    }
+}
+
+declare module 'drongo-cc/gui/relations/IRelationList' {
+    /**
+        * UI关联数据列表
+        */
+    export interface IRelationList {
+            /**
+                * 要显示的UI列表
+                */
+            show: Array<number>;
+            /**
+                * 要隐藏的UI列表
+                */
+            hide: Array<number>;
+    }
+}
+
+declare module 'drongo-cc/gui/relations/IRelationInfo' {
+    import { IRelationList } from "drongo-cc/gui/relations/IRelationList";
+    /**
+        * UI关联数据
+        */
+    export interface IRelationInfo {
+            /**
+                * 显示时的关联
+                */
+            show: IRelationList;
+            /**
+                * 隐藏时的关联
+                */
+            hide: IRelationList;
+    }
+}
+
+declare module 'drongo-cc/gui/relations/RelationManager' {
+    import { IRelationInfo } from "drongo-cc/gui/relations/IRelationInfo";
+    /**
+     * GUI 关联关系
+     */
+    export class RelationManager {
+            constructor();
+            static addRelation(key: number, value: IRelationInfo): void;
+            static removeRelation(key: number): void;
+            static getRelation(key: number): IRelationInfo;
     }
 }
 

@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "target": "es6",
+    "module": "es6",
+    "strict": true,
+    "strictNullChecks": false,
+    "moduleResolution": "Node",
+    "skipLibCheck": true
+  },
+  "include": [
+    "./src/**/*",
+    "libs"
+, "../drongo-cc/src/gui/layer/LayerManager.ts", "../drongo-cc/src/gui/relations", "../drongo-cc/src/gui/IGUIManager.ts"  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "./build/*"
+  ]
+}
