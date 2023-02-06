@@ -1861,7 +1861,7 @@ class ResManagerImpl {
         /**
          * 等待销毁的资源
          */
-        this._waitDestory = new List();
+        this._waitDestory = [];
         TickerManager.addTicker(this);
     }
     tick(dt) {
@@ -1890,8 +1890,9 @@ class ResManagerImpl {
         }
         let res = this.__resDic.get(key);
         //如果在待删除列表中
-        if (this._waitDestory.has(res)) {
-            this._waitDestory.remove(res);
+        let index = this._waitDestory.indexOf(res);
+        if (index >= 0) {
+            this._waitDestory.splice(index, 1);
         }
         //更新操作时间
         res.lastOpTime = Timer.currentTime;
@@ -1912,18 +1913,19 @@ class ResManagerImpl {
     gc(ignoreTime) {
         let res;
         let currentTime = Timer.currentTime;
-        let list = this._waitDestory.elements;
-        for (let index = 0; index < list.length; index++) {
-            res = list[index];
+        for (let index = 0; index < this._waitDestory.length; index++) {
+            res = this._waitDestory[index];
             if (res.refCount > 0) {
                 continue;
             }
             //如果忽略时间机制
             if (ignoreTime == true) {
+                this._waitDestory.splice(index, 1);
                 this.destoryRes(res);
                 index--;
             }
             else if (currentTime - res.lastOpTime > ResManager.GC_TIME) { //超过允许的时间就回收
+                this._waitDestory.splice(index, 1);
                 this.destoryRes(res);
                 index--;
             }
