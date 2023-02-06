@@ -19,7 +19,7 @@ export class Main extends Component {
         // sf.rect=new Rect(0,0,100,100);
         // this.sprite.spriteFrame=sf;
         
-        let resRef = await Res.getResRef({ url: "001", bundle: "resources", type: Texture2D }, "MainScene");
+        let resRef = await Res.getResRef({ url: "001", bundle: "resources", type: Texture2D }, "MainScene")
         resRef.dispose();
 
         // GRoot.create();

@@ -204,4 +204,46 @@ export class BindingUtils {
     unbindMM(source: any, functionName: string, preHandle: Handler, laterHandler: Handler): void {
         this.__removeHook(source, functionName, preHandle, laterHandler);
     }
+
+    //根据记录添加绑定
+    bindByRecords(): void {
+        //bind
+        for (let index = 0; index < this.__bindRecords.length; index++) {
+            const element = this.__bindRecords[index];
+            BinderUtils.bind(this, element.source, element.property, element.targetOrCallback, element.targetPropertyOrCaller);
+        }
+        //addHook
+        for (let index = 0; index < this.__hookRecords.length; index++) {
+            const element = this.__hookRecords[index];
+            BinderUtils.addHook(this, element.source, element.functionName, element.preHandler, element.laterHandler);
+        }
+    }
+
+    //根据记录删除绑定
+    unbindByRecords(): void {
+        //unbind
+        for (let index = 0; index < this.__bindRecords.length; index++) {
+            const element = this.__bindRecords[index];
+            BinderUtils.unbind(this, element.source, element.property, element.targetOrCallback, element.targetPropertyOrCaller);
+        }
+        //removeHook
+        for (let index = 0; index < this.__hookRecords.length; index++) {
+            const element = this.__hookRecords[index];
+            BinderUtils.removeHook(this, element.source, element.functionName, element.preHandler, element.laterHandler);
+        }
+    }
+
+    /**
+     * 销毁
+     */
+    destroy(): void {
+        if (this.__hookRecords) {
+            this.__hookRecords.length = 0;
+            this.__hookRecords = null;
+        }
+        if (this.__bindRecords) {
+            this.__bindRecords.length = 0;
+            this.__bindRecords = null;
+        }
+    }
 }
