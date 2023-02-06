@@ -17,7 +17,7 @@ export class BaseMediator {
 
     /**外部传参*/
     data: any;
-    
+
     /**需要注册和删除的事件*/
     private __bindEvents: Array<{ target: any, eventType: string, handler: Function, caller: any }> = [];
 
@@ -29,6 +29,10 @@ export class BaseMediator {
 
     init(): void {
 
+    }
+
+    tick(dt: number): void {
+        
     }
 
     show(data: any): void {

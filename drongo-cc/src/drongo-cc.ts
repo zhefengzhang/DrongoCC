@@ -87,3 +87,8 @@ export { GUIManager } from "./gui/GUIManager"
 export { IRelationList } from "./gui/relations/IRelationList"
 export { IRelationInfo } from "./gui/relations/IRelationInfo"
 export { RelationManager } from "./gui/relations/RelationManager"
+
+//loadingView
+export { ILoadingData } from "./gui/loadingView/ILoadingData"
+export { ILoadingView } from "./gui/loadingView/ILoadingView"
+export { LoadingView } from "./gui/loadingView/LoadingView"

@@ -4555,4 +4555,29 @@ class RelationManager {
 }
 RelationManager.__map = new Map();
 
-export { AudioChannel, AudioManager, BinderUtils, BindingUtils, BitFlag, Component, Debuger, Dictionary, Entity, Event, EventDispatcher, FSM, FindPosition, FunctionHook, GUIManager, GUIState, Group, Handler, Injector, LayerManager, List, LocalStorage, Matcher, MatcherAllOf, MatcherAnyOf, MatcherNoneOf, MaxRectBinPack, Pool, PropertyBinder, RGBA8888Texture, Rect, RelationManager, Res, ResManager, ResRef, Resource, StringUtils, System, TaskQueue, TaskSequence, TickerManager, Timer, World, fullURL, key2URL, url2Key };
+/**
+ * 加载界面
+ */
+class LoadingView {
+    static show() {
+        this.impl.show();
+    }
+    static hide() {
+        this.impl.hide();
+    }
+    static changeData(data) {
+        this.impl.changeData(data);
+    }
+    static get impl() {
+        if (this.__impl == null) {
+            this.__impl = Injector.getInject(this.KEY);
+        }
+        if (this.__impl == null) {
+            throw new Error(this.KEY + "为注入");
+        }
+        return this.__impl;
+    }
+}
+LoadingView.KEY = "drongo.LoadingView";
+
+export { AudioChannel, AudioManager, BinderUtils, BindingUtils, BitFlag, Component, Debuger, Dictionary, Entity, Event, EventDispatcher, FSM, FindPosition, FunctionHook, GUIManager, GUIState, Group, Handler, Injector, LayerManager, List, LoadingView, LocalStorage, Matcher, MatcherAllOf, MatcherAnyOf, MatcherNoneOf, MaxRectBinPack, Pool, PropertyBinder, RGBA8888Texture, Rect, RelationManager, Res, ResManager, ResRef, Resource, StringUtils, System, TaskQueue, TaskSequence, TickerManager, Timer, World, fullURL, key2URL, url2Key };

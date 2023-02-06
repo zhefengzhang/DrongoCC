@@ -11,7 +11,7 @@
   "include": [
     "./src/**/*",
     "libs"
-, "../drongo-cc/src/gui/layer/LayerManager.ts", "../drongo-cc/src/gui/relations", "../drongo-cc/src/gui/IGUIManager.ts"  ],
+  ],
   "exclude": [
     "node_modules",
     "dist",

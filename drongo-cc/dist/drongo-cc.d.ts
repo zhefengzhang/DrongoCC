@@ -65,6 +65,9 @@ declare module 'drongo-cc' {
     export { IRelationList } from "drongo-cc/gui/relations/IRelationList";
     export { IRelationInfo } from "drongo-cc/gui/relations/IRelationInfo";
     export { RelationManager } from "drongo-cc/gui/relations/RelationManager";
+    export { ILoadingData } from "drongo-cc/gui/loadingView/ILoadingData";
+    export { ILoadingView } from "drongo-cc/gui/loadingView/ILoadingView";
+    export { LoadingView } from "drongo-cc/gui/loadingView/LoadingView";
 }
 
 declare module 'drongo-cc/utils/Injector' {
@@ -2207,6 +2210,54 @@ declare module 'drongo-cc/gui/relations/RelationManager' {
             static addRelation(key: number, value: IRelationInfo): void;
             static removeRelation(key: number): void;
             static getRelation(key: number): IRelationInfo;
+    }
+}
+
+declare module 'drongo-cc/gui/loadingView/ILoadingData' {
+    /**
+      * 加载界面数据
+      */
+    export interface ILoadingData {
+        label?: string;
+        progress?: number;
+        tip?: string;
+    }
+}
+
+declare module 'drongo-cc/gui/loadingView/ILoadingView' {
+    import { ILoadingData } from "drongo-cc/gui/loadingView/ILoadingData";
+    /**
+        * 加载界面
+        */
+    export interface ILoadingView {
+            /**
+                * 更新
+                * @param data
+                */
+            changeData(data: ILoadingData): void;
+            /**
+                * 显示
+                */
+            show(): void;
+            /**
+                * 隐藏
+                */
+            hide(): void;
+    }
+}
+
+declare module 'drongo-cc/gui/loadingView/LoadingView' {
+    import { ILoadingData } from "drongo-cc/gui/loadingView/ILoadingData";
+    import { ILoadingView } from "drongo-cc/gui/loadingView/ILoadingView";
+    /**
+      * 加载界面
+      */
+    export class LoadingView {
+        static KEY: string;
+        static show(): void;
+        static hide(): void;
+        static changeData(data: ILoadingData): void;
+        static get impl(): ILoadingView;
     }
 }
 

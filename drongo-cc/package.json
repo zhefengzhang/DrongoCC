@@ -1,6 +1,6 @@
 {
   "name": "drongo-cc",
-  "version": "1.0.22",
+  "version": "1.0.24",
   "description": "Cocos Creator Game Base Framework",
   "main": "dist/drongo-cc.mjs",
   "types": "dist/drongo-cc.d.ts",

@@ -77,8 +77,6 @@ export class Resource implements IResource,IRecyclable {
             this.content.decRef();
         }
         this.__refs.splice(index, 1);
-        //回收
-        // ResRef.pool.recycle(value);
         value.destroy();
     }
 
