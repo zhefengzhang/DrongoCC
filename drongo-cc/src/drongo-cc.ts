@@ -81,6 +81,7 @@ export { GUIState } from "./gui/core/GUIState"
 export { IGUIMediator } from "./gui/core/IGUIMediator"
 export { IGUIManager } from "./gui/core/IGUIManager"
 export { IViewComponent } from "./gui/core/IViewComponent"
+export { IViewCreator } from "./gui/core/IViewCreator"
 export { GUIManager } from "./gui/GUIManager"
 
 export { IRelationList } from "./gui/relations/IRelationList"

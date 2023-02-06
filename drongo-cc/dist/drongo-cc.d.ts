@@ -60,6 +60,7 @@ declare module 'drongo-cc' {
     export { IGUIMediator } from "drongo-cc/gui/core/IGUIMediator";
     export { IGUIManager } from "drongo-cc/gui/core/IGUIManager";
     export { IViewComponent } from "drongo-cc/gui/core/IViewComponent";
+    export { IViewCreator } from "drongo-cc/gui/core/IViewCreator";
     export { GUIManager } from "drongo-cc/gui/GUIManager";
     export { IRelationList } from "drongo-cc/gui/relations/IRelationList";
     export { IRelationInfo } from "drongo-cc/gui/relations/IRelationInfo";
@@ -2083,6 +2084,19 @@ declare module 'drongo-cc/gui/core/IViewComponent' {
           * 激活
           */
         visible: boolean;
+    }
+}
+
+declare module 'drongo-cc/gui/core/IViewCreator' {
+    import { IGUIMediator } from "drongo-cc/gui/core/IGUIMediator";
+    /**
+        * View创建者
+        */
+    export interface IViewCreator {
+            /**
+                * 创建Mediator
+                */
+            createMediator(): IGUIMediator;
     }
 }
 
