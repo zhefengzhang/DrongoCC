@@ -11,11 +11,16 @@ declare module 'drongo-cc' {
     export { StringUtils } from "drongo-cc/utils/StringUtils";
     export { MaxRectBinPack, FindPosition, Rect } from "drongo-cc/utils/MaxRectsBinPack";
     export { RGBA8888Texture } from "drongo-cc/utils/RGBA8888Texture";
+    export { Handler } from "drongo-cc/utils/Handler";
     export { IEventDispatcher } from "drongo-cc/events/IEventDispatcher";
     export { Event } from "drongo-cc/events/Event";
     export { EventDispatcher } from "drongo-cc/events/EventDispatcher";
     export { List } from "drongo-cc/containers/List";
     export { Dictionary } from "drongo-cc/containers/Dictionary";
+    export { BindingUtils } from "drongo-cc/bindings/BindingUtils";
+    export { BinderUtils } from "drongo-cc/bindings/BinderUtils";
+    export { FunctionHook } from "drongo-cc/bindings/FunctionHook";
+    export { PropertyBinder } from "drongo-cc/bindings/PropertyBinder";
     export { ITicker } from "drongo-cc/ticker/ITicker";
     export { ITickerManager } from "drongo-cc/ticker/ITickerManager";
     export { TickerManager } from "drongo-cc/ticker/TickerManager";
@@ -399,6 +404,20 @@ declare module 'drongo-cc/utils/RGBA8888Texture' {
     }
 }
 
+declare module 'drongo-cc/utils/Handler' {
+    /**
+      * 处理器
+      */
+    export class Handler {
+        method: Function;
+        caller: any;
+        once: boolean;
+        run(...args: any[]): void;
+        equal(value: Handler): boolean;
+        static create(caller: any, method: Function | null, once?: boolean): Handler;
+    }
+}
+
 declare module 'drongo-cc/events/IEventDispatcher' {
     /**
         * 事件分发器
@@ -682,6 +701,245 @@ declare module 'drongo-cc/containers/Dictionary' {
             get elements(): Array<TValue>;
             get size(): number;
             destroy(): void;
+    }
+}
+
+declare module 'drongo-cc/bindings/BindingUtils' {
+    import { Handler } from "drongo-cc/utils/Handler";
+    /**
+        * 属性与属性数据
+        */
+    export interface PropertyBindInfo {
+            /**
+                * 数据源对象
+                */
+            source: any;
+            /**
+                * 数据源属性名
+                */
+            property: string | Array<string>;
+            /**
+                * 目标对象
+                */
+            targetOrCallback: any | Function;
+            /**
+                * 目标属性名
+                */
+            targetPropertyOrCaller: string | any;
+    }
+    /**
+        * 方法与方法绑定信息
+        */
+    export interface FunctionHookInfo {
+            source: any;
+            functionName: string;
+            preHandler: Handler;
+            laterHandler: Handler;
+    }
+    /**
+        * 绑定工具类
+        */
+    export class BindingUtils {
+            constructor();
+            /**
+                * 属性和属性的绑定
+                * @param source            数据源
+                * @param property          数据源属性名
+                * @param target            目标对象
+                * @param targetProperty    目标对象属性名
+                */
+            bindAA(source: any, property: string, target: any, targetProperty: string): void;
+            /**
+                * 取消属性和属性的绑定
+                * @param source
+                * @param property
+                * @param target
+                * @param targetProperty
+                */
+            unbindAA(source: any, property: string, target: any, targetProperty: string): void;
+            /**
+                * 属性和函数的绑定
+                * @param source
+                * @param property
+                * @param callBack
+                * @param caller
+                */
+            bindAM(source: any, property: string | Array<string>, callBack: (prepertys: Array<string>) => void, caller: any): void;
+            /**
+                * 取消属性和函数的绑定
+                * @param source
+                * @param propertys
+                * @param callBack
+                * @param caller
+                */
+            unbidAM(source: any, propertys: string | Array<string>, callBack: (prepertys: Array<string>) => void, caller: any): void;
+            /**
+                * 函数和函数的绑定
+                * @param source
+                * @param functionName  目标函数
+                * @param preHandle     该函数将在目标函数调用前调用
+                * @param laterHandler  该函数将在目标函数调用后调用
+                */
+            bindMM(source: any, functionName: string, preHandle: Handler, laterHandler?: Handler): void;
+            /**
+                * 取消方法和方法的绑定关系
+                * @param source
+                * @param functionName
+                * @param preHandle
+                * @param laterHandler
+                */
+            unbindMM(source: any, functionName: string, preHandle: Handler, laterHandler: Handler): void;
+            bindByRecords(): void;
+            unbindByRecords(): void;
+            /**
+                * 销毁
+                */
+            destroy(): void;
+    }
+}
+
+declare module 'drongo-cc/bindings/BinderUtils' {
+    import { Handler } from "drongo-cc/utils/Handler";
+    /**
+        * 绑定器工具类
+        */
+    export class BinderUtils {
+            constructor();
+            /**
+                * 绑定
+                * @param group
+                * @param source
+                * @param property
+                * @param targetOrCallBack
+                * @param tPropertyOrCaller
+                */
+            static bind(group: any, source: any, property: string | Array<string>, targetOrCallBack: any | Function, tPropertyOrCaller: string | any): void;
+            /**
+                * 取消绑定
+                * @param group
+                * @param source
+                * @param property
+                * @param targetOrCallBack
+                * @param tPropertyOrCaller
+                * @returns
+                */
+            static unbind(group: any, source: any, property?: string | Array<string>, targetOrCallBack?: any | Function, tPropertyOrCaller?: string | any): void;
+            /**
+                * 添加函数钩子
+                * @param group
+                * @param source
+                * @param functionName
+                * @param preHandler
+                * @param laterHandler
+                */
+            static addHook(group: any, source: any, functionName: string, preHandler: Handler, laterHandler: Handler): void;
+            /**
+                * 删除函数钩子
+                * @param group
+                * @param source
+                * @param functionName
+                * @param preHandler
+                * @param laterHandler
+                * @returns
+                */
+            static removeHook(group: any, source: any, functionName?: string, preHandler?: Handler, laterHandler?: Handler): void;
+    }
+}
+
+declare module 'drongo-cc/bindings/FunctionHook' {
+    import { Handler } from "drongo-cc/utils/Handler";
+    /**
+        * 函数钩子信息
+        */
+    export class FunctionHookInfo {
+            /**
+                * 方法名
+                */
+            functionName: string;
+            /**
+                * 前置处理器
+                */
+            preHandler: Handler;
+            /**
+                * 后置处理器
+                */
+            laterHandler: Handler;
+            equal(functionName: string, preHandler: Handler, laterHandler: Handler): boolean;
+    }
+    export class FunctionHook {
+            data: any;
+            constructor(data: any);
+            /**
+                * 添加钩子
+                * @param group
+                * @param functionName
+                * @param preHandlers
+                * @param laterHandlers
+                */
+            addHook(group: any, functionName: string, preHandler: Handler, laterHandler: Handler): void;
+            /**
+                * 删除钩子
+                * @param group
+                * @param functionName
+                * @param preHandler
+                * @param laterHandler
+                * @returns
+                */
+            removeHook(group: any, functionName?: string, preHandler?: Handler, laterHandler?: Handler): void;
+    }
+}
+
+declare module 'drongo-cc/bindings/PropertyBinder' {
+    /**
+        * 绑定信息
+        */
+    export class BindInfo {
+            /**
+                * 属性KEY
+                */
+            property: string;
+            /**
+                * 目标或回调函数
+                */
+            targetOrCallBack: any | Function;
+            /**
+                * 目标属性或目标this引用
+                */
+            tPropertyOrCaller: string | any;
+            constructor(property: string, targetOrCallBack: any | Function, tPropertyOrCaller: string | any);
+            /**
+                * 判断是否相等
+                * @param property
+                * @param targetOrCallBack
+                * @param tPropertyOrCaller
+                * @returns
+                */
+            equal(property: string, targetOrCallBack: any | Function, tPropertyOrCaller: string | any): boolean;
+    }
+    /**
+        * 属性绑定器
+        */
+    export class PropertyBinder {
+            data: any;
+            constructor(data: any);
+            /**
+                * 绑定
+                * @param group
+                * @param property
+                * @param targetOrCallBack
+                * @param tPropertyOrCaller
+                * @returns
+                */
+            bind(group: any, property: string | Array<string>, targetOrCallBack: any | Function, tPropertyOrCaller: string | any): void;
+            /**
+                * 取消绑定
+                * @param group
+                * @param property
+                * @param targetOrCallBack
+                * @param tPropertyOrCaller
+                * @returns
+                */
+            unbind(group: any, property?: string | Array<string>, targetOrCallBack?: any | Function, tPropertyOrCaller?: string | any): void;
     }
 }
 

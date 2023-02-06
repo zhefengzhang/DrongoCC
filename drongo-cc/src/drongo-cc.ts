@@ -7,6 +7,7 @@ export { LocalStorage } from "./utils/LocalStorage"
 export { StringUtils } from "./utils/StringUtils"
 export { MaxRectBinPack, FindPosition, Rect } from "./utils/MaxRectsBinPack"
 export { RGBA8888Texture } from "./utils/RGBA8888Texture"
+export { Handler } from "./utils/Handler"
 
 //events
 export { IEventDispatcher } from "./events/IEventDispatcher"
@@ -16,6 +17,12 @@ export { EventDispatcher } from "./events/EventDispatcher"
 //datas
 export { List } from "./containers/List"
 export { Dictionary } from "./containers/Dictionary"
+
+//binding
+export { BindingUtils } from "./bindings/BindingUtils"
+export { BinderUtils } from "./bindings/BinderUtils"
+export { FunctionHook } from "./bindings/FunctionHook"
+export { PropertyBinder } from "./bindings/PropertyBinder"
 
 //ticker
 export { ITicker } from "./ticker/ITicker"

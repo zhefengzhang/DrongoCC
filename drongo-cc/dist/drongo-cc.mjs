@@ -1490,6 +1490,37 @@ class RGBA8888Texture extends Texture2D {
 }
 
 /**
+ * 处理器
+ */
+class Handler {
+    constructor() {
+        this.once = true;
+    }
+    run(...args) {
+        if (this.method && !this.isOver) {
+            this.method.apply(this.caller, args);
+            if (this.once) {
+                this.isOver = true;
+            }
+        }
+    }
+    equal(value) {
+        if (this.method == value.method && this.caller == value.caller) {
+            return true;
+        }
+        return false;
+    }
+    static create(caller, method, once) {
+        var h = new Handler();
+        h.caller = caller;
+        h.method = method;
+        h.once = once;
+        h.isOver = false;
+        return h;
+    }
+}
+
+/**
  * 列表
  */
 class List extends EventDispatcher {
@@ -1660,6 +1691,184 @@ class List extends EventDispatcher {
 }
 
 /**
+ * 函数钩子信息
+ */
+class FunctionHookInfo {
+    equal(functionName, preHandler, laterHandler) {
+        if (this.functionName != functionName) {
+            return false;
+        }
+        if (!preHandler.equal(this.preHandler)) {
+            return false;
+        }
+        if (!laterHandler.equal(this.laterHandler)) {
+            return false;
+        }
+        return true;
+    }
+}
+class FunctionHook {
+    constructor(data) {
+        this.data = data;
+        this.__functions = [];
+        this.__preHandlerMap = new Map();
+        this.__laterHandlerMap = new Map();
+        this.__groupMap = new Map();
+    }
+    /**
+     * 添加钩子
+     * @param group
+     * @param functionName
+     * @param preHandlers
+     * @param laterHandlers
+     */
+    addHook(group, functionName, preHandler, laterHandler) {
+        let groupList = this.__groupMap.get(group);
+        if (!groupList) {
+            groupList = [];
+            this.__groupMap.set(group, groupList);
+        }
+        for (let index = 0; index < groupList.length; index++) {
+            const element = groupList[index];
+            if (element.equal(functionName, preHandler, laterHandler)) {
+                //重复添加
+                return;
+            }
+        }
+        let info = new FunctionHookInfo();
+        info.functionName = functionName;
+        info.preHandler = preHandler;
+        info.laterHandler = laterHandler;
+        groupList.push(info);
+        //如果没有添加好钩子
+        if (this.__functions.indexOf(functionName) < 0) {
+            let oldFun = this.data[functionName];
+            if (!oldFun) {
+                throw new Error("方法不存在！");
+            }
+            let pres = this.__preHandlerMap.get(functionName);
+            if (!pres) {
+                pres = [];
+                this.__preHandlerMap.set(functionName, pres);
+            }
+            let laters = this.__laterHandlerMap.get(functionName);
+            if (!laters) {
+                laters = [];
+                this.__laterHandlerMap.set(functionName, laters);
+            }
+            let newFun = function (...arg) {
+                //pre
+                if (pres && pres.length) {
+                    for (let index = 0; index < pres.length; index++) {
+                        const element = pres[index];
+                        element.run(arg);
+                    }
+                }
+                //old
+                oldFun(arg);
+                //later
+                if (laters && laters.length) {
+                    for (let index = 0; index < laters.length; index++) {
+                        const element = laters[index];
+                        element.run(arg);
+                    }
+                }
+            };
+            this.data[functionName] = newFun;
+            this.data["old_" + functionName] = oldFun;
+            this.__functions.push(functionName);
+        }
+        let pres = this.__preHandlerMap.get(functionName);
+        if (!pres) {
+            pres = [];
+            this.__preHandlerMap.set(functionName, pres);
+        }
+        if (pres.indexOf(preHandler) < 0) {
+            pres.push(preHandler);
+        }
+        let laters = this.__laterHandlerMap.get(functionName);
+        if (!laters) {
+            laters = [];
+            this.__laterHandlerMap.set(functionName, laters);
+        }
+        if (laters.indexOf(laterHandler) < 0) {
+            laters.push(laterHandler);
+        }
+    }
+    /**
+     * 删除钩子
+     * @param group
+     * @param functionName
+     * @param preHandler
+     * @param laterHandler
+     * @returns
+     */
+    removeHook(group, functionName, preHandler, laterHandler) {
+        let groupList = this.__groupMap.get(group);
+        if (!groupList) {
+            return;
+        }
+        let list;
+        let fIndex;
+        //编组删除
+        if (!functionName) {
+            for (let index = 0; index < groupList.length; index++) {
+                const element = groupList[index];
+                //pre
+                if (element.preHandler) {
+                    list = this.__preHandlerMap.get(element.functionName);
+                    fIndex = list.indexOf(element.preHandler);
+                    if (fIndex >= 0) {
+                        list.splice(fIndex, 1);
+                    }
+                    if (list.length == 0) {
+                        this.__preHandlerMap.delete(element.functionName);
+                    }
+                }
+                //later
+                if (element.laterHandler) {
+                    list = this.__laterHandlerMap.get(element.functionName);
+                    fIndex = list.indexOf(element.laterHandler);
+                    if (fIndex >= 0) {
+                        list.splice(fIndex, 1);
+                    }
+                    if (list.length == 0) {
+                        this.__laterHandlerMap.delete(element.functionName);
+                    }
+                }
+            }
+            groupList.length = 0;
+            this.__groupMap.delete(group);
+            return;
+        }
+        for (let index = 0; index < groupList.length; index++) {
+            const element = groupList[index];
+            if (element.equal(functionName, preHandler, laterHandler)) {
+                //删除
+                groupList.splice(index, 1);
+                //pre
+                if (element.preHandler) {
+                    list = this.__preHandlerMap.get(functionName);
+                    fIndex = list.indexOf(element.preHandler);
+                    if (fIndex >= 0) {
+                        list.splice(fIndex, 1);
+                    }
+                }
+                //later
+                if (element.laterHandler) {
+                    list = this.__laterHandlerMap.get(functionName);
+                    fIndex = list.indexOf(element.laterHandler);
+                    if (fIndex >= 0) {
+                        list.splice(fIndex, 1);
+                    }
+                }
+                return;
+            }
+        }
+    }
+}
+
+/**
  * 默认的ticker管理器实现
  */
 class TickerManagerImpl {
@@ -1790,6 +1999,518 @@ class TickerManager {
     }
 }
 TickerManager.KEY = "TickerManager";
+
+/**
+ * 绑定信息
+ */
+class BindInfo {
+    constructor(property, targetOrCallBack, tPropertyOrCaller) {
+        this.property = property;
+        this.targetOrCallBack = targetOrCallBack;
+        this.tPropertyOrCaller = tPropertyOrCaller;
+    }
+    /**
+     * 判断是否相等
+     * @param property
+     * @param targetOrCallBack
+     * @param tPropertyOrCaller
+     * @returns
+     */
+    equal(property, targetOrCallBack, tPropertyOrCaller) {
+        if (property == this.property && this.targetOrCallBack == targetOrCallBack && this.tPropertyOrCaller == tPropertyOrCaller) {
+            return true;
+        }
+        return false;
+    }
+}
+/**
+ * 属性绑定器
+ */
+class PropertyBinder {
+    constructor(data) {
+        this.data = data;
+        this.__propertys = [];
+        this.__changedPropertys = [];
+        this.__bindedMap = new Map();
+        this.__bindedGroupMap = new Map();
+    }
+    /**
+     * 绑定
+     * @param group
+     * @param property
+     * @param targetOrCallBack
+     * @param tPropertyOrCaller
+     * @returns
+     */
+    bind(group, property, targetOrCallBack, tPropertyOrCaller) {
+        let info;
+        let groupList = this.__bindedGroupMap.get(group);
+        if (!groupList) {
+            groupList = [];
+            this.__bindedGroupMap.set(group, groupList);
+        }
+        let exist = false;
+        let bindInfos;
+        if (Array.isArray(property)) {
+            for (let pIndex = 0; pIndex < property.length; pIndex++) {
+                const propertyKey = property[pIndex];
+                this.__checkProperty(propertyKey);
+                for (let index = 0; index < groupList.length; index++) {
+                    info = groupList[index];
+                    if (info.equal(propertyKey, targetOrCallBack, tPropertyOrCaller)) {
+                        exist = true;
+                        continue;
+                    }
+                }
+                //不存在
+                if (!exist) {
+                    info = new BindInfo(propertyKey, targetOrCallBack, tPropertyOrCaller);
+                    bindInfos = this.__bindedMap.get(propertyKey);
+                    if (!bindInfos) {
+                        bindInfos = [];
+                        this.__bindedMap.set(propertyKey, bindInfos);
+                    }
+                    bindInfos.push(info);
+                    groupList.push(info);
+                    //标记改变
+                    this.__propertyChanged(propertyKey);
+                }
+            }
+        }
+        else {
+            this.__checkProperty(property);
+            for (let index = 0; index < groupList.length; index++) {
+                info = groupList[index];
+                if (info.equal(property, targetOrCallBack, tPropertyOrCaller)) {
+                    return;
+                }
+            }
+            info = new BindInfo(property, targetOrCallBack, tPropertyOrCaller);
+            bindInfos = this.__bindedMap.get(property);
+            if (!bindInfos) {
+                bindInfos = [];
+                this.__bindedMap.set(property, bindInfos);
+            }
+            bindInfos.push(info);
+            groupList.push(info);
+            //标记改变
+            this.__propertyChanged(property);
+        }
+    }
+    /**
+     * 取消绑定
+     * @param group
+     * @param property
+     * @param targetOrCallBack
+     * @param tPropertyOrCaller
+     * @returns
+     */
+    unbind(group, property, targetOrCallBack, tPropertyOrCaller) {
+        let info;
+        let groupList = this.__bindedGroupMap.get(group);
+        //如果记录中没有
+        if (!groupList) {
+            return;
+        }
+        let bindInfos;
+        let fIndex;
+        //取消所有该组的绑定
+        if (property == null) {
+            for (let index = 0; index < groupList.length; index++) {
+                info = groupList[index];
+                //从已绑定的列表中删除
+                bindInfos = this.__bindedMap.get(info.property);
+                if (bindInfos && bindInfos.length > 0) {
+                    fIndex = bindInfos.indexOf(info);
+                    if (fIndex >= 0) {
+                        bindInfos.splice(fIndex, 1);
+                    }
+                }
+                if (bindInfos.length == 0) {
+                    this.__bindedMap.delete(info.property);
+                }
+            }
+            groupList.length = 0;
+            this.__bindedGroupMap.delete(group);
+            return;
+        }
+        if (Array.isArray(property)) {
+            for (let pIndex = 0; pIndex < property.length; pIndex++) {
+                const propertyKey = property[pIndex];
+                //从组中找相对比较快一些，因为编组列表相对数据绑定列表通常会小一些
+                for (let gIndex = 0; gIndex < groupList.length; gIndex++) {
+                    info = groupList[gIndex];
+                    bindInfos = this.__bindedMap.get(info.property);
+                    if (info.equal(propertyKey, targetOrCallBack, tPropertyOrCaller)) {
+                        fIndex = bindInfos.indexOf(info);
+                        if (fIndex >= 0) {
+                            bindInfos.splice(fIndex, 1);
+                        }
+                        groupList.splice(gIndex, 1);
+                        gIndex--;
+                    }
+                }
+            }
+            if (groupList.length == 0) {
+                this.__bindedGroupMap.delete(group);
+            }
+        }
+        else {
+            //从组中找相对比较快一些，因为编组列表相对数据绑定列表通常会小一些
+            for (let gIndex = 0; gIndex < groupList.length; gIndex++) {
+                info = groupList[gIndex];
+                bindInfos = this.__bindedMap.get(info.property);
+                if (info.equal(property, targetOrCallBack, tPropertyOrCaller)) {
+                    fIndex = bindInfos.indexOf(info);
+                    if (fIndex >= 0) {
+                        bindInfos.splice(fIndex, 1);
+                    }
+                    groupList.splice(gIndex, 1);
+                    gIndex--;
+                }
+            }
+            if (groupList.length == 0) {
+                this.__bindedGroupMap.delete(group);
+            }
+        }
+    }
+    //========================================属性绑定机制实现======================================//
+    /**
+    * 检测属性
+    * @param propertyKey
+    */
+    __checkProperty(propertyKey) {
+        let index = this.__propertys.indexOf(propertyKey);
+        //如果没有绑定过这个数据
+        if (index < 0) {
+            //数据绑定实现
+            let value = this.data[propertyKey];
+            this.__defineReactive(this.data, propertyKey, value);
+            this.__propertys.push(propertyKey);
+        }
+    }
+    /**定义 */
+    __defineReactive(data, key, value) {
+        let self = this;
+        Object.defineProperty(data, key, {
+            enumerable: true,
+            configurable: true,
+            get: function () {
+                return value;
+            },
+            set: function (newValue) {
+                if (value == newValue) {
+                    return;
+                }
+                // console.log("绑定数据改变：", value, newValue);
+                value = newValue;
+                self.__propertyChanged(key);
+            },
+        });
+    }
+    __propertyChanged(pKey, isInit = false) {
+        //标记改变
+        if (this.__changedPropertys.indexOf(pKey) < 0) {
+            this.__changedPropertys.push(pKey);
+            TickerManager.callNextFrame(this.__nextFramePropertyUpdate, this);
+        }
+    }
+    __nextFramePropertyUpdate(isInit = false) {
+        let pKey;
+        for (let propsIndex = 0; propsIndex < this.__changedPropertys.length; propsIndex++) {
+            pKey = this.__changedPropertys[propsIndex];
+            this.__updateProperty(pKey);
+        }
+        this.__changedPropertys.length = 0;
+    }
+    /**
+     * 属性更新
+     * @param pKey
+     */
+    __updateProperty(pKey) {
+        let bindInfos = this.__bindedMap.get(pKey);
+        let info;
+        if (bindInfos && bindInfos.length) {
+            for (let index = 0; index < bindInfos.length; index++) {
+                info = bindInfos[index];
+                //属性绑定
+                if (typeof info.targetOrCallBack != "function") {
+                    info.targetOrCallBack[info.tPropertyOrCaller] = this.data[pKey];
+                }
+                else { //函数绑定
+                    info.targetOrCallBack.apply(info.tPropertyOrCaller, this.__changedPropertys);
+                }
+            }
+        }
+    }
+}
+
+/**
+ * 绑定器工具类
+ */
+class BinderUtils {
+    constructor() {
+    }
+    /**
+     * 绑定
+     * @param group
+     * @param source
+     * @param property
+     * @param targetOrCallBack
+     * @param tPropertyOrCaller
+     */
+    static bind(group, source, property, targetOrCallBack, tPropertyOrCaller) {
+        let binder = source["$PropertyBinder"];
+        if (!binder) {
+            binder = new PropertyBinder(source);
+            source["$PropertyBinder"] = binder;
+        }
+        binder.bind(group, property, targetOrCallBack, tPropertyOrCaller);
+    }
+    /**
+     * 取消绑定
+     * @param group
+     * @param source
+     * @param property
+     * @param targetOrCallBack
+     * @param tPropertyOrCaller
+     * @returns
+     */
+    static unbind(group, source, property, targetOrCallBack, tPropertyOrCaller) {
+        let binder = source["$PropertyBinder"];
+        if (!binder) {
+            return;
+        }
+        binder.unbind(group, property, targetOrCallBack, tPropertyOrCaller);
+    }
+    /**
+     * 添加函数钩子
+     * @param group
+     * @param source
+     * @param functionName
+     * @param preHandler
+     * @param laterHandler
+     */
+    static addHook(group, source, functionName, preHandler, laterHandler) {
+        let hook = source["$FunctionHook"];
+        if (!hook) {
+            hook = new FunctionHook(source);
+            source["$FunctionHook"] = hook;
+        }
+        hook.addHook(group, functionName, preHandler, laterHandler);
+    }
+    /**
+     * 删除函数钩子
+     * @param group
+     * @param source
+     * @param functionName
+     * @param preHandler
+     * @param laterHandler
+     * @returns
+     */
+    static removeHook(group, source, functionName, preHandler, laterHandler) {
+        let hook = source["$FunctionHook"];
+        if (!hook) {
+            return;
+        }
+        hook.removeHook(group, functionName, preHandler, laterHandler);
+    }
+}
+
+/**
+ * 绑定工具类
+ */
+class BindingUtils {
+    constructor() {
+        this.__bindRecords = [];
+        this.__hookRecords = [];
+    }
+    /**
+     * 数据绑定
+     * @param source
+     * @param property
+     * @param targetOrCallBack
+     * @param tPropertyKeyOrCaller
+     */
+    __bind(source, property, targetOrCallBack, tPropertyKeyOrCaller) {
+        for (let index = 0; index < this.__bindRecords.length; index++) {
+            const element = this.__bindRecords[index];
+            if (element.source == source &&
+                element.property == property &&
+                element.targetOrCallback == targetOrCallBack &&
+                element.targetPropertyOrCaller == tPropertyKeyOrCaller) {
+                //重复绑定
+                throw new Error("重复绑定：" + source + property + targetOrCallBack + tPropertyKeyOrCaller);
+            }
+        }
+        this.__bindRecords.push({
+            source: source,
+            property: property,
+            targetOrCallback: targetOrCallBack,
+            targetPropertyOrCaller: tPropertyKeyOrCaller
+        });
+        BinderUtils.bind(this, source, property, targetOrCallBack, tPropertyKeyOrCaller);
+    }
+    /**
+     * 取消绑定
+     * @param source
+     * @param property
+     * @param targetOrCallBack
+     * @param tPropertyKeyOrCaller
+     */
+    __unbind(source, property, targetOrCallBack, tPropertyKeyOrCaller) {
+        for (let index = 0; index < this.__bindRecords.length; index++) {
+            const element = this.__bindRecords[index];
+            if (element.source == source &&
+                element.property == property &&
+                element.targetOrCallback == targetOrCallBack &&
+                element.targetPropertyOrCaller == tPropertyKeyOrCaller) {
+                this.__bindRecords.splice(index, 1);
+            }
+        }
+        BinderUtils.unbind(this, source, property, targetOrCallBack, tPropertyKeyOrCaller);
+    }
+    /**
+     * 添加函数钩子
+     * @param source
+     * @param functionName
+     * @param preHandles
+     * @param laterHandlers
+     */
+    __addHook(source, functionName, preHandle, laterHandler) {
+        for (let index = 0; index < this.__hookRecords.length; index++) {
+            const element = this.__hookRecords[index];
+            if (element.source == source &&
+                element.functionName == functionName &&
+                preHandle.equal(element.preHandler) &&
+                laterHandler.equal(element.laterHandler)) {
+                //重复绑定
+                throw new Error("重复绑定：" + source + " " + functionName);
+            }
+        }
+        //记录
+        this.__hookRecords.push({ source: source, functionName: functionName, preHandler: preHandle, laterHandler: laterHandler });
+        BinderUtils.addHook(this, source, functionName, preHandle, laterHandler);
+    }
+    /**
+     * 删除函数钩子
+     * @param source
+     * @param functionName
+     * @param preHandle
+     * @param laterHandler
+     */
+    __removeHook(source, functionName, preHandle, laterHandler) {
+        for (let index = 0; index < this.__hookRecords.length; index++) {
+            const element = this.__hookRecords[index];
+            if (element.source == source &&
+                element.functionName == functionName &&
+                preHandle.equal(element.preHandler) &&
+                laterHandler.equal(element.laterHandler)) {
+                this.__hookRecords.splice(index, 1);
+            }
+        }
+        BinderUtils.removeHook(this, source, functionName, preHandle, laterHandler);
+    }
+    /**
+     * 属性和属性的绑定
+     * @param source            数据源
+     * @param property          数据源属性名
+     * @param target            目标对象
+     * @param targetProperty    目标对象属性名
+     */
+    bindAA(source, property, target, targetProperty) {
+        this.__bind(source, property, target, targetProperty);
+    }
+    /**
+     * 取消属性和属性的绑定
+     * @param source
+     * @param property
+     * @param target
+     * @param targetProperty
+     */
+    unbindAA(source, property, target, targetProperty) {
+        this.__unbind(source, property, target, targetProperty);
+    }
+    /**
+     * 属性和函数的绑定
+     * @param source
+     * @param property
+     * @param callBack
+     * @param caller
+     */
+    bindAM(source, property, callBack, caller) {
+        this.__bind(source, property, callBack, caller);
+    }
+    /**
+     * 取消属性和函数的绑定
+     * @param source
+     * @param propertys
+     * @param callBack
+     * @param caller
+     */
+    unbidAM(source, propertys, callBack, caller) {
+        this.__unbind(source, propertys, callBack, caller);
+    }
+    /**
+     * 函数和函数的绑定
+     * @param source
+     * @param functionName  目标函数
+     * @param preHandle     该函数将在目标函数调用前调用
+     * @param laterHandler  该函数将在目标函数调用后调用
+     */
+    bindMM(source, functionName, preHandle, laterHandler) {
+        this.__addHook(source, functionName, preHandle, laterHandler);
+    }
+    /**
+     * 取消方法和方法的绑定关系
+     * @param source
+     * @param functionName
+     * @param preHandle
+     * @param laterHandler
+     */
+    unbindMM(source, functionName, preHandle, laterHandler) {
+        this.__removeHook(source, functionName, preHandle, laterHandler);
+    }
+    //根据记录添加绑定
+    bindByRecords() {
+        //bind
+        for (let index = 0; index < this.__bindRecords.length; index++) {
+            const element = this.__bindRecords[index];
+            BinderUtils.bind(this, element.source, element.property, element.targetOrCallback, element.targetPropertyOrCaller);
+        }
+        //addHook
+        for (let index = 0; index < this.__hookRecords.length; index++) {
+            const element = this.__hookRecords[index];
+            BinderUtils.addHook(this, element.source, element.functionName, element.preHandler, element.laterHandler);
+        }
+    }
+    //根据记录删除绑定
+    unbindByRecords() {
+        //unbind
+        for (let index = 0; index < this.__bindRecords.length; index++) {
+            const element = this.__bindRecords[index];
+            BinderUtils.unbind(this, element.source, element.property, element.targetOrCallback, element.targetPropertyOrCaller);
+        }
+        //removeHook
+        for (let index = 0; index < this.__hookRecords.length; index++) {
+            const element = this.__hookRecords[index];
+            BinderUtils.removeHook(this, element.source, element.functionName, element.preHandler, element.laterHandler);
+        }
+    }
+    /**
+     * 销毁
+     */
+    destroy() {
+        if (this.__hookRecords) {
+            this.__hookRecords.length = 0;
+            this.__hookRecords = null;
+        }
+        if (this.__bindRecords) {
+            this.__bindRecords.length = 0;
+            this.__bindRecords = null;
+        }
+    }
+}
 
 class TimerImpl {
     constructor() {
@@ -3834,4 +4555,4 @@ class RelationManager {
 }
 RelationManager.__map = new Map();
 
-export { AudioChannel, AudioManager, BitFlag, Component, Debuger, Dictionary, Entity, Event, EventDispatcher, FSM, FindPosition, GUIManager, GUIState, Group, Injector, LayerManager, List, LocalStorage, Matcher, MatcherAllOf, MatcherAnyOf, MatcherNoneOf, MaxRectBinPack, Pool, RGBA8888Texture, Rect, RelationManager, Res, ResManager, ResRef, Resource, StringUtils, System, TaskQueue, TaskSequence, TickerManager, Timer, World, fullURL, key2URL, url2Key };
+export { AudioChannel, AudioManager, BinderUtils, BindingUtils, BitFlag, Component, Debuger, Dictionary, Entity, Event, EventDispatcher, FSM, FindPosition, FunctionHook, GUIManager, GUIState, Group, Handler, Injector, LayerManager, List, LocalStorage, Matcher, MatcherAllOf, MatcherAnyOf, MatcherNoneOf, MaxRectBinPack, Pool, PropertyBinder, RGBA8888Texture, Rect, RelationManager, Res, ResManager, ResRef, Resource, StringUtils, System, TaskQueue, TaskSequence, TickerManager, Timer, World, fullURL, key2URL, url2Key };
